@@ -561,7 +561,7 @@ export default function MasterAnalyzer({ onPlaybackStart }) {
             }}
             className={`relative flex-1 rounded-2xl flex flex-col items-center justify-center text-center cursor-pointer transition-all duration-500 group overflow-hidden z-10
               ${!isLocked 
-                ? isDragActive ? 'bg-[#9D4EDD]/[0.05] border border-[#9D4EDD]/40' : 'bg-transparent border border-transparent' 
+                ? isDragActive ? 'bg-white/[0.02] border border-white/10 scale-[0.99]' : 'bg-transparent border border-transparent' 
                 : 'border border-red-500/20 bg-red-950/[0.02]'
               }`}
           >
@@ -602,23 +602,25 @@ export default function MasterAnalyzer({ onPlaybackStart }) {
                 {/* Hero Text Re-ubicado (Step 6) */}
                 <div className={`transition-all duration-500 transform ${isDragActive ? '-translate-y-10 opacity-0' : 'translate-y-0 opacity-100'} mb-6`}>
                   <h1 className="font-modern text-3xl md:text-5xl font-light text-white tracking-tighter leading-tight mb-2">
-                    Analyze your master. <br />
-                    <span className="font-serif italic text-white/70 text-2xl md:text-4xl">Know your numbers. Take CTRL.</span>
+                    Free Spotify Loudness Checker.
                   </h1>
-                  <h2 className="text-[8px] md:text-[9px] font-mono tracking-widest uppercase text-white/40 mt-3 max-w-xl mx-auto leading-relaxed">
+                  <h2 className="font-serif italic text-white/70 text-2xl md:text-4xl mb-4">
+                    Know your numbers. Take CTRL.
+                  </h2>
+                  <p className="text-[8px] md:text-[9px] font-mono tracking-widest uppercase text-white/40 mt-3 max-w-xl mx-auto leading-relaxed">
                     Free audio analyzer — entirely in your browser. <br className="hidden md:block" />
                     <span className="text-[#9D4EDD]/80">No uploads. No signup. 100% client-side.</span>
-                  </h2>
+                  </p>
                 </div>
 
                 {/* Iris y Círculo Central (Step 4) */}
                 <div className="relative flex items-center justify-center w-32 h-32 md:w-48 md:h-48 mb-6">
                   {/* Anillo Pulsante */}
-                  <div className={`absolute inset-0 rounded-full border-2 transition-all duration-700 ${isDragActive ? 'border-[#9D4EDD] scale-110 blur-sm' : 'border-white/10 animate-pulse'}`}></div>
-                  <div className={`absolute inset-4 rounded-full border border-dashed transition-all duration-500 ${isDragActive ? 'border-[#9D4EDD] animate-spin-slow' : 'border-white/20'}`}></div>
+                  <div className={`absolute inset-0 rounded-full border-2 transition-all duration-700 ${isDragActive ? 'border-[#9D4EDD] scale-110 blur-sm' : 'border-[#9D4EDD]/40 shadow-[0_0_20px_rgba(157,78,221,0.2)] animate-pulse'}`}></div>
+                  <div className={`absolute inset-4 rounded-full border border-dashed transition-all duration-500 ${isDragActive ? 'border-[#9D4EDD] animate-spin-slow' : 'border-[#9D4EDD]/20'}`}></div>
                   
                   {/* Círculo Principal */}
-                  <div className={`absolute inset-8 rounded-full flex items-center justify-center transition-all duration-300 ${isDragActive ? 'bg-[#9D4EDD]/20 shadow-[0_0_50px_rgba(157,78,221,0.5)]' : 'bg-black/40 border border-white/5 group-hover:border-[#9D4EDD]/40'}`}>
+                  <div className={`absolute inset-8 rounded-full flex items-center justify-center transition-all duration-300 ${isDragActive ? 'bg-[#9D4EDD]/20 shadow-[0_0_50px_rgba(157,78,221,0.5)]' : 'bg-transparent group-hover:shadow-[0_0_30px_rgba(157,78,221,0.1)]'}`}>
                     {isDragActive ? (
                       <span className="font-serif italic text-[#E0AAFF] text-2xl md:text-3xl animate-pulse">Drop it.</span>
                     ) : (
@@ -843,24 +845,59 @@ export default function MasterAnalyzer({ onPlaybackStart }) {
               </div>
 
               {/* Verdict Recommendation */}
-              <div className="mt-4 p-4 bg-white/[0.02] border border-white/5 rounded-xl text-[10px] text-white/60 font-mono space-y-2 leading-relaxed">
-                <span className="text-[#E0AAFF] font-bold">FINAL MASTERING RECOMMENDATION:</span>
-                {analysisResult.truePeak >= -0.2 ? (
-                  <p>
-                    ⚠️ ALERT: Your absolute peak level is excessively high ({analysisResult.truePeak.toFixed(1)} dBTP). When Spotify encodes your track to Ogg Vorbis/AAC, it will cause analog saturation. <strong className="text-white">Lower your DAW's limiter fader to -1.0 dB.</strong>
-                  </p>
-                ) : analysisResult.lufs > -11 ? (
-                  <p>
-                    ✓ Your track meets safe peak limits. Note that at {analysisResult.lufs.toFixed(1)} LUFS, your master is quite loud and Spotify will passively turn it down by about {(analysisResult.lufs - (-14)).toFixed(1)} dB. For urban or EDM genres it's normal to sacrifice dynamics for density, but if it's an acoustic or indie track, consider bouncing a version with less compression.
-                  </p>
-                ) : analysisResult.lufs < -16.5 ? (
-                  <p>
-                    ⚠️ WARNING: Loudness is very low ({analysisResult.lufs.toFixed(1)} LUFS). Platforms will artificially raise the volume by engaging internal limiters. <strong className="text-white">Apply a subtle limiter or gain to push the master to around -14 LUFS.</strong>
-                  </p>
+              <div className="mt-4 flex flex-col gap-3">
+                <div className="p-5 bg-white/[0.02] border border-white/5 rounded-2xl text-[10px] text-[#9ca3af] font-mono space-y-3 leading-relaxed">
+                  <div className="flex items-center justify-between border-b border-white/5 pb-3 mb-3">
+                    <span className="text-white font-modern tracking-widest uppercase text-xs font-semibold">Spotify Loudness Verdict</span>
+                    <span className="text-white/40 tracking-widest uppercase">Target: -14 LUFS</span>
+                  </div>
+
+                  <div>
+                    {analysisResult.lufs > -10 ? (
+                      <div>
+                        <p className="text-white font-bold mb-1">⚠️ LOUDNESS PENALTY TRIGGERED ({(analysisResult.lufs - (-14)).toFixed(1)} dB)</p>
+                        <p>At <strong className="text-white">{analysisResult.lufs.toFixed(1)} LUFS</strong>, your track is extremely loud. Spotify will automatically turn down your master by approx. <strong className="text-white">{Math.abs(-14 - analysisResult.lufs).toFixed(1)} dB</strong>.</p>
+                        <p className="mt-2 text-white/50"><strong className="text-white/80">Making Metal or Heavy EDM?</strong> The "louder is better" myth will crush your transients. Your drums and guitar attacks will sound choked and lose all impact compared to dynamic tracks. <strong className="text-[#E0AAFF]">Pro Tip: Master between -10 and -12 LUFS</strong> to preserve aggressive punch while staying competitive.</p>
+                      </div>
+                    ) : analysisResult.lufs >= -12 ? (
+                      <div>
+                        <p className="text-white font-bold mb-1">✓ HEAVY GENRE SWEET SPOT</p>
+                        <p>At <strong className="text-white">{analysisResult.lufs.toFixed(1)} LUFS</strong>, you're slightly above the -14 LUFS target. Spotify will slightly lower your volume by {Math.abs(-14 - analysisResult.lufs).toFixed(1)} dB.</p>
+                        <p className="mt-2 text-white/50">This is the <strong className="text-[#E0AAFF]">perfect range for Metal, Rock, or heavy Electronic music</strong>. You maintain high energy and density without completely destroying your drum transients and dynamic impact.</p>
+                      </div>
+                    ) : analysisResult.lufs >= -15 ? (
+                      <div>
+                        <p className="text-white font-bold mb-1">✓ PERFECT DYNAMICS</p>
+                        <p>At <strong className="text-white">{analysisResult.lufs.toFixed(1)} LUFS</strong>, you are perfectly aligned with Spotify's standard.</p>
+                        <p className="mt-2 text-white/50">Your track will experience zero or minimal volume penalties. It will sound exactly as you intended, preserving total transparency and dynamic range. Ideal for Pop, Acoustic, and highly dynamic mixes.</p>
+                      </div>
+                    ) : (
+                      <div>
+                        <p className="text-white font-bold mb-1">⚠️ TOO QUIET (-14 LUFS TARGET)</p>
+                        <p>At <strong className="text-white">{analysisResult.lufs.toFixed(1)} LUFS</strong>, Spotify will artificially <strong className="text-white">boost</strong> your volume to reach -14 LUFS.</p>
+                        <p className="mt-2 text-white/50">This will trigger their internal limiters, potentially altering your mix balance and pumping the background noise. Use a transparent limiter in your DAW to gain stage your master closer to -14 LUFS.</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* True Peak Warning Card */}
+                {analysisResult.truePeak > -1.0 ? (
+                  <div className="p-4 bg-white/[0.01] border border-red-500/10 rounded-xl text-[10px] text-[#9ca3af] font-mono flex items-start gap-3">
+                    <AlertTriangle className="w-4 h-4 text-red-500/50 flex-shrink-0 mt-0.5" />
+                    <div>
+                      <p className="text-white font-bold mb-1">TRUE PEAK CLIPPING RISK ({analysisResult.truePeak.toFixed(1)} dBTP)</p>
+                      <p className="text-white/50">When Spotify encodes your WAV file to compressed formats (Ogg Vorbis), inter-sample peaks will cause digital distortion. <strong className="text-[#E0AAFF]">Always leave a ceiling of -1.0 dBTP on your final limiter.</strong></p>
+                    </div>
+                  </div>
                 ) : (
-                  <p>
-                    ✓ Congratulations! Your track is in the ideal range for digital distribution. It maintains an excellent dynamic to RMS power ratio, won't suffer severe attenuation, and will sound transparent and faithful on streaming platforms.
-                  </p>
+                  <div className="p-4 bg-white/[0.01] border border-white/5 rounded-xl text-[10px] text-[#9ca3af] font-mono flex items-start gap-3">
+                    <CheckCircle className="w-4 h-4 text-white/30 flex-shrink-0 mt-0.5" />
+                    <div>
+                      <p className="text-white font-bold mb-1">TRUE PEAK SAFE ({analysisResult.truePeak.toFixed(1)} dBTP)</p>
+                      <p className="text-white/50">Your master respects the -1.0 dBTP ceiling. It will encode perfectly to Spotify's streaming formats without any inter-sample clipping.</p>
+                    </div>
+                  </div>
                 )}
               </div>
             </div>

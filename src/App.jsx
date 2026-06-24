@@ -274,7 +274,7 @@ export default function App() {
               >.</span>
             </span>
           </span>
-          <span className="text-[8px] tracking-[0.4em] text-[#9ca3af] uppercase mt-1">MASTERING ANALYZER</span>
+          <span className="text-[8px] tracking-[0.4em] text-[#9ca3af] uppercase mt-1">SPOTIFY LOUDNESS CHECKER</span>
         </div>
 
         <div className="absolute inset-0 hidden md:flex justify-center items-center pointer-events-none z-20">
