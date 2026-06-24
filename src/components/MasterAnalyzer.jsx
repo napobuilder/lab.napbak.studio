@@ -1457,16 +1457,30 @@ export default function MasterAnalyzer({ onPlaybackStart }) {
 
       </div>
 
-      {isPro && (
-        <div className="flex justify-center mt-4">
-          <button
-            onClick={handleResetLimits}
-            className="text-[8px] tracking-[0.3em] font-mono uppercase text-white/30 hover:text-white/60 border border-white/5 hover:border-white/10 px-3 py-1.5 rounded-full transition-all bg-black/40"
-          >
-            [ DEV: Reset Pro Status & Limits ]
-          </button>
-        </div>
-      )}
+      <div className="flex justify-center gap-3 mt-4">
+        <button
+          onClick={handleResetLimits}
+          className="text-[8px] tracking-[0.3em] font-mono uppercase text-white/30 hover:text-white/60 border border-white/5 hover:border-white/10 px-3 py-1.5 rounded-full transition-all bg-black/40"
+        >
+          [ DEV: Reset Limits (3 Left) ]
+        </button>
+        <button
+          onClick={() => {
+            if (isPro) {
+              lockPro();
+              localStorage.removeItem('napbak_pro');
+              localStorage.removeItem('napbak_pro_storage');
+            } else {
+              localStorage.setItem('napbak_pro', 'true');
+              unlockPro('dev-toggle');
+              setShowPaywall(false);
+            }
+          }}
+          className="text-[8px] tracking-[0.3em] font-mono uppercase text-white/30 hover:text-white/60 border border-white/5 hover:border-white/10 px-3 py-1.5 rounded-full transition-all bg-black/40"
+        >
+          [ DEV: Toggle Pro Mode ({isPro ? 'ON' : 'OFF'}) ]
+        </button>
+      </div>
     </div>
   );
 }
