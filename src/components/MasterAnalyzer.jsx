@@ -9,7 +9,8 @@ import {
   XCircle, 
   Lock, 
   RotateCcw,
-  Volume2
+  Volume2,
+  Info
 } from 'lucide-react';
 import { 
   calculateIntegratedLUFS, 
@@ -754,8 +755,20 @@ export default function MasterAnalyzer({ onPlaybackStart }) {
 
             {/* Metrics cards grid */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <div className="bg-white/[0.02] border border-white/10 p-4 rounded-xl flex flex-col justify-between relative overflow-hidden">
-                <div className="text-[9px] text-white/40 tracking-wider uppercase font-mono">Integrated Loudness</div>
+              <div className="bg-white/[0.02] border border-white/10 p-4 rounded-xl flex flex-col justify-between relative overflow-visible group/card1">
+                <div className="flex items-center justify-between">
+                  <div className="text-[9px] text-white/40 tracking-wider uppercase font-mono">Integrated Loudness</div>
+                  <div className="relative flex items-center justify-center">
+                    <Info className="w-3.5 h-3.5 text-white/20 hover:text-white/80 transition-colors cursor-help" />
+                    <div className="absolute bottom-full mb-3 left-1/2 -translate-x-1/2 w-[260px] bg-[#050505]/95 backdrop-blur-xl border border-white/10 p-4 rounded-xl shadow-2xl opacity-0 invisible group-hover/card1:opacity-100 group-hover/card1:visible transition-all duration-300 z-[60] pointer-events-none">
+                      <p className="text-white text-xs font-modern font-bold mb-1">Spotify Algorithm & LUFS</p>
+                      <p className="text-[#9ca3af] text-[10px] font-mono leading-relaxed mb-2">Spotify aims to standardize loudness at <strong className="text-white">-14 LUFS</strong>. If your master is louder, they will turn it down. If it's quieter, they will artificially limit it.</p>
+                      <p className="text-[#E0AAFF] text-[10px] font-mono leading-relaxed"><strong className="font-bold">Metal/EDM Tip:</strong> Aim between -10 and -12 LUFS to preserve natural impact and aggression without choking the transients.</p>
+                      {/* Flecha del tooltip */}
+                      <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-[1px] border-solid border-t-[#050505]/95 border-t-8 border-x-transparent border-x-8 border-b-0"></div>
+                    </div>
+                  </div>
+                </div>
                 <div className="flex items-baseline gap-1 my-3">
                   <span className="text-3xl font-modern text-white font-bold">
                     {analysisResult.lufs !== -Infinity ? analysisResult.lufs.toFixed(1) : '-INF'}
@@ -767,8 +780,18 @@ export default function MasterAnalyzer({ onPlaybackStart }) {
                 </div>
               </div>
 
-              <div className="bg-white/[0.02] border border-white/10 p-4 rounded-xl flex flex-col justify-between relative overflow-hidden">
-                <div className="text-[9px] text-white/40 tracking-wider uppercase font-mono">Max True Peak (4x)</div>
+              <div className="bg-white/[0.02] border border-white/10 p-4 rounded-xl flex flex-col justify-between relative overflow-visible group/card2">
+                <div className="flex items-center justify-between">
+                  <div className="text-[9px] text-white/40 tracking-wider uppercase font-mono">Max True Peak (4x)</div>
+                  <div className="relative flex items-center justify-center">
+                    <Info className="w-3.5 h-3.5 text-white/20 hover:text-white/80 transition-colors cursor-help" />
+                    <div className="absolute bottom-full mb-3 left-1/2 -translate-x-1/2 w-[240px] bg-[#050505]/95 backdrop-blur-xl border border-white/10 p-4 rounded-xl shadow-2xl opacity-0 invisible group-hover/card2:opacity-100 group-hover/card2:visible transition-all duration-300 z-[60] pointer-events-none">
+                      <p className="text-white text-xs font-modern font-bold mb-1">Clipping Prevention</p>
+                      <p className="text-[#9ca3af] text-[10px] font-mono leading-relaxed">Always leave a ceiling of <strong className="text-red-400">-1.0 dBTP</strong> on your final limiter. Converting your WAV to streaming formats (Ogg Vorbis, AAC) generates inter-sample peaks that cause digital distortion if there's no headroom.</p>
+                      <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-[1px] border-solid border-t-[#050505]/95 border-t-8 border-x-transparent border-x-8 border-b-0"></div>
+                    </div>
+                  </div>
+                </div>
                 <div className="flex items-baseline gap-1 my-3">
                   <span className={`text-3xl font-modern font-bold ${analysisResult.truePeak >= -0.2 ? 'text-red-400' : 'text-white'}`}>
                     {analysisResult.truePeak !== -Infinity ? analysisResult.truePeak.toFixed(1) : '-INF'}
@@ -780,8 +803,18 @@ export default function MasterAnalyzer({ onPlaybackStart }) {
                 </div>
               </div>
 
-              <div className="bg-white/[0.02] border border-white/10 p-4 rounded-xl flex flex-col justify-between relative overflow-hidden">
-                <div className="text-[9px] text-white/40 tracking-wider uppercase font-mono">Loudness Range (LRA)</div>
+              <div className="bg-white/[0.02] border border-white/10 p-4 rounded-xl flex flex-col justify-between relative overflow-visible group/card3">
+                <div className="flex items-center justify-between">
+                  <div className="text-[9px] text-white/40 tracking-wider uppercase font-mono">Loudness Range (LRA)</div>
+                  <div className="relative flex items-center justify-center">
+                    <Info className="w-3.5 h-3.5 text-white/20 hover:text-white/80 transition-colors cursor-help" />
+                    <div className="absolute bottom-full mb-3 right-[-10px] w-[220px] bg-[#050505]/95 backdrop-blur-xl border border-white/10 p-4 rounded-xl shadow-2xl opacity-0 invisible group-hover/card3:opacity-100 group-hover/card3:visible transition-all duration-300 z-[60] pointer-events-none origin-bottom-right">
+                      <p className="text-white text-xs font-modern font-bold mb-1">Dynamic Range</p>
+                      <p className="text-[#9ca3af] text-[10px] font-mono leading-relaxed">Measures the variation between the quiet and loud parts of the track. A low LRA ({"< 4 LU"}) indicates heavy compression and constant energy. A high LRA indicates wide dynamics.</p>
+                      <div className="absolute top-full right-[13px] -mt-[1px] border-solid border-t-[#050505]/95 border-t-8 border-x-transparent border-x-8 border-b-0"></div>
+                    </div>
+                  </div>
+                </div>
                 <div className="flex items-baseline gap-1 my-3">
                   <span className="text-3xl font-modern text-white font-bold">
                     {analysisResult.lra.toFixed(1)}
