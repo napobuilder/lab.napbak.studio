@@ -460,7 +460,8 @@ export default function App() {
               </p>
             </div>
 
-            <div className="max-w-5xl mx-auto w-full overflow-hidden border border-white/10 bg-[#0a0a0a]/40 backdrop-blur-sm rounded-3xl relative shadow-[0_0_50px_rgba(157,78,221,0.03)]">
+            {/* Desktop Table View */}
+            <div className="hidden md:block max-w-5xl mx-auto w-full overflow-hidden border border-white/10 bg-[#0a0a0a]/40 backdrop-blur-sm rounded-3xl relative shadow-[0_0_50px_rgba(157,78,221,0.03)]">
               <div className="overflow-x-auto">
                 <table className="w-full text-center border-collapse min-w-[700px]">
                   <thead>
@@ -553,6 +554,94 @@ export default function App() {
                   </tbody>
                 </table>
               </div>
+            </div>
+
+            {/* Mobile Stacked Pricing Cards */}
+            <div className="grid grid-cols-1 gap-6 md:hidden">
+              
+              {/* Free Plan */}
+              <div className="border border-white/10 bg-[#0a0a0a]/40 backdrop-blur-sm rounded-3xl p-6 relative shadow-lg flex flex-col justify-between">
+                <div>
+                  <div className="flex justify-between items-center mb-4">
+                    <span className="font-modern text-white tracking-widest text-lg font-bold uppercase">FREE</span>
+                    <span className="text-[9px] text-white/40 font-mono tracking-widest uppercase border border-white/10 px-2 py-0.5 rounded">ACTIVE</span>
+                  </div>
+                  <div className="font-serif italic text-4xl text-white mb-6">$0</div>
+                  <ul className="text-xs font-mono text-white/70 space-y-3 mb-8">
+                    <li className="flex items-center gap-2">✓ 3 Daily Analyses</li>
+                    <li className="flex items-center gap-2">✓ LUFS & True Peak</li>
+                    <li className="flex items-center gap-2">✓ 100% Client-Side Processing</li>
+                    <li className="flex items-center gap-2">✓ Platform & Device Simulation</li>
+                  </ul>
+                </div>
+                <button 
+                  onClick={() => {
+                    lockPro();
+                    const element = document.getElementById('analyzer');
+                    element?.scrollIntoView({ behavior: 'smooth' });
+                  }}
+                  className="w-full py-3.5 rounded-full border border-white/10 text-[9px] tracking-widest uppercase hover:bg-white/5 transition-colors font-mono font-bold"
+                >
+                  Active Free Plan
+                </button>
+              </div>
+
+              {/* Pro Monthly */}
+              <div className="border border-[#9D4EDD]/30 bg-[#9D4EDD]/[0.02] backdrop-blur-sm rounded-3xl p-6 relative shadow-lg flex flex-col justify-between">
+                <div>
+                  <div className="flex justify-between items-center mb-4">
+                    <span className="font-modern text-[#E0AAFF] tracking-widest text-lg font-bold uppercase">PRO</span>
+                    <span className="text-[9px] text-[#E0AAFF]/70 font-mono tracking-widest uppercase border border-[#9D4EDD]/20 px-2 py-0.5 rounded">MONTHLY</span>
+                  </div>
+                  <div className="font-serif italic text-4xl text-[#E0AAFF] font-bold mb-6">$4.99<span className="text-xs font-mono lowercase text-[#E0AAFF]/50 not-italic font-normal">/mo</span></div>
+                  <ul className="text-xs font-mono text-[#E0AAFF]/80 space-y-3 mb-8">
+                    <li className="flex items-center gap-2">✓ Unlimited Analyses</li>
+                    <li className="flex items-center gap-2">✓ Dynamic Range (LRA)</li>
+                    <li className="flex items-center gap-2">✓ 100% Client-Side Processing</li>
+                    <li className="flex items-center gap-2">✓ Platform & Device Simulation</li>
+                  </ul>
+                </div>
+                <button 
+                  onClick={() => {
+                    unlockPro('monthly');
+                    const element = document.getElementById('analyzer');
+                    element?.scrollIntoView({ behavior: 'smooth' });
+                  }}
+                  className="w-full py-3.5 rounded-full border border-[#9D4EDD]/50 text-[#E0AAFF] hover:bg-[#9D4EDD]/20 hover:border-[#9D4EDD] transition-colors text-[9px] tracking-widest uppercase font-bold"
+                >
+                  Subscribe Monthly
+                </button>
+              </div>
+
+              {/* Lifetime Access */}
+              <div className="border border-[#9D4EDD]/40 bg-[#9D4EDD]/[0.04] backdrop-blur-sm rounded-3xl p-6 relative shadow-[0_0_30px_rgba(157,78,221,0.05)] flex flex-col justify-between">
+                <div className="absolute top-4 right-4 bg-[#9D4EDD] text-white text-[8px] font-mono tracking-widest uppercase px-3 py-1 rounded-full">
+                  BEST VALUE
+                </div>
+                <div>
+                  <div className="flex justify-between items-center mb-4 mt-2">
+                    <span className="font-modern text-[#E0AAFF] tracking-widest text-lg font-bold uppercase">LIFETIME</span>
+                  </div>
+                  <div className="font-serif italic text-4xl text-[#E0AAFF] font-bold mb-6">$29.99<span className="text-[10px] tracking-widest font-mono uppercase text-[#E0AAFF]/50 not-italic font-normal ml-2">(One-Time)</span></div>
+                  <ul className="text-xs font-mono text-[#E0AAFF]/80 space-y-3 mb-8">
+                    <li className="flex items-center gap-2">✓ Unlimited Analyses</li>
+                    <li className="flex items-center gap-2">✓ Dynamic Range (LRA)</li>
+                    <li className="flex items-center gap-2">✓ 100% Client-Side Processing</li>
+                    <li className="flex items-center gap-2">✓ Platform & Device Simulation</li>
+                  </ul>
+                </div>
+                <button 
+                  onClick={() => {
+                    unlockPro('lifetime');
+                    const element = document.getElementById('analyzer');
+                    element?.scrollIntoView({ behavior: 'smooth' });
+                  }}
+                  className="w-full py-3.5 rounded-full bg-gradient-to-r from-[#9D4EDD] to-[#ec4899] text-white hover:from-[#E0AAFF] hover:to-[#fbcfe8] hover:text-black transition-colors text-[9px] tracking-widest uppercase font-bold shadow-[0_0_30px_rgba(157,78,221,0.3)]"
+                >
+                  Get Lifetime Access
+                </button>
+              </div>
+
             </div>
 
             {/* Upsell Card */}
