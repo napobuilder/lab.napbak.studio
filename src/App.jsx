@@ -260,15 +260,21 @@ export default function App() {
 
       <nav className={`fixed top-0 w-full px-6 md:px-10 flex justify-between items-center z-40 transition-all duration-500 opacity-100 ${isScrolled ? 'py-4 md:py-6 bg-[#050505]/90 backdrop-blur-md border-b border-white/5 shadow-[0_4px_30px_rgba(0,0,0,0.5)]' : 'py-6 md:py-10 bg-transparent'}`}>
         
-        <div className="flex flex-col relative z-10 flex-1 items-start">
-          <span className="font-modern text-2xl md:text-3xl text-white font-light tracking-tighter lowercase relative z-10">
-            napbak<span 
-              className={`font-serif italic text-white tracking-normal transition-opacity duration-300 px-[1px] cursor-pointer dot-slot ${isDotStolen ? 'opacity-0' : 'opacity-100'}`}
-              onMouseEnter={() => setIsDotStolen(true)}
-              onClick={() => setIsDotStolen(false)}
-            >.</span><span className="font-serif italic text-white/70 tracking-normal">studio</span><span className="animate-pulse text-white/30 font-mono ml-1">_</span>
+        <div className="flex flex-col relative z-10 flex-1 items-start group">
+          <span className="font-modern text-2xl md:text-3xl text-white font-light tracking-tighter relative z-10 flex items-center">
+            <span className="text-white/30 mr-1 font-mono">[</span>
+            <span className="font-bold tracking-widest text-white uppercase">CTRL</span>
+            <span className="text-white/30 ml-1 font-mono">]</span>
+            <span className="text-[10px] tracking-widest text-white/50 font-mono uppercase ml-3 flex items-baseline relative top-[2px]">
+              by napbak
+              <span 
+                className={`font-serif italic text-[#9D4EDD] tracking-normal transition-opacity duration-300 px-[1px] cursor-pointer dot-slot ${isDotStolen ? 'opacity-0' : 'opacity-100'}`}
+                onMouseEnter={() => setIsDotStolen(true)}
+                onClick={() => setIsDotStolen(false)}
+              >.</span>
+            </span>
           </span>
-          <span className="text-[8px] tracking-[0.4em] text-[#9ca3af] uppercase mt-1">PRODUCER / DEV</span>
+          <span className="text-[8px] tracking-[0.4em] text-[#9ca3af] uppercase mt-1">MASTERING ANALYZER</span>
         </div>
 
         <div className="absolute inset-0 hidden md:flex justify-center items-center pointer-events-none z-20">
@@ -340,10 +346,10 @@ export default function App() {
             <div className="flex flex-col items-center text-center mb-16">
               <h2 className="text-[10px] tracking-[0.5em] text-[#9D4EDD] mb-4">01. ENGINE FEATURES</h2>
               <h3 className="font-modern text-3xl md:text-5xl font-light text-white tracking-tighter">
-                Tecnología de precisión para tu <span className="font-serif italic text-white/70">sonido</span>
+                Precision technology for your <span className="font-serif italic text-white/70">masters</span>
               </h3>
               <p className="text-xs text-[#9ca3af]/60 uppercase tracking-[0.2em] font-mono mt-2">
-                Monitorea el comportamiento de tu masterización según los estándares internacionales
+                Monitor the behavior of your mastering according to international standards
               </p>
             </div>
 
@@ -355,9 +361,9 @@ export default function App() {
                     <path strokeLinecap="round" strokeLinejoin="round" d="M19.114 5.636a9 9 0 0 1 0 12.728M16.463 8.288a5.25 5.25 0 0 1 0 7.424M6.75 8.25l4.72-4.72a.75.75 0 0 1 1.28.53v15.88a.75.75 0 0 1-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.009 9.009 0 0 1 2.25 12c0-.83.112-1.633.322-2.396C2.806 8.756 3.63 8.25 4.51 8.25H6.75Z" />
                   </svg>
                 </div>
-                <h4 className="text-sm font-modern text-white font-bold tracking-wider uppercase mb-2">Loudness Integrado (EBU R128)</h4>
+                <h4 className="text-sm font-modern text-white font-bold tracking-wider uppercase mb-2">Integrated Loudness (EBU R128)</h4>
                 <p className="text-xs leading-relaxed text-white/50 font-mono">
-                  Calcula la sonoridad integrada acumulada real de tu tema. Evita que las plataformas compriman dinámicamente tu audio de forma indeseada.
+                  Calculate the real cumulative integrated loudness of your track. Prevent platforms from dynamically compressing your audio in an undesirable way.
                 </p>
               </div>
 
@@ -368,9 +374,9 @@ export default function App() {
                     <path strokeLinecap="round" strokeLinejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v5.25c0 .621-.504 1.125-1.125 1.125h-2.25A1.125 1.125 0 0 1 3 18.375v-5.25ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125v-9.75ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v14.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z" />
                   </svg>
                 </div>
-                <h4 className="text-sm font-modern text-white font-bold tracking-wider uppercase mb-2">Estimador True Peak (4x Oversampling)</h4>
+                <h4 className="text-sm font-modern text-white font-bold tracking-wider uppercase mb-2">True Peak Estimator (4x Oversampling)</h4>
                 <p className="text-xs leading-relaxed text-white/50 font-mono">
-                  Detecta los picos inter-sample que generan distorsión de clipping al codificar tu audio digital en formatos comprimidos de streaming (Ogg, AAC, MP3).
+                  Detect inter-sample peaks that cause clipping distortion when encoding your digital audio into compressed streaming formats (Ogg, AAC, MP3).
                 </p>
               </div>
 
@@ -381,9 +387,9 @@ export default function App() {
                     <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 21 3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5" />
                   </svg>
                 </div>
-                <h4 className="text-sm font-modern text-white font-bold tracking-wider uppercase mb-2">Rango Dinámico (LRA)</h4>
+                <h4 className="text-sm font-modern text-white font-bold tracking-wider uppercase mb-2">Dynamic Range (LRA)</h4>
                 <p className="text-xs leading-relaxed text-white/50 font-mono">
-                  Evalúa la diferencia de volumen real en unidades LU entre los momentos más expresivos y los de menor intensidad para balancear tu mezcla.
+                  Evaluate the real volume difference in LU units between the most expressive and lowest intensity moments to balance your mix.
                 </p>
               </div>
             </div>
@@ -401,110 +407,158 @@ export default function App() {
                 Simple, transparent <span className="font-serif italic text-white/70">plans</span>
               </h3>
               <p className="text-xs text-[#9ca3af]/60 uppercase tracking-[0.2em] font-mono mt-2">
-                Libera el verdadero potencial de tu música sin límites
+                Unleash the true potential of your music without limits
               </p>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto items-stretch">
+            <div className="max-w-5xl mx-auto w-full overflow-hidden border border-white/10 bg-[#0a0a0a]/40 backdrop-blur-sm rounded-3xl relative shadow-[0_0_50px_rgba(157,78,221,0.03)]">
+              <div className="overflow-x-auto">
+                <table className="w-full text-center border-collapse min-w-[700px]">
+                  <thead>
+                    <tr className="border-b border-white/10">
+                      <th className="p-6 md:p-8 font-modern text-white tracking-widest text-lg uppercase w-1/3">
+                        FREE
+                        <span className="text-[10px] text-white/40 font-mono tracking-widest block mt-1">(Status: Active)</span>
+                      </th>
+                      <th className="p-6 md:p-8 font-modern text-[#E0AAFF] tracking-widest text-lg uppercase w-1/3 border-l border-white/5 bg-[#9D4EDD]/[0.02]">
+                        PRO
+                        <span className="text-[10px] text-[#E0AAFF]/50 font-mono tracking-widest block mt-1">(Monthly)</span>
+                      </th>
+                      <th className="p-6 md:p-8 font-modern text-[#E0AAFF] tracking-widest text-lg uppercase w-1/3 relative border-l border-white/5 bg-[#9D4EDD]/[0.04]">
+                        LIFETIME
+                        <span className="text-[10px] text-[#E0AAFF]/50 font-mono tracking-widest block mt-1">(One-Time)</span>
+                        <div className="absolute top-4 right-4 bg-[#9D4EDD] text-white text-[8px] font-mono tracking-widest uppercase px-3 py-1 rounded-full hidden sm:block shadow-[0_0_15px_rgba(157,78,221,0.5)]">
+                          BEST VALUE
+                        </div>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="text-xs font-mono text-white/70">
+                    <tr className="border-b border-white/5 hover:bg-white/[0.02] transition-colors">
+                      <td className="p-6 md:px-8 py-5 text-white/80">3 Daily Analyses</td>
+                      <td className="p-6 md:px-8 py-5 text-[#E0AAFF] border-l border-white/5 bg-[#9D4EDD]/[0.02] font-bold">Unlimited Analyses</td>
+                      <td className="p-6 md:px-8 py-5 text-[#E0AAFF] border-l border-white/5 bg-[#9D4EDD]/[0.04] font-bold">Unlimited Analyses</td>
+                    </tr>
+                    <tr className="border-b border-white/5 hover:bg-white/[0.02] transition-colors">
+                      <td className="p-6 md:px-8 py-5 text-white/80">LUFS & True Peak</td>
+                      <td className="p-6 md:px-8 py-5 text-[#E0AAFF] border-l border-white/5 bg-[#9D4EDD]/[0.02] font-bold">Dynamic Range (LRA)</td>
+                      <td className="p-6 md:px-8 py-5 text-[#E0AAFF] border-l border-white/5 bg-[#9D4EDD]/[0.04] font-bold">Dynamic Range (LRA)</td>
+                    </tr>
+                    <tr className="border-b border-white/5 hover:bg-white/[0.02] transition-colors">
+                      <td className="p-6 md:px-8 py-5 text-white/80">100% Client-Side Processing</td>
+                      <td className="p-6 md:px-8 py-5 text-[#E0AAFF] border-l border-white/5 bg-[#9D4EDD]/[0.02] font-bold">100% Client-Side Processing</td>
+                      <td className="p-6 md:px-8 py-5 text-[#E0AAFF] border-l border-white/5 bg-[#9D4EDD]/[0.04] font-bold">100% Client-Side Processing</td>
+                    </tr>
+                    <tr className="border-b border-white/10 hover:bg-white/[0.02] transition-colors">
+                      <td className="p-6 md:px-8 py-6 font-serif italic text-3xl text-white/80">$0</td>
+                      <td className="p-6 md:px-8 py-6 border-l border-white/5 bg-[#9D4EDD]/[0.02]">
+                        <span className="font-serif italic text-3xl text-[#E0AAFF] font-bold">$4.99<span className="text-xs font-mono lowercase text-[#E0AAFF]/50 not-italic font-normal"> / mo</span></span>
+                      </td>
+                      <td className="p-6 md:px-8 py-6 border-l border-white/5 bg-[#9D4EDD]/[0.04]">
+                        <span className="font-serif italic text-3xl text-[#E0AAFF] font-bold">$29.99<span className="text-[10px] tracking-widest font-mono uppercase text-[#E0AAFF]/50 not-italic font-normal ml-2">(One-Time)</span></span>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="p-6 md:p-8 align-bottom">
+                        <button 
+                          onClick={() => {
+                            localStorage.removeItem('napbak_pro');
+                            window.dispatchEvent(new Event('napbak_pro_changed'));
+                            const element = document.getElementById('analyzer');
+                            element?.scrollIntoView({ behavior: 'smooth' });
+                          }}
+                          className="w-full max-w-[200px] py-3.5 rounded-full border border-white/10 text-[9px] tracking-widest uppercase hover:bg-white/5 transition-colors font-mono mx-auto block"
+                        >
+                          Active Free Plan
+                        </button>
+                      </td>
+                      <td className="p-6 md:p-8 border-l border-white/5 bg-[#9D4EDD]/[0.02] align-bottom">
+                        <button 
+                          onClick={() => {
+                            localStorage.setItem('napbak_pro', 'true');
+                            window.dispatchEvent(new Event('napbak_pro_changed'));
+                            const element = document.getElementById('analyzer');
+                            element?.scrollIntoView({ behavior: 'smooth' });
+                          }}
+                          className="w-full max-w-[200px] py-3.5 rounded-full border border-[#9D4EDD]/50 text-[#E0AAFF] hover:bg-[#9D4EDD]/20 hover:border-[#9D4EDD] transition-colors text-[9px] tracking-widest uppercase font-bold mx-auto block"
+                        >
+                          Subscribe Monthly
+                        </button>
+                      </td>
+                      <td className="p-6 md:p-8 border-l border-white/5 bg-[#9D4EDD]/[0.04] align-bottom">
+                        <button 
+                          onClick={() => {
+                            localStorage.setItem('napbak_pro', 'true');
+                            window.dispatchEvent(new Event('napbak_pro_changed'));
+                            const element = document.getElementById('analyzer');
+                            element?.scrollIntoView({ behavior: 'smooth' });
+                          }}
+                          className="w-full max-w-[200px] py-3.5 rounded-full bg-gradient-to-r from-[#9D4EDD] to-[#ec4899] text-white hover:from-[#E0AAFF] hover:to-[#fbcfe8] hover:text-black transition-colors text-[9px] tracking-widest uppercase font-bold shadow-[0_0_30px_rgba(157,78,221,0.3)] hover:shadow-[0_0_40px_rgba(236,72,153,0.5)] mx-auto block"
+                        >
+                          Get Lifetime Access
+                        </button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* Upsell Card */}
+            <div className="mt-12 max-w-5xl mx-auto w-full relative overflow-hidden rounded-3xl border border-[#9D4EDD]/20 bg-[#070707] p-8 md:p-12 shadow-[0_0_50px_rgba(157,78,221,0.05)] group">
+              <div className="absolute inset-0 bg-gradient-to-br from-[#9D4EDD]/10 via-transparent to-transparent opacity-50 group-hover:opacity-100 transition-opacity duration-700"></div>
+              <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCI+CjxyZWN0IHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgZmlsbD0ibm9uZSIvPgo8cGF0aCBkPSJNIDIwIDAgTCAwIDAgMCAyMCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJyZ2JhKDI1NSwyNTUsMjU1LDAuMDMpIiBzdHJva2Utd2lkdGg9IjEiLz4KPC9zdmc+')] opacity-30"></div>
               
-              {/* Plan Free */}
-              <div className="border border-white/5 bg-[#0a0a0a]/30 backdrop-blur-sm rounded-3xl p-8 flex flex-col justify-between hover:border-white/10 transition-colors">
-                <div>
-                  <div className="flex justify-between items-start mb-6">
-                    <div>
-                      <h4 className="text-lg font-modern text-white tracking-widest uppercase">FREE</h4>
-                      <p className="text-xs text-white/40 font-mono mt-1">Pruebas rápidas</p>
-                    </div>
-                    <span className="font-serif italic text-2xl text-white/80">$0</span>
-                  </div>
-                  <ul className="text-xs font-mono space-y-4 text-white/60 mb-8 border-t border-white/5 pt-6">
-                    <li className="flex items-center gap-2">
-                      <span className="text-[#9D4EDD]">✓</span> 3 análisis de master al día
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <span className="text-[#9D4EDD]">✓</span> Medición de LUFS Integrados
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <span className="text-[#9D4EDD]">✓</span> Estimador de True Peak
-                    </li>
-                    <li className="flex items-center gap-2 text-white/30">
-                      <span>✕</span> Sin recomendaciones avanzadas
-                    </li>
-                  </ul>
+              <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
+                <div className="flex-1 text-center md:text-left">
+                  <h4 className="text-[10px] tracking-[0.4em] text-[#E0AAFF] font-mono uppercase mb-4 font-bold flex items-center justify-center md:justify-start gap-3">
+                    <span className="w-2 h-2 rounded-full bg-[#E0AAFF] animate-pulse"></span>
+                    DONE-FOR-YOU: HANDCRAFTED MASTERING
+                  </h4>
+                  <h3 className="font-modern text-2xl md:text-3xl text-white font-light tracking-tight mb-4">
+                    Tired of automated limiters? <br className="hidden md:block" />
+                    Send your -6dB mix and let a real producer take <span className="font-bold">CTRL</span>.
+                  </h3>
+                  <p className="text-xs text-white/50 font-mono leading-relaxed max-w-xl mx-auto md:mx-0">
+                    Custom EQ, dynamic balance, and human ears. Delivered in 48 hours.
+                  </p>
                 </div>
-                <button 
-                  onClick={() => {
-                    localStorage.removeItem('napbak_pro');
-                    window.dispatchEvent(new Event('napbak_pro_changed'));
-                    const element = document.getElementById('analyzer');
-                    element?.scrollIntoView({ behavior: 'smooth' });
-                  }}
-                  className="w-full py-3 rounded-full border border-white/10 text-[9px] tracking-widest uppercase hover:bg-white/5 transition-colors font-mono"
-                >
-                  Active Free Plan
-                </button>
+                
+                <div className="flex-shrink-0 w-full md:w-auto relative group/btn">
+                  <div className="absolute inset-0 bg-[#E0AAFF] opacity-0 group-hover/btn:opacity-20 blur-xl transition-opacity duration-500 rounded-full"></div>
+                  <a 
+                    href="#"
+                    onClick={(e) => { e.preventDefault(); setIsContactOpen(true); }}
+                    className="relative inline-flex items-center justify-center w-full md:w-auto px-8 py-5 rounded-full border border-[#E0AAFF]/30 bg-black text-[#E0AAFF] hover:bg-white/5 hover:border-[#E0AAFF]/70 transition-all duration-300 text-[10px] tracking-[0.2em] font-mono uppercase font-bold"
+                  >
+                    [ GET PRO MASTER FOR $20 ] <span className="ml-3 group-hover/btn:translate-x-1 transition-transform">→</span>
+                  </a>
+                </div>
               </div>
-
-              {/* Plan Pro */}
-              <div className="border border-[#9D4EDD]/30 bg-[#0a0a0a]/60 backdrop-blur-sm rounded-3xl p-8 flex flex-col justify-between hover:border-[#9D4EDD]/60 transition-colors relative shadow-[0_0_50px_rgba(157,78,221,0.05)]">
-                <div className="absolute -top-3 right-6 bg-[#9D4EDD] text-white text-[8px] font-mono tracking-widest uppercase px-3 py-1 rounded-full">
-                  POPULAR
-                </div>
-                <div>
-                  <div className="flex justify-between items-start mb-6">
-                    <div>
-                      <h4 className="text-lg font-modern text-[#E0AAFF] tracking-widest uppercase font-bold">PRO ACCESS</h4>
-                      <p className="text-xs text-[#E0AAFF]/40 font-mono mt-1">Sin restricciones</p>
-                    </div>
-                    <span className="font-serif italic text-2xl text-[#E0AAFF] font-bold">$9<span className="text-xs font-mono lowercase text-white/50">/mo</span></span>
-                  </div>
-                  <ul className="text-xs font-mono space-y-4 text-white/80 mb-8 border-t border-[#9D4EDD]/20 pt-6">
-                    <li className="flex items-center gap-2">
-                      <span className="text-[#9D4EDD]">✓</span> Análisis ilimitados (Sin cupos diarios)
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <span className="text-[#9D4EDD]">✓</span> Medición precisa de LRA (Loudness Range)
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <span className="text-[#9D4EDD]">✓</span> Sugerencias de distorsión y clipping
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <span className="text-[#9D4EDD]">✓</span> Recomendaciones avanzadas de streaming
-                    </li>
-                  </ul>
-                </div>
-                <button 
-                  onClick={() => {
-                    localStorage.setItem('napbak_pro', 'true');
-                    window.dispatchEvent(new Event('napbak_pro_changed'));
-                    const element = document.getElementById('analyzer');
-                    element?.scrollIntoView({ behavior: 'smooth' });
-                  }}
-                  className="w-full py-3 rounded-full bg-[#9D4EDD] text-white hover:bg-[#E0AAFF] hover:text-black transition-colors text-[9px] tracking-widest uppercase font-bold shadow-xl shadow-[#9D4EDD]/10"
-                >
-                  Get Pro Access (Simulate)
-                </button>
-              </div>
-
             </div>
 
           </div>
         </section>
 
         <footer className="w-full py-12 border-t border-white/5 flex flex-col items-center justify-center gap-6 relative z-10 bg-[#050505]">
-          <h1 className="font-modern text-2xl text-white font-light tracking-tighter lowercase">
-            napbak<span 
-              className={`font-serif italic text-white tracking-normal transition-opacity duration-300 px-[1px] cursor-pointer dot-slot ${isDotStolen ? 'opacity-0' : 'opacity-100'}`}
-              onMouseEnter={() => setIsDotStolen(true)}
-              onClick={() => setIsDotStolen(false)}
-            >.</span><span className="font-serif italic text-white/70 tracking-normal">studio</span><span className="animate-pulse text-white/30 font-mono ml-1">_</span>
+          <h1 className="font-modern text-2xl text-white font-light tracking-tighter flex items-center">
+            <span className="text-white/30 mr-1 font-mono">[</span>
+            <span className="font-bold tracking-widest uppercase">CTRL</span>
+            <span className="text-white/30 ml-1 font-mono">]</span>
+            <span className="text-[10px] tracking-widest text-white/50 font-mono uppercase ml-3 flex items-baseline relative top-[2px]">
+              by napbak
+              <span 
+                className={`font-serif italic text-[#9D4EDD] tracking-normal transition-opacity duration-300 px-[1px] cursor-pointer dot-slot ${isDotStolen ? 'opacity-0' : 'opacity-100'}`}
+                onMouseEnter={() => setIsDotStolen(true)}
+                onClick={() => setIsDotStolen(false)}
+              >.</span>
+            </span>
           </h1>
           <div className="flex gap-6 text-[10px] tracking-widest uppercase text-[#9ca3af] items-center">
             <a href="https://www.instagram.com/napbak.studio" target="_blank" rel="noreferrer" className="hover:text-white transition-colors">Instagram</a>
-            <a href="https://open.spotify.com/intl-es/artist/1mc3f2GvIm1g6f61hVvyJt" target="_blank" rel="noreferrer" className="hover:text-white transition-colors">Spotify</a>
             <div className="w-[1px] h-3 bg-white/10 hidden md:block"></div>
-            <a href="https://napbak.dev" target="_blank" rel="noreferrer" className="text-[#9D4EDD] hover:text-[#E0AAFF] transition-colors flex items-center gap-1 group">
-              DEV HUB <span className="group-hover:translate-x-[2px] group-hover:-translate-y-[2px] transition-transform text-[8px]">↗</span>
+            <a href="https://napbak.studio/" target="_blank" rel="noreferrer" className="text-[#9D4EDD] hover:text-[#E0AAFF] transition-colors flex items-center gap-1 group">
+              STUDIO <span className="group-hover:translate-x-[2px] group-hover:-translate-y-[2px] transition-transform text-[8px]">↗</span>
             </a>
           </div>
           <p className="text-[9px] tracking-widest text-white/20 mt-8">© {new Date().getFullYear()} ALL RIGHTS RESERVED.</p>
