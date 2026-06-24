@@ -2,7 +2,55 @@ import React, { useState, useRef, useEffect } from 'react';
 import MasterAnalyzer from './components/MasterAnalyzer';
 import { useProStore } from './store/useProStore';
 
+const faqData = [
+  {
+    question: "My track is -8 LUFS, what does this mean?",
+    answer: "Perfect! -8 LUFS is powerful, punchy, and professional. You're in the sweet spot for modern music production. Check any LUFS meter online - while streaming platforms normalize to around -14 LUFS, your track has the energy and impact it needs for clubs, radio, downloads, and non-normalized playback.\n\nSkrillex's 'Bangarang' (-8 LUFS), Travis Scott's 'SICKO MODE' (-7 LUFS), The Weeknd's hits (-8 to -9 LUFS). These artists prioritize sonic impact over normalization targets. Your music isn't just for Spotify - it's for car stereos, festivals, DJ sets, and anywhere that demands presence and power."
+  },
+  {
+    question: "Is -14 LUFS a must for streaming platforms?",
+    answer: "Absolutely not! -14 LUFS is just one platform's suggestion, not a rule. Music exists far beyond streaming services - think vinyl, CDs, DJ pools, radio, live venues, and direct downloads. Your artistic vision matters more than arbitrary numbers.\n\nMost commercial releases today range from -6 to -12 LUFS integrated. Post Malone, Billie Eilish, Drake - they all master louder because it sounds right for their music. Remember: streaming is just one distribution channel."
+  },
+  {
+    question: "Why do streaming platforms normalize audio levels?",
+    answer: "It's about consistent playback experience. Platforms want users to enjoy playlists without constantly adjusting volume. But here's the key: normalization is just volume adjustment, not quality reduction.\n\nYour loud master keeps all its sonic character - the compression, saturation, and energy remain intact. Plus, many listeners turn normalization off, and it doesn't apply to all playback scenarios. That punchy, in-your-face sound you crafted still works its magic everywhere else."
+  },
+  {
+    question: "What's the loudness war and should I care?",
+    answer: "The loudness war was the industry push for maximum loudness, peaking in the 2000s. Some albums hit -3 LUFS (Metallica's 'Death Magnetic'), sacrificing dynamics for volume. Today, we've found better balance.\n\nModern mastering embraces both loudness AND dynamics. With our tool, you can preview exactly how your master translates. Sometimes -6 LUFS is perfect for EDM bangers, while -12 LUFS suits indie folk. It's genre and vibe dependent, not a competition."
+  },
+  {
+    question: "How loud are popular songs really?",
+    answer: "Much louder than platform targets! Drake averages -8 to -9 LUFS. EDM hits -6 to -8 LUFS. Pop tracks -9 to -11 LUFS. Rock/metal -7 to -9 LUFS. Only classical and jazz go quieter at -16 to -23 LUFS.\n\nThe average upload to streaming platforms is -10 to -11 LUFS. Artists and labels choose loudness for artistic reasons, not platform guidelines. Use our LUFS meter or loudness analyzer to check your reference tracks and match the energy that fits your genre and vision."
+  },
+  {
+    question: "How can I make my track louder while staying LUFS-safe?",
+    answer: "With CTRL by Napbak, you can analyze your master and check exactly how platforms affect its dynamics. To achieve professional loudness:\n\nUse saturation for perceived loudness without increasing peaks. Apply compression in stages (2-3dB per stage). Boost 2-5kHz for presence. Parallel processing maintains punch. Always leave a ceiling of -1.0 dBTP on your final limiter to prevent distortion when converting your WAV to streaming formats."
+  },
+  {
+    question: "What's the difference between LUFS and dB?",
+    answer: "dB measures raw signal level, while LUFS measures perceived loudness - how loud it actually sounds to human ears. LUFS factors in that we're more sensitive to certain frequencies (like 2-5 kHz where vocals sit).\n\nThink of dB like a speedometer and LUFS like how fast the car feels. A motorcycle at 60mph feels faster than a luxury car at 60mph. Same speed, different experience. That's why mastering to LUFS gives more consistent results across different songs."
+  },
+  {
+    question: "Should I master differently for each platform?",
+    answer: "One killer master beats multiple mediocre ones. Focus on making your track sound incredible at your target loudness (usually -9 to -11 LUFS for modern music). This translates well everywhere - from earbuds to club systems.\n\nPlatform targets vary: YouTube (-14 LUFS), Spotify (-14 LUFS, or -11 LUFS with 'Loud' normalization setting), Apple Music (-16 LUFS with Sound Check on, off by default), SoundCloud (no normalization), Beatport (no normalization). Instead of chasing platforms, master for your music's best presentation. Quality transcends numbers."
+  },
+  {
+    question: "Should I avoid the loudness penalty?",
+    answer: "Not necessarily! The 'penalty' is just volume reduction on some platforms. Your master's character, punch, and energy remain intact. Many successful releases embrace louder masters because they sound better overall.\n\nEvery major artist today accepts normalization as part of the game. They master for impact, not algorithms. Our free loudness analyzer shows you exactly what happens on each platform, so you can make an informed choice. Often, a powerful -9 LUFS master beats a weak -14 LUFS one, even with normalization."
+  },
+  {
+    question: "How do different playback systems affect loudness?",
+    answer: "Every system colors your sound differently! Car stereos boost bass (+6 to +12dB around 60-80Hz), phones cut everything below 200Hz, laptop speakers emphasize mids. Your carefully crafted master faces wildly different playback environments.\n\nOur speaker simulations let you preview exactly how your track translates - from club systems to earbuds. Test your master across all simulations to ensure it works everywhere. What sounds perfect in the studio might need tweaks for real-world playback. Knowledge is power!"
+  },
+  {
+    question: "How accurate are these simulations?",
+    answer: "Our loudness penalty calculations are virtually 100% accurate - we use the exact same LUFS measurement algorithms as streaming platforms. Any LUFS meter using the ITU standard will confirm our readings. Platforms may apply additional processing like lossy encoding or True Peak limiting, but the loudness matching is spot-on.\n\nSpeaker simulations are meticulously modeled from real device frequency responses. Their accuracy depends on your listening environment - flat studio monitors will give the most accurate representation. But even on consumer headphones or in untreated rooms, you'll get valuable insights into how frequency balance and dynamics translate across different systems. Think of it as an educated preview of real-world playback."
+  }
+];
+
 export default function App() {
+  const [openFaq, setOpenFaq] = useState(null);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isDotStolen, setIsDotStolen] = useState(false);
   const [isContactOpen, setIsContactOpen] = useState(false);
@@ -547,6 +595,51 @@ export default function App() {
               </div>
             </div>
 
+          </div>
+        </section>
+
+        {/* FAQ Section */}
+        <section id="faq" className="py-24 border-t border-white/5 relative z-10 bg-[#050505]/20 backdrop-blur-sm">
+          <div className="max-w-4xl mx-auto px-6">
+            <div className="flex flex-col items-center text-center mb-16">
+              <h2 className="text-[10px] tracking-[0.5em] text-[#9D4EDD] mb-4">03. FAQ</h2>
+              <h3 className="font-modern text-3xl md:text-5xl font-light text-white tracking-tighter">
+                Everything you need to know about <span className="font-serif italic text-white/70">loudness</span>
+              </h3>
+            </div>
+
+            <div className="space-y-4">
+              {faqData.map((faq, index) => {
+                const isOpen = openFaq === index;
+                return (
+                  <div 
+                    key={index} 
+                    className="border border-white/5 bg-[#0a0a0a]/30 rounded-2xl overflow-hidden transition-all duration-300 hover:border-white/10"
+                  >
+                    <button
+                      onClick={() => setOpenFaq(isOpen ? null : index)}
+                      className="w-full p-6 text-left flex justify-between items-center gap-4 text-white focus:outline-none"
+                    >
+                      <span className="font-modern font-semibold text-sm tracking-wide">{faq.question}</span>
+                      <span className={`text-[#E0AAFF] font-mono text-lg transition-transform duration-300 ${isOpen ? 'rotate-45' : 'rotate-0'}`}>
+                        +
+                      </span>
+                    </button>
+                    <div 
+                      className={`transition-all duration-500 ease-in-out ${
+                        isOpen ? 'max-h-[1000px] border-t border-white/5 opacity-100 p-6' : 'max-h-0 opacity-0 overflow-hidden'
+                      }`}
+                    >
+                      <div className="text-xs text-white/60 font-mono leading-relaxed space-y-4">
+                        {faq.answer.split('\n\n').map((paragraph, pIdx) => (
+                          <p key={pIdx}>{paragraph}</p>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </section>
 
