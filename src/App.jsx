@@ -348,7 +348,7 @@ export default function App() {
               </p>
             </div>
 
-            <div className="grid md:grid-cols-3 gap-6">
+            <div className="grid md:grid-cols-4 gap-6">
               {/* Feature 1 */}
               <div className="border border-white/5 bg-[#0a0a0a]/30 backdrop-blur-sm rounded-2xl p-6 hover:border-[#9D4EDD]/20 transition-all duration-300 group hover:-translate-y-1">
                 <div className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center mb-4 group-hover:bg-[#9D4EDD]/10 transition-colors">
@@ -385,6 +385,19 @@ export default function App() {
                 <h4 className="text-sm font-modern text-white font-bold tracking-wider uppercase mb-2">Dynamic Range (LRA)</h4>
                 <p className="text-xs leading-relaxed text-white/50 font-mono">
                   Evaluate the real volume difference in LU units between the most expressive and lowest intensity moments to balance your mix.
+                </p>
+              </div>
+
+              {/* Feature 4 */}
+              <div className="border border-white/5 bg-[#0a0a0a]/30 backdrop-blur-sm rounded-2xl p-6 hover:border-[#9D4EDD]/20 transition-all duration-300 group hover:-translate-y-1">
+                <div className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center mb-4 group-hover:bg-[#9D4EDD]/10 transition-colors">
+                  <svg className="w-5 h-5 text-[#E0AAFF]" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="1.5">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 6h9.75M10.5 6a1.5 1.5 0 1 1-3 0m3 0a1.5 1.5 0 1 0-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-9.75 0h9.75" />
+                  </svg>
+                </div>
+                <h4 className="text-sm font-modern text-white font-bold tracking-wider uppercase mb-2">Platform & Device Simulation</h4>
+                <p className="text-xs leading-relaxed text-white/50 font-mono">
+                  Listen in real-time to how streaming normalization changes your volume, and audition your mix on simulated phone speakers, car EQs, and more.
                 </p>
               </div>
             </div>
