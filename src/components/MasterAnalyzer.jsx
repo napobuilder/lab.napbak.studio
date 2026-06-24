@@ -649,6 +649,19 @@ export default function MasterAnalyzer({ onPlaybackStart }) {
     }
   };
 
+  const handleWaveformClick = (e) => {
+    if (!audioRef.current || duration === 0) return;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const rect = canvas.getBoundingClientRect();
+    const clickX = e.clientX - rect.left;
+    const clickRatio = Math.max(0, Math.min(1, clickX / rect.width));
+    const seekTime = clickRatio * duration;
+    
+    audioRef.current.currentTime = seekTime;
+    setPlaybackTime(seekTime);
+  };
+
   const handleAudioEnded = () => {
     isPlayingRef.current = false;
     setIsPlaying(false);
@@ -1032,8 +1045,11 @@ export default function MasterAnalyzer({ onPlaybackStart }) {
                     {formatSecs(playbackTime)} / {formatSecs(duration)}
                   </span>
                 </div>
-                <div className="relative h-20 w-full bg-white/[0.01] rounded-lg overflow-hidden border border-white/5">
-                  <canvas ref={waveformRefCallback} className="absolute inset-0 w-full h-full" />
+                <div 
+                  onClick={handleWaveformClick}
+                  className="relative h-20 w-full bg-white/[0.01] rounded-lg overflow-hidden border border-white/5 cursor-pointer"
+                >
+                  <canvas ref={waveformRefCallback} className="absolute inset-0 w-full h-full pointer-events-none" />
                 </div>
               </div>
 
