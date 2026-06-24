@@ -444,6 +444,11 @@ export default function App() {
                       <td className="p-6 md:px-8 py-5 text-[#E0AAFF] border-l border-white/5 bg-[#9D4EDD]/[0.02] font-bold">100% Client-Side Processing</td>
                       <td className="p-6 md:px-8 py-5 text-[#E0AAFF] border-l border-white/5 bg-[#9D4EDD]/[0.04] font-bold">100% Client-Side Processing</td>
                     </tr>
+                    <tr className="border-b border-white/5 hover:bg-white/[0.02] transition-colors">
+                      <td className="p-6 md:px-8 py-5 text-white/80">Platform & Device Simulation</td>
+                      <td className="p-6 md:px-8 py-5 text-[#E0AAFF] border-l border-white/5 bg-[#9D4EDD]/[0.02] font-bold">Platform & Device Simulation</td>
+                      <td className="p-6 md:px-8 py-5 text-[#E0AAFF] border-l border-white/5 bg-[#9D4EDD]/[0.04] font-bold">Platform & Device Simulation</td>
+                    </tr>
                     <tr className="border-b border-white/10 hover:bg-white/[0.02] transition-colors">
                       <td className="p-6 md:px-8 py-6 font-serif italic text-3xl text-white/80">$0</td>
                       <td className="p-6 md:px-8 py-6 border-l border-white/5 bg-[#9D4EDD]/[0.02]">
