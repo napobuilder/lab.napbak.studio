@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import MasterAnalyzer from './components/MasterAnalyzer';
+import { useProStore } from './store/useProStore';
 
 export default function App() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -7,26 +8,21 @@ export default function App() {
   const [isContactOpen, setIsContactOpen] = useState(false);
   const [copied, setCopied] = useState(false);
 
-  // Estados Pro reactivos
-  const [isPro, setIsPro] = useState(false);
+  // Estados Pro usando Zustand
+  const { isPro, unlockPro, lockPro } = useProStore();
 
   const cursorRef = useRef(null);
   const cursorInnerRef = useRef(null);
   const canvasRef = useRef(null);
 
-  // Sincronizar estado PRO reactivo
+  // Sincronizar estado PRO reactivo por si hay cambios en localStorage de la versión anterior
   useEffect(() => {
-    const checkPro = () => {
-      setIsPro(localStorage.getItem('napbak_pro') === 'true');
-    };
-    checkPro();
-    window.addEventListener('storage', checkPro);
-    window.addEventListener('napbak_pro_changed', checkPro);
-    return () => {
-      window.removeEventListener('storage', checkPro);
-      window.removeEventListener('napbak_pro_changed', checkPro);
-    };
-  }, []);
+    const legacyPro = localStorage.getItem('napbak_pro');
+    if (legacyPro === 'true' && !isPro) {
+      unlockPro('legacy-migrated');
+      localStorage.removeItem('napbak_pro');
+    }
+  }, [isPro, unlockPro]);
 
   // ── PARTÍCULAS Y AURAS DE FONDO ───────────────
   useEffect(() => {
@@ -312,8 +308,7 @@ export default function App() {
           ) : (
             <button 
               onClick={() => {
-                localStorage.setItem('napbak_pro', 'true');
-                window.dispatchEvent(new Event('napbak_pro_changed'));
+                unlockPro('nav-click');
                 const element = document.getElementById('analyzer');
                 element?.scrollIntoView({ behavior: 'smooth' });
               }} 
@@ -462,8 +457,7 @@ export default function App() {
                       <td className="p-6 md:p-8 align-bottom">
                         <button 
                           onClick={() => {
-                            localStorage.removeItem('napbak_pro');
-                            window.dispatchEvent(new Event('napbak_pro_changed'));
+                            lockPro();
                             const element = document.getElementById('analyzer');
                             element?.scrollIntoView({ behavior: 'smooth' });
                           }}
@@ -475,8 +469,7 @@ export default function App() {
                       <td className="p-6 md:p-8 border-l border-white/5 bg-[#9D4EDD]/[0.02] align-bottom">
                         <button 
                           onClick={() => {
-                            localStorage.setItem('napbak_pro', 'true');
-                            window.dispatchEvent(new Event('napbak_pro_changed'));
+                            unlockPro('monthly');
                             const element = document.getElementById('analyzer');
                             element?.scrollIntoView({ behavior: 'smooth' });
                           }}
@@ -488,8 +481,7 @@ export default function App() {
                       <td className="p-6 md:p-8 border-l border-white/5 bg-[#9D4EDD]/[0.04] align-bottom">
                         <button 
                           onClick={() => {
-                            localStorage.setItem('napbak_pro', 'true');
-                            window.dispatchEvent(new Event('napbak_pro_changed'));
+                            unlockPro('lifetime');
                             const element = document.getElementById('analyzer');
                             element?.scrollIntoView({ behavior: 'smooth' });
                           }}

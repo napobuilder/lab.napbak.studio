@@ -17,6 +17,7 @@ import {
   calculateLoudnessRange, 
   estimateTruePeak
 } from '../utils/audioDsp';
+import { useProStore } from '../store/useProStore';
 
 export default function MasterAnalyzer({ onPlaybackStart }) {
   // --- States ---
@@ -31,11 +32,21 @@ export default function MasterAnalyzer({ onPlaybackStart }) {
   const [playbackTime, setPlaybackTime] = useState(0);
   const [duration, setDuration] = useState(0);
 
+  // Simulation & DSP States
+  const [selectedPlatform, setSelectedPlatform] = useState('original');
+  const [selectedDevice, setSelectedDevice] = useState('default');
+  const [simulationIntensity, setSimulationIntensity] = useState(100);
+  const [isMono, setIsMono] = useState(false);
+
   // Freemium States
-  const [isPro, setIsPro] = useState(false);
+  const { isPro, unlockPro, lockPro } = useProStore();
   const [remainingFreeRuns, setRemainingFreeRuns] = useState(3);
   const [showPaywall, setShowPaywall] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
+  
+  const [isVerifying, setIsVerifying] = useState(false);
+  const [showManualInput, setShowManualInput] = useState(false);
+  const [manualKey, setManualKey] = useState('');
 
   // --- Refs ---
   const fileInputRef = useRef(null);
@@ -48,10 +59,36 @@ export default function MasterAnalyzer({ onPlaybackStart }) {
   const sourceNodeRef = useRef(null);
   const isPlayingRef = useRef(false);
 
+  // DSP Node Refs
+  const platformGainNodeRef = useRef(null);
+  const filter1Ref = useRef(null);
+  const filter2Ref = useRef(null);
+  const filter3Ref = useRef(null);
+  const dryGainNodeRef = useRef(null);
+  const wetGainNodeRef = useRef(null);
+  const stereoGainNodeRef = useRef(null);
+  const monoGainNodeRef = useRef(null);
+
   useEffect(() => {
     const checkStatus = () => {
-      const localProStatus = localStorage.getItem('napbak_pro') === 'true';
-      setIsPro(localProStatus);
+      // 1. URL Auto-Verification
+      const params = new URLSearchParams(window.location.search);
+      const licenseKey = params.get('license_key');
+      
+      if (licenseKey && !isPro) {
+        setIsVerifying(true);
+        setShowPaywall(true);
+        
+        // Simulating API call to Gumroad (api.gumroad.com/v2/licenses/verify)
+        setTimeout(() => {
+          unlockPro(licenseKey);
+          window.history.replaceState({}, document.title, window.location.pathname);
+          setTimeout(() => {
+            setShowPaywall(false);
+            setIsVerifying(false);
+          }, 800);
+        }, 2000);
+      }
 
       const today = new Date().toISOString().split('T')[0];
       const limitObjStr = localStorage.getItem('napbak_analyzer_limit');
@@ -294,6 +331,205 @@ export default function MasterAnalyzer({ onPlaybackStart }) {
     }
   };
 
+  const updateDSPParams = () => {
+    if (!audioContextRef.current) return;
+    const actx = audioContextRef.current;
+    
+    // 1. Simulation Intensity values
+    const intensityRatio = simulationIntensity / 100;
+    
+    // Set gains with a short transition ramp to avoid clicks
+    const now = actx.currentTime;
+    if (dryGainNodeRef.current) {
+      dryGainNodeRef.current.gain.setTargetAtTime(1 - intensityRatio, now, 0.01);
+    }
+    if (wetGainNodeRef.current) {
+      wetGainNodeRef.current.gain.setTargetAtTime(intensityRatio, now, 0.01);
+    }
+
+    // 2. Platform Volume normalizer
+    let targetLUFS = null;
+    if (selectedPlatform === 'spotify' || selectedPlatform === 'youtube' || selectedPlatform === 'tidal' || selectedPlatform === 'amazon') {
+      targetLUFS = -14;
+    } else if (selectedPlatform === 'applemusic') {
+      targetLUFS = -16;
+    } else if (selectedPlatform === 'deezer') {
+      targetLUFS = -15;
+    }
+
+    let pGainVal = 1.0;
+    if (targetLUFS !== null && analysisResult && analysisResult.lufs !== -Infinity) {
+      const dbDiff = targetLUFS - analysisResult.lufs;
+      pGainVal = Math.pow(10, dbDiff / 20);
+    }
+    if (platformGainNodeRef.current) {
+      platformGainNodeRef.current.gain.setTargetAtTime(pGainVal, now, 0.01);
+    }
+
+    // 3. Mono vs Stereo selection
+    if (stereoGainNodeRef.current) {
+      stereoGainNodeRef.current.gain.setTargetAtTime(isMono ? 0 : 1, now, 0.01);
+    }
+    if (monoGainNodeRef.current) {
+      monoGainNodeRef.current.gain.setTargetAtTime(isMono ? 1 : 0, now, 0.01);
+    }
+
+    // 4. Device EQ filters
+    const f1 = filter1Ref.current;
+    const f2 = filter2Ref.current;
+    const f3 = filter3Ref.current;
+
+    if (f1 && f2 && f3) {
+      // Reset default parameters
+      f1.type = 'allpass';
+      f1.frequency.setValueAtTime(1000, now);
+      f1.Q.setValueAtTime(1, now);
+      f1.gain.setValueAtTime(0, now);
+
+      f2.type = 'allpass';
+      f2.frequency.setValueAtTime(1000, now);
+      f2.Q.setValueAtTime(1, now);
+      f2.gain.setValueAtTime(0, now);
+
+      f3.type = 'allpass';
+      f3.frequency.setValueAtTime(1000, now);
+      f3.Q.setValueAtTime(1, now);
+      f3.gain.setValueAtTime(0, now);
+
+      switch (selectedDevice) {
+        case 'car':
+          // Low Shelf: +5 dB at 80 Hz
+          f1.type = 'lowshelf';
+          f1.frequency.setValueAtTime(80, now);
+          f1.gain.setValueAtTime(5, now);
+          
+          // Peaking: -2 dB at 2.5 kHz
+          f2.type = 'peaking';
+          f2.frequency.setValueAtTime(2500, now);
+          f2.Q.setValueAtTime(1.0, now);
+          f2.gain.setValueAtTime(-2, now);
+          break;
+
+        case 'iphone':
+          // High Pass: Cutoff at 250 Hz
+          f1.type = 'highpass';
+          f1.frequency.setValueAtTime(250, now);
+          
+          // Peaking: +4 dB at 2.5 kHz
+          f2.type = 'peaking';
+          f2.frequency.setValueAtTime(2500, now);
+          f2.Q.setValueAtTime(1.0, now);
+          f2.gain.setValueAtTime(4, now);
+          
+          // Low Pass: Cutoff at 12 kHz
+          f3.type = 'lowpass';
+          f3.frequency.setValueAtTime(12000, now);
+          break;
+
+        case 'macbook':
+          // High Pass: Cutoff at 150 Hz
+          f1.type = 'highpass';
+          f1.frequency.setValueAtTime(150, now);
+          
+          // Peaking: +2 dB at 1.5 kHz
+          f2.type = 'peaking';
+          f2.frequency.setValueAtTime(1500, now);
+          f2.Q.setValueAtTime(1.0, now);
+          f2.gain.setValueAtTime(2, now);
+
+          // Low Pass: Cutoff at 14 kHz
+          f3.type = 'lowpass';
+          f3.frequency.setValueAtTime(14000, now);
+          break;
+
+        case 'headphones':
+          // Low Shelf: +2 dB at 100 Hz
+          f1.type = 'lowshelf';
+          f1.frequency.setValueAtTime(100, now);
+          f1.gain.setValueAtTime(2, now);
+          
+          // High Shelf: +1.5 dB at 8 kHz
+          f3.type = 'highshelf';
+          f3.frequency.setValueAtTime(8000, now);
+          f3.gain.setValueAtTime(1.5, now);
+          break;
+
+        case 'tv':
+          // High Pass: Cutoff at 100 Hz
+          f1.type = 'highpass';
+          f1.frequency.setValueAtTime(100, now);
+          
+          // Peaking: +3 dB at 2 kHz
+          f2.type = 'peaking';
+          f2.frequency.setValueAtTime(2000, now);
+          f2.Q.setValueAtTime(1.0, now);
+          f2.gain.setValueAtTime(3, now);
+
+          // Low Pass: Cutoff at 10 kHz
+          f3.type = 'lowpass';
+          f3.frequency.setValueAtTime(10000, now);
+          break;
+
+        case 'hometheater':
+          // Low Shelf: +4 dB at 60 Hz
+          f1.type = 'lowshelf';
+          f1.frequency.setValueAtTime(60, now);
+          f1.gain.setValueAtTime(4, now);
+          
+          // Peaking: +1 dB at 120 Hz
+          f2.type = 'peaking';
+          f2.frequency.setValueAtTime(120, now);
+          f2.Q.setValueAtTime(1.0, now);
+          f2.gain.setValueAtTime(1, now);
+          break;
+
+        case 'bluetooth':
+          // High Pass: Cutoff at 70 Hz
+          f1.type = 'highpass';
+          f1.frequency.setValueAtTime(70, now);
+
+          // Peaking: +3 dB at 150 Hz
+          f2.type = 'peaking';
+          f2.frequency.setValueAtTime(150, now);
+          f2.Q.setValueAtTime(1.2, now);
+          f2.gain.setValueAtTime(3, now);
+
+          // Peaking: -2 dB at 4 kHz
+          f3.type = 'peaking';
+          f3.frequency.setValueAtTime(4000, now);
+          f3.Q.setValueAtTime(1.0, now);
+          f3.gain.setValueAtTime(-2, now);
+          break;
+
+        case 'gaming':
+          // Low Shelf: +4 dB at 90 Hz
+          f1.type = 'lowshelf';
+          f1.frequency.setValueAtTime(90, now);
+          f1.gain.setValueAtTime(4, now);
+
+          // High Shelf: +3 dB at 6 kHz
+          f3.type = 'highshelf';
+          f3.frequency.setValueAtTime(6000, now);
+          f3.gain.setValueAtTime(3, now);
+          break;
+
+        case 'tablet':
+          // High Pass: Cutoff at 180 Hz
+          f1.type = 'highpass';
+          f1.frequency.setValueAtTime(180, now);
+          break;
+
+        default:
+          // flat
+          break;
+      }
+    }
+  };
+
+  useEffect(() => {
+    updateDSPParams();
+  }, [selectedPlatform, selectedDevice, simulationIntensity, isMono, analysisResult]);
+
   const initLiveAudioContext = () => {
     if (audioContextRef.current) return;
 
@@ -305,12 +541,79 @@ export default function MasterAnalyzer({ onPlaybackStart }) {
     analyser.smoothingTimeConstant = 0.82;
 
     const sourceNode = actx.createMediaElementSource(audioRef.current);
-    sourceNode.connect(analyser);
-    analyser.connect(actx.destination);
 
+    // Create parallel path nodes
+    const dryGain = actx.createGain();
+    const wetGain = actx.createGain();
+    const platformGain = actx.createGain();
+
+    // Create EQ Filters (3 in series on the wet path)
+    const filter1 = actx.createBiquadFilter();
+    const filter2 = actx.createBiquadFilter();
+    const filter3 = actx.createBiquadFilter();
+
+    // Mixer node
+    const mixer = actx.createGain();
+
+    // Mono Summing Nodes
+    const splitter = actx.createChannelSplitter(2);
+    const merger = actx.createChannelMerger(2);
+    const sumGain = actx.createGain();
+    sumGain.gain.value = 0.5;
+
+    const stereoGain = actx.createGain();
+    const monoGain = actx.createGain();
+
+    // -- Connect Graph --
+    // Source -> Analyser
+    sourceNode.connect(analyser);
+
+    // Analyser splits to Dry & Wet
+    analyser.connect(dryGain);
+    analyser.connect(platformGain);
+
+    // Wet path: PlatformGain -> Filter1 -> Filter2 -> Filter3 -> WetGain
+    platformGain.connect(filter1);
+    filter1.connect(filter2);
+    filter2.connect(filter3);
+    filter3.connect(wetGain);
+
+    // Dry & Wet merge at Mixer
+    dryGain.connect(mixer);
+    wetGain.connect(mixer);
+
+    // Mixer splits to Stereo and Mono paths
+    mixer.connect(stereoGain);
+    mixer.connect(splitter);
+
+    // Mono summing route: Splitter (L & R) -> SumGain -> Merger (L & R inputs)
+    splitter.connect(sumGain, 0); // connect L
+    splitter.connect(sumGain, 1); // connect R
+    sumGain.connect(merger, 0, 0); // connect summed signal to L input of merger
+    sumGain.connect(merger, 0, 1); // connect summed signal to R input of merger
+
+    merger.connect(monoGain);
+
+    // Stereo & Mono connect to Destination
+    stereoGain.connect(actx.destination);
+    monoGain.connect(actx.destination);
+
+    // Save refs
     audioContextRef.current = actx;
     analyserRef.current = analyser;
     sourceNodeRef.current = sourceNode;
+    
+    platformGainNodeRef.current = platformGain;
+    filter1Ref.current = filter1;
+    filter2Ref.current = filter2;
+    filter3Ref.current = filter3;
+    dryGainNodeRef.current = dryGain;
+    wetGainNodeRef.current = wetGain;
+    stereoGainNodeRef.current = stereoGain;
+    monoGainNodeRef.current = monoGain;
+
+    // Apply current settings
+    updateDSPParams();
   };
 
   const handlePlayToggle = async () => {
@@ -424,14 +727,11 @@ export default function MasterAnalyzer({ onPlaybackStart }) {
   };
 
   const handleResetLimits = () => {
-    localStorage.removeItem('napbak_pro');
-    localStorage.setItem('napbak_analyzer_limit', JSON.stringify({ 
-      date: new Date().toISOString().split('T')[0], 
-      count: 0 
-    }));
-    setIsPro(false);
+    lockPro();
+    localStorage.removeItem('napbak_analyzer_limit');
     setRemainingFreeRuns(3);
-    setShowPaywall(false);
+    setAnalysisResult(null);
+    setFile(null);
   };
 
   const formatSecs = (secs) => {
@@ -500,7 +800,7 @@ export default function MasterAnalyzer({ onPlaybackStart }) {
   const isLocked = !isPro && remainingFreeRuns <= 0;
 
   return (
-    <div id="analyzer" className="relative w-full max-w-5xl mx-auto pt-6 pb-6 px-4 md:px-6 z-10 h-[calc(100vh-120px)] min-h-[500px] flex flex-col">
+    <div id="analyzer" className="relative w-full max-w-5xl mx-auto pt-6 pb-6 px-4 md:px-6 z-10 h-auto min-h-[500px] flex flex-col">
       <audio
         ref={audioRef}
         src={audioUrl || undefined}
@@ -827,8 +1127,151 @@ export default function MasterAnalyzer({ onPlaybackStart }) {
               </div>
             </div>
 
+            {/* Platform Preview Section */}
+            <div className="bg-white/[0.01] border border-white/5 rounded-2xl p-5 md:p-6 mt-4">
+              <h3 className="text-[10px] tracking-[0.22em] uppercase text-white/50 mb-4 font-mono font-bold">
+                Platform Preview
+              </h3>
+              <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-3">
+                {[
+                  { name: 'Original', id: 'original', target: null },
+                  { name: 'Spotify', id: 'spotify', target: -14 },
+                  { name: 'YouTube', id: 'youtube', target: -14 },
+                  { name: 'AppleMusic', id: 'applemusic', target: -16 },
+                  { name: 'Tidal', id: 'tidal', target: -14 },
+                  { name: 'Amazon', id: 'amazon', target: -14 },
+                  { name: 'Deezer', id: 'deezer', target: -15 }
+                ].map((platform) => {
+                  let diffStr = '0.0 dB';
+                  let isPenalty = false;
+                  if (platform.target !== null && analysisResult.lufs !== -Infinity) {
+                    const diff = platform.target - analysisResult.lufs;
+                    if (diff < -0.1) {
+                      isPenalty = true;
+                      diffStr = diff.toFixed(1) + ' dB';
+                    } else if (diff > 0.1) {
+                      diffStr = '+' + diff.toFixed(1) + ' dB';
+                    }
+                  }
+                  
+                  const isSelected = selectedPlatform === platform.id;
+                  
+                  return (
+                    <div 
+                      key={platform.id} 
+                      onClick={() => setSelectedPlatform(platform.id)}
+                      className={`flex flex-col items-center justify-center p-3 rounded-xl border transition-all duration-300 cursor-pointer ${
+                        isSelected 
+                          ? 'bg-white border-transparent text-black shadow-[0_0_15px_rgba(255,255,255,0.2)]' 
+                          : 'border-white/5 bg-white/[0.02] hover:bg-white/[0.05] hover:border-white/20'
+                      }`}
+                    >
+                      <span className={`text-sm font-modern font-bold mb-1 ${isSelected ? 'text-black' : isPenalty ? 'text-red-400' : 'text-white'}`}>
+                        {diffStr}
+                      </span>
+                      <span className={`text-[9px] font-mono uppercase tracking-wider ${isSelected ? 'text-black/60' : 'text-white/50'}`}>
+                        {platform.name}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Device Preview Section */}
+            <div className="bg-white/[0.01] border border-white/5 rounded-2xl p-5 md:p-6 mt-4">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
+                <h3 className="text-[10px] tracking-[0.22em] uppercase text-white/50 font-mono font-bold">
+                  Device Preview
+                </h3>
+                
+                {/* Control elements: Intensity and Mono */}
+                <div className="flex flex-wrap items-center gap-6 w-full sm:w-auto">
+                  {/* Simulation Intensity */}
+                  <div className="flex items-center gap-3">
+                    <span className="text-[9px] tracking-wider uppercase text-white/40 font-mono whitespace-nowrap">
+                      Simulation Intensity
+                    </span>
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="range"
+                        min="0"
+                        max="100"
+                        value={simulationIntensity}
+                        onChange={(e) => setSimulationIntensity(Number(e.target.value))}
+                        className="w-24 accent-[#9D4EDD] bg-white/10 h-1 rounded-lg appearance-none cursor-pointer"
+                      />
+                      <span className="text-[9px] text-white/60 font-mono font-bold min-w-[32px] text-right">
+                        {simulationIntensity}%
+                      </span>
+                      <button
+                        onClick={() => {
+                          setSimulationIntensity(100);
+                          setSelectedPlatform('original');
+                          setSelectedDevice('default');
+                          setIsMono(false);
+                        }}
+                        className="text-[8px] text-[#9D4EDD] hover:text-[#b56ef5] font-mono underline uppercase tracking-wider"
+                      >
+                        Reset
+                      </button>
+                    </div>
+                  </div>
+                  
+                  {/* Mono Toggle */}
+                  <div className="flex items-center gap-2">
+                    <span className="text-[9px] tracking-wider uppercase text-white/40 font-mono">
+                      Mono
+                    </span>
+                    <button
+                      onClick={() => setIsMono(!isMono)}
+                      className={`w-9 h-5 rounded-full p-0.5 transition-colors duration-300 focus:outline-none ${
+                        isMono ? 'bg-[#9D4EDD]' : 'bg-white/10'
+                      }`}
+                    >
+                      <div
+                        className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform duration-300 ${
+                          isMono ? 'translate-x-4' : 'translate-x-0'
+                        }`}
+                      />
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 gap-3">
+                {[
+                  { id: 'default', name: 'Studio Monitors' },
+                  { id: 'car', name: 'Car Speakers' },
+                  { id: 'iphone', name: 'iPhone Speaker' },
+                  { id: 'macbook', name: 'MacBook Speaker' },
+                  { id: 'headphones', name: 'Headphones' },
+                  { id: 'tv', name: 'TV Speaker' },
+                  { id: 'hometheater', name: 'Home Theater' },
+                  { id: 'bluetooth', name: 'Bluetooth Speaker' },
+                  { id: 'gaming', name: 'Gaming Headset' },
+                  { id: 'tablet', name: 'Tablet Speaker' }
+                ].map((device) => {
+                  const isSelected = selectedDevice === device.id;
+                  return (
+                    <button
+                      key={device.id}
+                      onClick={() => setSelectedDevice(device.id)}
+                      className={`flex flex-col items-center justify-center p-3 rounded-xl border transition-all duration-300 font-mono text-[9px] uppercase tracking-wider ${
+                        isSelected
+                          ? 'bg-white border-transparent text-black shadow-[0_0_15px_rgba(255,255,255,0.2)] font-bold'
+                          : 'border-white/5 bg-white/[0.02] text-white/50 hover:bg-white/[0.05] hover:text-white hover:border-white/20'
+                      }`}
+                    >
+                      {device.name}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
             {/* Target Compliance Checklist */}
-            <div className="bg-white/[0.01] border border-white/5 rounded-2xl p-5 md:p-6 mt-2">
+            <div className="bg-white/[0.01] border border-white/5 rounded-2xl p-5 md:p-6 mt-4">
               <h3 className="text-[10px] tracking-[0.22em] uppercase text-white/50 mb-4 font-mono font-bold">
                 PLATFORM STANDARDS CHECKLIST
               </h3>
@@ -941,36 +1384,74 @@ export default function MasterAnalyzer({ onPlaybackStart }) {
         {/* Dynamic Paywall Overlay screen */}
         {showPaywall && (
           <div className="absolute inset-0 bg-[#050505]/95 backdrop-blur-xl z-30 flex flex-col justify-center items-center text-center p-6 transition-all duration-500">
-            <button 
-              onClick={() => setShowPaywall(false)}
-              className="absolute top-6 right-6 text-[10px] tracking-widest text-white/40 hover:text-white uppercase font-mono transition-colors"
-            >
-              ✕ Close
-            </button>
-            <div className="w-16 h-16 bg-[#9D4EDD]/10 border border-[#9D4EDD]/30 rounded-2xl flex items-center justify-center mb-5 shadow-2xl">
-              <Lock className="w-7 h-7 text-[#E0AAFF]" />
-            </div>
-            <h3 className="font-modern text-2xl text-white font-light tracking-tight mb-2">
-              Daily limit reached
-            </h3>
-            <p className="text-xs text-white/50 font-mono tracking-wide max-w-sm mb-6 leading-relaxed uppercase">
-              You've used your 3 free mastering analyses for today. Upgrade to Pro for unlimited analyses, precise LRA measurement, and advanced streaming recommendations.
-            </p>
-            <div className="flex flex-col gap-3 w-full max-w-xs">
+            {!isVerifying && (
               <button 
-                onClick={handleSimulatePayment}
-                className="w-full relative overflow-hidden rounded-full border border-[#9D4EDD]/50 hover:border-[#b56ef5]/80 bg-gradient-to-r from-[#9D4EDD]/40 to-[#ec4899]/30 hover:to-[#ec4899]/50 text-white font-mono text-[10px] tracking-widest font-bold uppercase py-3.5 transition-all duration-300 shadow-[0_0_30px_rgba(157,78,221,0.2)] hover:scale-[1.02] active:scale-[0.98]"
+                onClick={() => setShowPaywall(false)}
+                className="absolute top-6 right-6 text-[10px] tracking-widest text-white/40 hover:text-white uppercase font-mono transition-colors"
               >
-                Upgrade to Pro — $9/month
+                ✕ Close
               </button>
-              
-              <button 
-                onClick={handleSimulatePayment}
-                className="text-[9px] tracking-widest uppercase font-mono text-[#E0AAFF] hover:text-[#f8fafc] border-b border-[#E0AAFF]/20 hover:border-[#f8fafc]/50 pb-0.5 mx-auto transition-all"
-              >
-                [ Simulate Payment Success ]
-              </button>
-            </div>
+            )}
+            
+            {isVerifying ? (
+              <div className="flex flex-col items-center justify-center animate-pulse">
+                <div className="text-[#E0AAFF] font-mono text-xs tracking-[0.3em] font-bold mb-4">
+                  [ STATUS: VERIFYING... ]
+                </div>
+                <div className="w-48 h-0.5 bg-white/5 overflow-hidden relative">
+                  <div className="absolute top-0 left-0 h-full w-1/3 bg-[#9D4EDD] shadow-[0_0_10px_#9D4EDD] animate-[pulse_1s_ease-in-out_infinite]"></div>
+                </div>
+              </div>
+            ) : (
+              <div className={`flex flex-col items-center transition-all duration-500 ${isPro ? 'opacity-0 translate-y-4' : 'opacity-100'}`}>
+                <div className="w-16 h-16 bg-[#9D4EDD]/10 border border-[#9D4EDD]/30 rounded-2xl flex items-center justify-center mb-5 shadow-[0_0_30px_rgba(157,78,221,0.2)]">
+                  <Lock className="w-7 h-7 text-[#E0AAFF]" />
+                </div>
+                <h3 className="font-modern text-2xl text-white font-light tracking-tight mb-2">
+                  Daily limit reached
+                </h3>
+                <p className="text-xs text-white/50 font-mono tracking-wide max-w-sm mb-6 leading-relaxed uppercase">
+                  You've used your 3 free mastering analyses for today. Upgrade to Pro for unlimited analyses, precise LRA measurement, and advanced streaming recommendations.
+                </p>
+                <div className="flex flex-col gap-3 w-full max-w-xs">
+                  <a 
+                    href="https://napbak.gumroad.com/l/dummy-pro" 
+                    className="w-full relative overflow-hidden rounded-full border border-[#9D4EDD]/50 hover:border-[#b56ef5]/80 bg-gradient-to-r from-[#9D4EDD]/40 to-[#ec4899]/30 hover:to-[#ec4899]/50 text-white font-mono text-[10px] tracking-widest font-bold uppercase py-3.5 transition-all duration-300 shadow-[0_0_30px_rgba(157,78,221,0.2)] hover:scale-[1.02] active:scale-[0.98] text-center block"
+                  >
+                    Upgrade to Pro — $4.99
+                  </a>
+                  
+                  {!showManualInput ? (
+                    <button 
+                      onClick={() => setShowManualInput(true)}
+                      className="text-[9px] tracking-widest uppercase font-mono text-white/40 hover:text-[#E0AAFF] mt-2 transition-colors"
+                    >
+                      [ I HAVE A LICENSE KEY ]
+                    </button>
+                  ) : (
+                    <div className="mt-4 flex flex-col gap-3">
+                      <input 
+                        type="text" 
+                        placeholder="ENTER LICENSE KEY"
+                        value={manualKey}
+                        onChange={(e) => setManualKey(e.target.value)}
+                        className="bg-transparent border-b border-white/20 focus:border-[#E0AAFF] text-white font-mono text-[10px] tracking-widest text-center py-2 outline-none w-full uppercase placeholder:text-white/20 transition-colors"
+                      />
+                      <button 
+                        onClick={() => {
+                          if (manualKey) {
+                            window.location.search = `?license_key=${manualKey}`;
+                          }
+                        }}
+                        className="text-[9px] tracking-widest uppercase font-mono text-[#E0AAFF] hover:text-white transition-colors"
+                      >
+                        [ VERIFY ]
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
         )}
 
