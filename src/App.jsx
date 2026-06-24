@@ -365,13 +365,6 @@ export default function App() {
               GET PRO
             </button>
           )}
-
-          <button 
-            onClick={() => setIsContactOpen(true)} 
-            className="text-[9px] md:text-[10px] tracking-widest border border-white/20 px-4 py-2 rounded-full hover:bg-white hover:text-black transition-all whitespace-nowrap"
-          >
-            CONTACT
-          </button>
         </div>
       </nav>
 
@@ -643,28 +636,73 @@ export default function App() {
           </div>
         </section>
 
-        <footer className="w-full py-12 border-t border-white/5 flex flex-col items-center justify-center gap-6 relative z-10 bg-[#050505]">
-          <h1 className="font-modern text-2xl text-white font-light tracking-tighter flex items-center">
-            <span className="text-white/30 mr-1 font-mono">[</span>
-            <span className="font-bold tracking-widest uppercase">CTRL</span>
-            <span className="text-white/30 ml-1 font-mono">]</span>
-            <span className="text-[10px] tracking-widest text-white/50 font-mono uppercase ml-3 flex items-baseline relative top-[2px]">
-              by napbak
-              <span 
-                className={`font-serif italic text-[#9D4EDD] tracking-normal transition-opacity duration-300 px-[1px] cursor-pointer dot-slot ${isDotStolen ? 'opacity-0' : 'opacity-100'}`}
-                onMouseEnter={() => setIsDotStolen(true)}
-                onClick={() => setIsDotStolen(false)}
-              >.</span>
-            </span>
-          </h1>
-          <div className="flex gap-6 text-[10px] tracking-widest uppercase text-[#9ca3af] items-center">
-            <a href="https://www.instagram.com/napbak.studio" target="_blank" rel="noreferrer" className="hover:text-white transition-colors">Instagram</a>
-            <div className="w-[1px] h-3 bg-white/10 hidden md:block"></div>
-            <a href="https://napbak.studio/" target="_blank" rel="noreferrer" className="text-[#9D4EDD] hover:text-[#E0AAFF] transition-colors flex items-center gap-1 group">
-              STUDIO <span className="group-hover:translate-x-[2px] group-hover:-translate-y-[2px] transition-transform text-[8px]">↗</span>
-            </a>
+        <footer className="w-full py-16 px-6 md:px-12 border-t border-white/5 relative z-10 bg-[#050505] text-[#9ca3af]">
+          <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-10 md:gap-6">
+            
+            {/* Column 1: Brand Info */}
+            <div className="flex flex-col items-start gap-4">
+              <h1 className="font-modern text-2xl text-white font-light tracking-tighter flex items-center">
+                <span className="text-white/30 mr-1 font-mono">[</span>
+                <span className="font-bold tracking-widest uppercase">CTRL</span>
+                <span className="text-white/30 ml-1 font-mono">]</span>
+                <span className="text-[10px] tracking-widest text-white/50 font-mono uppercase ml-3 flex items-baseline relative top-[2px]">
+                  by napbak
+                  <span 
+                    className={`font-serif italic text-[#9D4EDD] tracking-normal transition-opacity duration-300 px-[1px] cursor-pointer dot-slot ${isDotStolen ? 'opacity-0' : 'opacity-100'}`}
+                    onMouseEnter={() => setIsDotStolen(true)}
+                    onClick={() => setIsDotStolen(false)}
+                  >.</span>
+                </span>
+              </h1>
+              <p className="text-[10px] leading-relaxed text-white/40 font-mono max-w-[220px]">
+                Free offline EBU R128 loudness compliance meter, true peak estimator, and streaming platform simulation.
+              </p>
+            </div>
+
+            {/* Column 2: Navigation Links */}
+            <div className="flex flex-col items-start gap-3">
+              <span className="text-[9px] tracking-widest font-mono uppercase text-white font-bold mb-2">QUICK LINKS</span>
+              <a href="#analyzer" onClick={(e) => scrollTo(e, 'analyzer')} className="text-[10px] tracking-wide font-mono hover:text-[#E0AAFF] transition-colors">Analyzer</a>
+              <a href="#features" onClick={(e) => scrollTo(e, 'features')} className="text-[10px] tracking-wide font-mono hover:text-[#E0AAFF] transition-colors">Features</a>
+              <a href="#pricing" onClick={(e) => scrollTo(e, 'pricing')} className="text-[10px] tracking-wide font-mono hover:text-[#E0AAFF] transition-colors">Pricing</a>
+              <a href="#faq" onClick={(e) => scrollTo(e, 'faq')} className="text-[10px] tracking-wide font-mono hover:text-[#E0AAFF] transition-colors">FAQ</a>
+            </div>
+
+            {/* Column 3: Contact & Studio */}
+            <div className="flex flex-col items-start gap-3">
+              <span className="text-[9px] tracking-widest font-mono uppercase text-white font-bold mb-2">GET IN TOUCH</span>
+              <button onClick={() => setIsContactOpen(true)} className="text-[10px] tracking-wide font-mono hover:text-[#E0AAFF] text-left transition-colors">
+                [ Contact & Support ]
+              </button>
+              <a href="https://www.instagram.com/napbak.studio" target="_blank" rel="noreferrer" className="text-[10px] tracking-wide font-mono hover:text-[#E0AAFF] transition-colors">Instagram</a>
+              <a href="https://napbak.studio/" target="_blank" rel="noreferrer" className="text-[10px] tracking-wide font-mono text-[#9D4EDD] hover:text-[#E0AAFF] transition-colors flex items-center gap-1 group">
+                Napbak Studio <span className="group-hover:translate-x-[2px] group-hover:-translate-y-[2px] transition-transform text-[8px]">↗</span>
+              </a>
+            </div>
+
+            {/* Column 4: System Status */}
+            <div className="flex flex-col items-start gap-3">
+              <span className="text-[9px] tracking-widest font-mono uppercase text-white font-bold mb-2">ENGINE STATUS</span>
+              <div className="flex items-center gap-2">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                </span>
+                <span className="text-[9px] font-mono tracking-widest text-green-400 uppercase">
+                  DSP CORE: ONLINE
+                </span>
+              </div>
+              <p className="text-[9px] leading-relaxed text-white/30 font-mono">
+                Running 100% client-side. No audio data ever leaves your computer. Secure & private.
+              </p>
+            </div>
+            
           </div>
-          <p className="text-[9px] tracking-widest text-white/20 mt-8">© {new Date().getFullYear()} ALL RIGHTS RESERVED.</p>
+          
+          <div className="max-w-5xl mx-auto border-t border-white/5 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-[9px] tracking-widest text-white/20 font-mono">
+            <span>© {new Date().getFullYear()} ALL RIGHTS RESERVED.</span>
+            <span>DESIGNED BY NAPBAK</span>
+          </div>
         </footer>
 
       </main>
