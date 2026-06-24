@@ -1,0 +1,1062 @@
+import React, { useState, useRef, useEffect } from 'react';
+
+// ── Globals del sistema de audio en Memoria (Sample-Accurate) ───────────────
+let globalAudioCtx      = null;
+let globalMasterGain    = null;   
+let globalStreamDest    = null;   
+let globalMediaRecorder = null;   
+let globalRecChunks     = [];     
+let globalTrackGains    = {};     // Nodos de volumen individuales por pista
+let globalAudioBuffers  = {};     // Archivos decodificados en RAM
+let globalBufferSources = {};     // Reproductores de los buffers
+
+export default function App() {
+  const [hasEntered, setHasEntered] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false); // Nuevo estado de carga
+  const [loadingProgress, setLoadingProgress] = useState(0); // Porcentaje
+  const [time, setTime] = useState(0);
+  
+  const [isRecording, setIsRecording] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
+  const [hasSaved, setHasSaved] = useState(false);
+  
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [isDotStolen, setIsDotStolen] = useState(false);
+
+  const [isContactOpen, setIsContactOpen] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  // --- SEO & META TAGS ESTRATÉGICOS ---
+  useEffect(() => {
+    document.title = "Napbak | Creative Developer & Music Producer";
+    
+    const setMetaTag = (name, content, attribute = "name") => {
+      let element = document.querySelector(`meta[${attribute}="${name}"]`);
+      if (!element) {
+        element = document.createElement('meta');
+        element.setAttribute(attribute, name);
+        document.head.appendChild(element);
+      }
+      element.setAttribute('content', content);
+    };
+
+    setMetaTag('description', 'Interactive audio portfolio of Napbak. Sound designer, creative developer, and music producer crafting immersive digital experiences and modern sonic landscapes.');
+    setMetaTag('keywords', 'Napbak, creative developer, productor musical creativo, interactive web audio, sound design portfolio, immersive website, web interactiva, latin america, tech and music');
+    setMetaTag('author', 'Napbak Studio');
+    setMetaTag('theme-color', '#050505');
+    
+    setMetaTag('og:type', 'website', 'property');
+    setMetaTag('og:title', 'Napbak | Creative Developer & Sound Designer', 'property');
+    setMetaTag('og:description', 'I build immersive sonic landscapes where technology meets raw emotion.', 'property');
+    setMetaTag('og:image', 'https://i.imgur.com/39HXelI.png', 'property');
+    setMetaTag('og:url', 'https://napbak.studio', 'property');
+
+    setMetaTag('twitter:card', 'summary_large_image');
+    setMetaTag('twitter:title', 'Napbak | Creative Developer & Music Producer');
+    setMetaTag('twitter:description', 'Crafting immersive sonic landscapes where technology meets raw emotion.');
+    setMetaTag('twitter:image', 'https://i.imgur.com/39HXelI.png');
+  }, []);
+
+  const [trackStates, setTrackStates] = useState({
+    ether: false,
+    bass: false,
+    arp: false,
+    drums: false
+  });
+
+  const trackStatesRef = useRef(trackStates);
+  useEffect(() => {
+    trackStatesRef.current = trackStates;
+  }, [trackStates]);
+
+  const cursorRef = useRef(null);
+  const cursorInnerRef = useRef(null);
+  const canvasRef = useRef(null);
+
+  const [activeSnippet, setActiveSnippet] = useState(null);
+  const snippetAudioRef = useRef(null);
+
+  // ── 1. PRECARGA DE AUDIOS EN RAM (SYNC PERFECTO) ───────────────
+  useEffect(() => {
+    const loadAudioAssets = async () => {
+      try {
+        const AC = window.AudioContext || window.webkitAudioContext;
+        if (!globalAudioCtx) {
+          globalAudioCtx = new AC();
+          globalMasterGain = globalAudioCtx.createGain();
+          globalMasterGain.gain.value = 1;
+          globalMasterGain.connect(globalAudioCtx.destination);
+
+          globalStreamDest = globalAudioCtx.createMediaStreamDestination();
+          globalMasterGain.connect(globalStreamDest);
+
+          // Crear un GainNode por cada Stem para control de volumen individual
+          ['ether', 'bass', 'arp', 'drums'].forEach(id => {
+            const gainNode = globalAudioCtx.createGain();
+            gainNode.gain.value = 0; // Empiezan muteados
+            gainNode.connect(globalMasterGain);
+            globalTrackGains[id] = gainNode;
+          });
+        }
+
+        const urls = {
+          ether: '/audio/stem_atmosphere.ogg',
+          bass: '/audio/stem_subbass.ogg',
+          arp: '/audio/stem_syntharp.ogg',
+          drums: '/audio/stem_percussion.ogg'
+        };
+
+        let loadedCount = 0;
+        const total = Object.keys(urls).length;
+
+        for (const [id, url] of Object.entries(urls)) {
+          const response = await fetch(url);
+          const arrayBuffer = await response.arrayBuffer();
+          
+          // FIX SAFARI/iOS: Safari falla si usamos 'await' directo. Requiere callbacks.
+          const audioBuffer = await new Promise((resolve, reject) => {
+            globalAudioCtx.decodeAudioData(
+              arrayBuffer,
+              (buffer) => resolve(buffer),
+              (e) => reject(e)
+            );
+          });
+
+          globalAudioBuffers[id] = audioBuffer;
+          loadedCount++;
+          setLoadingProgress(Math.round((loadedCount / total) * 100));
+        }
+        
+        setIsLoaded(true);
+      } catch (error) {
+        console.error("Error preloading audio buffers:", error);
+        setIsLoaded(true); // Permitimos entrar aunque falle por seguridad
+      }
+    };
+
+    loadAudioAssets();
+  }, []);
+
+  const works = [
+    { 
+      id: 'here-with-me',
+      title: "Here With Me", 
+      type: "Single / 2025", 
+      tag: "Alt R&B",
+      cover: "https://i.imgur.com/n6RZIwH.jpeg",
+      spotifyUrl: "https://open.spotify.com/intl-es/track/2hQIbXr0WIr8Rpwz2UHHMv",
+      snippetUrl: "/audio/snippet_here_with_me.ogg" 
+    },
+    { 
+      id: 'gangsta',
+      title: "Gangsta (Cover)", 
+      type: "Single / 2025", 
+      tag: "Dark R&B",
+      cover: "https://i.imgur.com/SoNPdjY.jpeg",
+      spotifyUrl: "https://open.spotify.com/intl-es/track/4i6lvmArvdt9t2vRiskHN7",
+      snippetUrl: "/audio/snippet_gangsta.ogg"
+    },
+    { 
+      id: 'narcotics',
+      title: "Narcotics", 
+      type: "Single / 2025", 
+      tag: "Dark Electronic",
+      cover: "https://i.imgur.com/gKpPX4s.jpeg",
+      spotifyUrl: "https://open.spotify.com/intl-es/track/0wnO2GjTLEgAP9LFGeJ0KL",
+      snippetUrl: "/audio/snippet_narcotics.ogg"
+    },
+  ];
+
+  const handlePlaySnippet = (workId, url) => {
+    if (activeSnippet === workId) {
+      if (snippetAudioRef.current) {
+        snippetAudioRef.current.pause();
+      }
+      setActiveSnippet(null);
+      return;
+    }
+
+    setActiveSnippet(workId);
+    if (snippetAudioRef.current) {
+      snippetAudioRef.current.src = url;
+      snippetAudioRef.current.play().catch(e => console.log("Snippet play error:", e));
+    }
+
+    if (!isPaused && hasEntered && !hasSaved) {
+      if (globalAudioCtx) globalAudioCtx.suspend(); // Pausa perfecta de stems
+      if (globalMediaRecorder && globalMediaRecorder.state === "recording") globalMediaRecorder.pause();
+      setIsPaused(true);
+    }
+  };
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    let animationFrameId;
+
+    const resize = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    };
+    window.addEventListener('resize', resize);
+    resize();
+
+    const glowOpacities = { ether: 0, bass: 0, arp: 0, drums: 0 };
+    let currentIntensity = 1;
+
+    class Particle {
+      constructor() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.size = Math.random() * 1.5 + 0.5;
+        this.baseVx = (Math.random() - 0.5) * 0.4;
+        this.baseVy = (Math.random() - 0.5) * 0.4;
+        this.color = '255, 255, 255';
+      }
+
+      updateColor(states) {
+        const colors = [];
+        if(states.ether) colors.push('157, 78, 221');
+        if(states.bass) colors.push('59, 130, 246');
+        if(states.arp) colors.push('236, 72, 153');
+        if(states.drums) colors.push('248, 250, 252');
+        
+        if(colors.length === 0) {
+          this.color = '255, 255, 255';
+        } else if (Math.random() < 0.02) {
+          this.color = colors[Math.floor(Math.random() * colors.length)];
+        }
+      }
+
+      update(intensity, states) {
+        this.x += this.baseVx * intensity;
+        this.y -= (Math.abs(this.baseVy) + 0.2) * intensity;
+
+        if (this.x > canvas.width) this.x = 0;
+        if (this.x < 0) this.x = canvas.width;
+        if (this.y < 0) this.y = canvas.height;
+
+        this.updateColor(states);
+      }
+
+      draw(ctx, intensity) {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(${this.color}, ${Math.min(0.1 + (intensity * 0.05), 0.6)})`;
+        ctx.fill();
+      }
+    }
+
+    const particles = Array.from({ length: 60 }, () => new Particle());
+
+    const drawAura = (x, y, radius, colorStr, opacity, timeStr) => {
+      if (opacity <= 0.01) return;
+      const xPos = x + Math.sin(timeStr) * 150;
+      const yPos = y + Math.cos(timeStr * 0.8) * 150;
+      
+      const gradient = ctx.createRadialGradient(xPos, yPos, 0, xPos, yPos, radius);
+      gradient.addColorStop(0, `rgba(${colorStr}, ${opacity})`);
+      gradient.addColorStop(1, `rgba(${colorStr}, 0)`);
+      
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+    };
+
+    const render = () => {
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      const states = trackStatesRef.current;
+      const timeSec = Date.now() * 0.0005;
+
+      const activeCount = Object.values(states).filter(Boolean).length;
+      const targetIntensity = 1 + (activeCount * 1.2);
+      currentIntensity += (targetIntensity - currentIntensity) * 0.05;
+
+      glowOpacities.ether += ((states.ether ? 0.12 : 0) - glowOpacities.ether) * 0.03;
+      glowOpacities.bass += ((states.bass ? 0.15 : 0) - glowOpacities.bass) * 0.03;
+      glowOpacities.arp += ((states.arp ? 0.15 : 0) - glowOpacities.arp) * 0.03;
+      glowOpacities.drums += ((states.drums ? 0.08 : 0) - glowOpacities.drums) * 0.03;
+
+      ctx.globalCompositeOperation = 'screen';
+
+      const w = canvas.width;
+      const h = canvas.height;
+      drawAura(w * 0.3, h * 0.4, w * 0.5, '157, 78, 221', glowOpacities.ether, timeSec);
+      drawAura(w * 0.7, h * 0.7, w * 0.4, '59, 130, 246', glowOpacities.bass, timeSec + 1);
+      drawAura(w * 0.5, h * 0.3, w * 0.4, '236, 72, 153', glowOpacities.arp, timeSec + 2);
+      drawAura(w * 0.5, h * 0.8, w * 0.3, '255, 255, 255', glowOpacities.drums, timeSec + 3);
+
+      particles.forEach(p => {
+        p.update(currentIntensity, states);
+        p.draw(ctx, currentIntensity);
+      });
+
+      animationFrameId = requestAnimationFrame(render);
+    };
+    render();
+
+    return () => {
+      window.removeEventListener('resize', resize);
+      cancelAnimationFrame(animationFrameId);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (window.matchMedia("(pointer: coarse)").matches) return;
+
+    let mouseX = window.innerWidth / 2;
+    let mouseY = window.innerHeight / 2;
+    let cursorX = mouseX;
+    let cursorY = mouseY;
+    let reqId;
+
+    const onMouseMove = (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+    };
+
+    const loop = () => {
+      cursorX += (mouseX - cursorX) * 0.15;
+      cursorY += (mouseY - cursorY) * 0.15;
+      
+      if (cursorRef.current) {
+        cursorRef.current.style.transform = `translate3d(${cursorX}px, ${cursorY}px, 0) translate(-50%, -50%)`;
+      }
+      reqId = requestAnimationFrame(loop);
+    };
+
+    window.addEventListener('mousemove', onMouseMove);
+    reqId = requestAnimationFrame(loop);
+
+    return () => {
+      window.removeEventListener('mousemove', onMouseMove);
+      cancelAnimationFrame(reqId);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (window.matchMedia("(pointer: coarse)").matches) return;
+
+    const handleMouseOver = (e) => {
+      if (e.target.closest('a, button, .dot-slot')) {
+        cursorInnerRef.current?.classList.add('scale-[3]');
+      }
+    };
+
+    const handleMouseOut = (e) => {
+      if (e.target.closest('a, button, .dot-slot')) {
+        cursorInnerRef.current?.classList.remove('scale-[3]');
+      }
+    };
+
+    document.addEventListener('mouseover', handleMouseOver);
+    document.addEventListener('mouseout', handleMouseOut);
+    return () => {
+      document.removeEventListener('mouseover', handleMouseOver);
+      document.removeEventListener('mouseout', handleMouseOut);
+    };
+  }, []);
+
+  useEffect(() => {
+    let interval;
+    if (hasEntered && !isPaused && isRecording) {
+      interval = setInterval(() => {
+        setTime(prev => prev + 10);
+      }, 10);
+    }
+    return () => clearInterval(interval);
+  }, [hasEntered, isPaused, isRecording]);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 50);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  useEffect(() => {
+    if (isDotStolen) {
+      document.body.classList.add('cursor-stolen');
+    } else {
+      document.body.classList.remove('cursor-stolen');
+    }
+  }, [isDotStolen]);
+
+  const formatTime = (ms) => {
+    const minutes = Math.floor(ms / 60000).toString().padStart(2, '0');
+    const seconds = Math.floor((ms % 60000) / 1000).toString().padStart(2, '0');
+    const milis = Math.floor((ms % 1000) / 10).toString().padStart(2, '0');
+    return `${minutes}:${seconds}:${milis}`;
+  };
+
+  const scrollTo = (e, id) => {
+    e.preventDefault();
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
+  const handleCopyEmail = () => {
+    const textArea = document.createElement("textarea");
+    textArea.value = "hello@napbak.studio";
+    document.body.appendChild(textArea);
+    textArea.select();
+    try {
+      document.execCommand('copy');
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error('Copy failed', err);
+    }
+    document.body.removeChild(textArea);
+  };
+
+  // ── 2. INICIO Y DISPARO SIMULTÁNEO (SYNC MÓVIL PERFECTO) ──────────
+  const handleEnter = async () => {
+    if (!isLoaded) return;
+    setHasEntered(true);
+    
+    if (globalAudioCtx && globalAudioCtx.state === 'suspended') {
+      await globalAudioCtx.resume();
+    }
+
+    // FIX iOS: Buffer silencioso para forzar el encendido del hardware de audio (Unlock Hack)
+    if (globalAudioCtx) {
+      const silentBuffer = globalAudioCtx.createBuffer(1, 1, 22050);
+      const dummySource = globalAudioCtx.createBufferSource();
+      dummySource.buffer = silentBuffer;
+      dummySource.connect(globalAudioCtx.destination);
+      dummySource.start(0);
+    }
+
+    // Configurar grabadora
+    globalRecChunks = [];
+    const mimeType = [
+      'audio/ogg;codecs=opus', 'audio/ogg', 
+      'audio/webm;codecs=opus', 'audio/webm'
+    ].find(t => MediaRecorder.isTypeSupported(t)) || '';
+
+    try {
+      globalMediaRecorder = new MediaRecorder(globalStreamDest.stream, mimeType ? { mimeType } : {});
+      globalMediaRecorder.ondataavailable = (e) => {
+        if (e.data && e.data.size > 0) globalRecChunks.push(e.data);
+      };
+      globalMediaRecorder.start(500); 
+      setIsRecording(true);
+    } catch(err) {
+      console.error("No recorder:", err);
+      setIsRecording(true);
+    }
+
+    // Resetear las ganancias (Solo Ether activo al inicio)
+    ['ether', 'bass', 'arp', 'drums'].forEach(id => {
+      if (globalTrackGains[id]) {
+        globalTrackGains[id].gain.value = id === 'ether' ? 1 : 0;
+      }
+    });
+    setTrackStates({ ether: true, bass: false, arp: false, drums: false });
+
+    // DISPARO SIMULTÁNEO: Todos los audios inician exactamente en el mismo milisegundo
+    const startTime = globalAudioCtx.currentTime + 0.15; // 150ms de margen para procesadores lentos
+    
+    ['ether', 'bass', 'arp', 'drums'].forEach(id => {
+      if (globalAudioBuffers[id]) {
+        const source = globalAudioCtx.createBufferSource();
+        source.buffer = globalAudioBuffers[id];
+        source.loop = true; // Loop infinito nativo, sin gaps
+        source.connect(globalTrackGains[id]);
+        source.start(startTime);
+        globalBufferSources[id] = source;
+      }
+    });
+  };
+
+  const toggleTrack = (trackId) => {
+    setTrackStates(prev => {
+      const newState = !prev[trackId];
+      if (globalTrackGains[trackId] && globalAudioCtx) {
+        // Transición suavizada (ramp) de 50ms para evitar "clics"
+        globalTrackGains[trackId].gain.setTargetAtTime(newState ? 1 : 0, globalAudioCtx.currentTime, 0.05);
+      }
+      return { ...prev, [trackId]: newState };
+    });
+  };
+
+  const handlePause = () => {
+    if (isPaused) {
+      if (globalAudioCtx) globalAudioCtx.resume();
+      if (globalMediaRecorder && globalMediaRecorder.state === 'paused') {
+        globalMediaRecorder.resume();
+      }
+      setIsPaused(false);
+      
+      if (activeSnippet) {
+        if (snippetAudioRef.current) snippetAudioRef.current.pause();
+        setActiveSnippet(null);
+      }
+    } else {
+      if (globalAudioCtx) globalAudioCtx.suspend(); // Congela el reloj del audio (Pausa perfecta)
+      if (globalMediaRecorder && globalMediaRecorder.state === 'recording') {
+        globalMediaRecorder.pause();
+      }
+      setIsPaused(true);
+    }
+  };
+
+  const handleStopAndSave = () => {
+    setIsRecording(false);
+
+    // Apagar las fuentes de audio
+    ['ether', 'bass', 'arp', 'drums'].forEach(id => {
+      if (globalBufferSources[id]) {
+        try { globalBufferSources[id].stop(); } catch(e){}
+      }
+    });
+
+    if (!globalMediaRecorder) {
+      setHasSaved(true);
+      return;
+    }
+
+    globalMediaRecorder.onstop = () => {
+      if (globalRecChunks.length === 0) {
+        setHasSaved(true);
+        return;
+      }
+      const mimeType = globalRecChunks[0]?.type || 'audio/ogg';
+      const blob = new Blob(globalRecChunks, { type: mimeType });
+      const url  = URL.createObjectURL(blob);
+      const a    = document.createElement('a');
+      a.href     = url;
+      a.download = `napbak-session-${Date.now()}.ogg`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 2000);
+
+      globalRecChunks    = [];
+      globalMediaRecorder = null;
+      setHasSaved(true);
+    };
+
+    if (globalMediaRecorder.state !== 'inactive') {
+      globalMediaRecorder.requestData();
+      globalMediaRecorder.stop();
+    } else {
+      setHasSaved(true);
+    }
+  };
+
+  const handleReset = () => {
+    setTime(0);
+    setHasSaved(false);
+    setIsPaused(false);
+
+    if (globalMediaRecorder && globalMediaRecorder.state !== 'inactive') {
+      globalMediaRecorder.onstop = null; 
+      globalMediaRecorder.stop();
+    }
+    globalMediaRecorder = null;
+    globalRecChunks = [];
+
+    const mimeType = [
+      'audio/ogg;codecs=opus', 'audio/ogg', 
+      'audio/webm;codecs=opus', 'audio/webm'
+    ].find(t => MediaRecorder.isTypeSupported(t)) || '';
+
+    try {
+      globalMediaRecorder = new MediaRecorder(globalStreamDest.stream, mimeType ? { mimeType } : {});
+      globalMediaRecorder.ondataavailable = (e) => {
+        if (e.data && e.data.size > 0) globalRecChunks.push(e.data);
+      };
+      globalMediaRecorder.start(500); 
+      setIsRecording(true);
+    } catch(err) {
+      setIsRecording(true);
+    }
+
+    setTrackStates({ ether: true, bass: false, arp: false, drums: false });
+    
+    // Disparo Simultáneo otra vez
+    const startTime = globalAudioCtx.currentTime + 0.15;
+    ['ether', 'bass', 'arp', 'drums'].forEach(id => {
+      if (globalTrackGains[id]) {
+        globalTrackGains[id].gain.value = id === 'ether' ? 1 : 0;
+      }
+      if (globalBufferSources[id]) {
+        try { globalBufferSources[id].stop(); } catch(e){}
+      }
+      if (globalAudioBuffers[id]) {
+        const source = globalAudioCtx.createBufferSource();
+        source.buffer = globalAudioBuffers[id];
+        source.loop = true;
+        source.connect(globalTrackGains[id]);
+        source.start(startTime);
+        globalBufferSources[id] = source;
+      }
+    });
+  };
+
+  const stemsConfig = [
+    { id: 'ether', num: '01', name: 'ATMOSPHERE', color: 'bg-[#9D4EDD]', border: 'border-[#9D4EDD]', shadow: 'rgba(157,78,221,0.5)' },
+    { id: 'bass', num: '02', name: 'SUB BASS', color: 'bg-[#3b82f6]', border: 'border-[#3b82f6]', shadow: 'rgba(59,130,246,0.5)' },
+    { id: 'arp', num: '03', name: 'SYNTH ARP', color: 'bg-[#ec4899]', border: 'border-[#ec4899]', shadow: 'rgba(236,72,153,0.5)' },
+    { id: 'drums', num: '04', name: 'PERCUSSION', color: 'bg-[#f8fafc]', border: 'border-[#f8fafc]', shadow: 'rgba(248,250,252,0.5)' },
+  ];
+
+  return (
+    <div className={`bg-[#050505] text-[#9ca3af] font-mono selection:bg-[#9D4EDD] selection:text-white min-h-screen relative scroll-smooth ${isPaused ? 'paused-state' : ''}`}>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@100;400;700&family=Outfit:wght@100;300;400;700&display=swap');
+        
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+        .font-modern { font-family: 'Outfit', sans-serif; }
+        .font-serif { font-family: 'Instrument Serif', serif; }
+        
+        ::-webkit-scrollbar { width: 0px; background: transparent; }
+        
+        ${isDotStolen ? `
+        @media (pointer: fine) {
+          body, a, button, input, .dot-slot { cursor: none !important; }
+        }
+        ` : ''}
+        
+        .noise-overlay {
+          position: fixed;
+          inset: 0;
+          opacity: 0.03;
+          background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+          pointer-events: none;
+          z-index: 50;
+        }
+
+        .pad-unpressed {
+          box-shadow: inset 0 1px 1px rgba(255,255,255,0.08), 0 10px 20px rgba(0,0,0,0.4);
+        }
+        .pad-pressed {
+          box-shadow: inset 0 4px 15px rgba(0,0,0,0.8), inset 0 1px 2px rgba(0,0,0,0.5);
+        }
+
+        .bar-anim { animation: pulse-height 1s ease-in-out infinite alternate; }
+        @keyframes pulse-height {
+          0% { transform: scaleY(0.3); opacity: 0.5; }
+          100% { transform: scaleY(1); opacity: 1; }
+        }
+        .paused-state .bar-anim { animation-play-state: paused; }
+        .paused-state canvas { opacity: 0.3 !important; transition: opacity 1s; }
+
+        .eq-bar {
+          animation: eq-bounce 0.6s ease-in-out infinite alternate;
+        }
+        @keyframes eq-bounce {
+          0% { transform: scaleY(0.3); }
+          100% { transform: scaleY(1); }
+        }
+      `}</style>
+      
+      {/* Solo dejamos la etiqueta audio para los snippets que no requieren sincro */}
+      <audio 
+        ref={snippetAudioRef} 
+        onEnded={() => setActiveSnippet(null)} 
+      />
+      
+      <div 
+        ref={cursorRef} 
+        className={`hidden md:block fixed top-0 left-0 pointer-events-none z-[9999] mix-blend-difference will-change-transform transition-opacity duration-300 ${isDotStolen ? 'opacity-100' : 'opacity-0'}`}
+      >
+        <div 
+          ref={cursorInnerRef} 
+          className="w-3 h-3 bg-white rounded-full transition-transform duration-300 ease-out"
+        ></div>
+      </div>
+
+      <canvas 
+        ref={canvasRef}
+        className={`fixed inset-0 w-full h-full z-0 pointer-events-none transition-opacity duration-[2000ms] ${hasEntered ? 'opacity-70' : 'opacity-0'}`}
+      />
+
+      <div className="noise-overlay"></div>
+
+      {/* --- GATEKEEPER CON PORCENTAJE DE CARGA --- */}
+      {!hasEntered && (
+        <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#050505] transition-opacity duration-1000">
+          <h1 className="font-modern text-4xl md:text-7xl text-white font-light tracking-tighter lowercase mb-12 drop-shadow-[0_0_30px_rgba(255,255,255,0.1)] relative z-10">
+            napbak<span 
+              className={`font-serif italic text-white tracking-normal transition-opacity duration-300 px-[2px] cursor-pointer dot-slot ${isDotStolen ? 'opacity-0' : 'opacity-100'}`}
+              onMouseEnter={() => setIsDotStolen(true)}
+              onClick={() => setIsDotStolen(false)}
+            >.</span><span className="font-serif italic text-white/70 tracking-normal">studio</span><span className="animate-pulse text-white/30 font-mono ml-1">_</span>
+          </h1>
+          
+          <button 
+            onClick={isLoaded ? handleEnter : null}
+            className={`group relative px-8 py-4 overflow-hidden rounded-full border transition-all duration-500 
+              ${isLoaded ? 'border-white/10 hover:border-[#9D4EDD]/50 cursor-pointer' : 'border-white/5 opacity-50 cursor-wait'}`}
+          >
+            <div className={`absolute inset-0 w-0 transition-all duration-500 ease-out group-hover:w-full ${isLoaded ? 'bg-[#9D4EDD]/10' : 'bg-transparent'}`}></div>
+            <span className="relative tracking-[0.3em] text-[#9ca3af] group-hover:text-white transition-colors text-xs uppercase">
+              {isLoaded ? 'Enter Soundscape' : `Loading Assets... ${loadingProgress}%`}
+            </span>
+          </button>
+
+        </div>
+      )}
+
+      <nav className={`fixed top-0 w-full px-6 md:px-10 flex justify-between items-center z-40 transition-all duration-500 ${hasEntered ? 'opacity-100' : 'opacity-0 pointer-events-none'} ${isScrolled ? 'py-4 md:py-6 bg-[#050505]/90 backdrop-blur-md border-b border-white/5 shadow-[0_4px_30px_rgba(0,0,0,0.5)]' : 'py-6 md:py-10 bg-transparent'}`}>
+        
+        <div className="flex flex-col relative z-10 flex-1 items-start">
+          <span className="font-modern text-2xl md:text-3xl text-white font-light tracking-tighter lowercase relative z-10">
+            napbak<span 
+              className={`font-serif italic text-white tracking-normal transition-opacity duration-300 px-[1px] cursor-pointer dot-slot ${isDotStolen ? 'opacity-0' : 'opacity-100'}`}
+              onMouseEnter={() => setIsDotStolen(true)}
+              onClick={() => setIsDotStolen(false)}
+            >.</span><span className="font-serif italic text-white/70 tracking-normal">studio</span><span className="animate-pulse text-white/30 font-mono ml-1">_</span>
+          </span>
+          <span className="text-[8px] tracking-[0.4em] text-[#9ca3af] uppercase mt-1">PRODUCER / DEV</span>
+        </div>
+
+        <div className="absolute inset-0 hidden md:flex justify-center items-center pointer-events-none z-20">
+          <div className="flex gap-8 text-[10px] tracking-widest uppercase pointer-events-auto">
+            <a href="#mixer" onClick={(e) => scrollTo(e, 'mixer')} className="hover:text-white transition-colors cursor-pointer">Mixer</a>
+            <a href="#about" onClick={(e) => scrollTo(e, 'about')} className="hover:text-white transition-colors cursor-pointer">About</a>
+            <a href="#works" onClick={(e) => scrollTo(e, 'works')} className="hover:text-white transition-colors cursor-pointer">Selected Works</a>
+          </div>
+        </div>
+
+        <div className="flex items-center justify-end gap-3 lg:gap-6 relative z-10 flex-1">
+          <div className={`flex items-center gap-2 transition-all duration-500 origin-right overflow-hidden ${isScrolled && !hasSaved ? 'opacity-100 w-[40px] md:w-[150px] translate-x-0' : 'opacity-0 w-0 -translate-x-4 pointer-events-none'}`}>
+            <div className="hidden md:flex items-center gap-2 px-3 py-1.5 bg-white/5 rounded-full border border-white/10 whitespace-nowrap">
+              <div className={`w-1.5 h-1.5 rounded-full ${isRecording && !isPaused ? 'bg-red-500 animate-pulse' : 'bg-red-500/30'}`}></div>
+              <span className="text-[9px] tracking-widest text-white">{isPaused ? 'PAUSED' : formatTime(time)}</span>
+            </div>
+            <button
+              onClick={handlePause}
+              className="shrink-0 min-w-[32px] w-[32px] h-[32px] md:min-w-[36px] md:w-[36px] md:h-[36px] bg-white/5 hover:bg-white/10 border border-white/10 rounded-full transition-colors text-[#9ca3af] hover:text-white flex items-center justify-center backdrop-blur-md"
+              title={isPaused ? "Resume" : "Pause"}
+            >
+              {isPaused ? (
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+              ) : (
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+              )}
+            </button>
+          </div>
+          <button 
+            onClick={() => setIsContactOpen(true)} 
+            className="text-[9px] md:text-[10px] tracking-widest border border-white/20 px-4 py-2 rounded-full hover:bg-white hover:text-black transition-all whitespace-nowrap"
+          >
+            CONTACT
+          </button>
+        </div>
+      </nav>
+
+      <main className={`transition-opacity duration-1000 delay-300 ${hasEntered ? 'opacity-100' : 'opacity-0 h-screen overflow-hidden'}`}>
+        
+        <section id="mixer" className="relative min-h-screen w-full flex flex-col items-center justify-between pt-32 pb-8">
+          
+          <div className="flex flex-col items-center gap-3 mt-2 md:mt-4 px-6 relative z-10">
+            <div className={`flex items-center gap-1.5 p-1 px-1.5 rounded-full border transition-all duration-500 backdrop-blur-md ${hasSaved ? 'bg-[#9D4EDD]/20 border-[#9D4EDD]/50' : 'bg-[#050505]/40 border-white/10'}`}>
+              
+              <div className="flex items-center gap-2 px-2 py-1">
+                <div className={`w-1.5 h-1.5 rounded-full ${isRecording && !isPaused ? 'bg-red-500 animate-pulse' : hasSaved ? 'bg-[#9D4EDD]' : 'bg-red-500/30'}`}></div>
+                <span className={`text-[8px] md:text-[9px] tracking-widest ${hasSaved ? 'text-[#E0AAFF]' : 'text-white'}`}>
+                  {hasSaved ? 'SESSION EXPORTED' : isPaused ? `PAUSED ${formatTime(time)}` : `REC ${formatTime(time)}`}
+                </span>
+              </div>
+
+              {!hasSaved && (
+                <div className="flex items-center gap-1 border-l border-white/10 pl-1.5">
+                  <button
+                    onClick={handlePause}
+                    className="p-1.5 hover:bg-white/10 rounded-full transition-colors text-[#9ca3af] hover:text-white"
+                    title={isPaused ? "Resume" : "Pause"}
+                  >
+                    {isPaused ? (
+                      <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+                    ) : (
+                      <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+                    )}
+                  </button>
+                  <button
+                    onClick={handleStopAndSave}
+                    className="p-1.5 hover:bg-white/10 rounded-full transition-colors text-[#9ca3af] hover:text-white group flex items-center gap-1.5"
+                    title="Stop & Download Mix"
+                  >
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+                  </button>
+                </div>
+              )}
+            </div>
+            
+            {hasSaved ? (
+              <button 
+                onClick={handleReset}
+                className="text-[8px] uppercase tracking-[0.4em] text-[#9D4EDD] hover:text-[#E0AAFF] transition-colors text-center mt-1 border-b border-[#9D4EDD]/30 hover:border-[#E0AAFF]/50 pb-0.5 cursor-pointer backdrop-blur-sm bg-black/20"
+              >
+                START NEW SESSION
+              </button>
+            ) : (
+              <p className="text-[8px] uppercase tracking-[0.4em] text-white/30 text-center mt-1 backdrop-blur-sm bg-black/20 px-2 py-0.5 rounded">
+                Interactive Audio Experience
+              </p>
+            )}
+          </div>
+
+          <div className={`flex flex-col items-center justify-start w-full max-w-4xl px-6 pt-2 md:pt-4 flex-1 transition-opacity duration-1000 relative z-10 ${hasSaved ? 'opacity-20 pointer-events-none' : 'opacity-100'}`}>
+            <div className="flex items-end justify-center gap-2 h-12 md:h-16 mb-5 md:mb-8 w-full max-w-md">
+              {stemsConfig.map((stem, i) => (
+                <div key={`vis-${stem.id}`} className="w-1/4 h-full flex items-end justify-center pb-2">
+                  <div 
+                    className={`w-1 rounded-full transition-all duration-500 ${trackStates[stem.id] ? `${stem.color} bar-anim drop-shadow-[0_0_10px_currentColor]` : 'bg-white/10 h-2'}`}
+                    style={{ animationDelay: `${i * 0.15}s` }}
+                  ></div>
+                </div>
+              ))}
+            </div>
+
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 w-full">
+              {stemsConfig.map((stem) => {
+                const isActive = trackStates[stem.id];
+                return (
+                  <button
+                    key={stem.id}
+                    onClick={() => toggleTrack(stem.id)}
+                    className={`relative flex flex-col justify-between h-28 md:h-36 p-4 md:p-5 rounded-2xl transition-all duration-500 overflow-hidden group outline-none
+                      ${isActive 
+                        ? 'bg-[#050505]/90 pad-pressed scale-[0.98]' 
+                        : 'bg-[#0a0a0a]/40 pad-unpressed hover:bg-[#111]/60'
+                      }
+                    `}
+                  >
+                    <div className={`absolute inset-0 rounded-2xl border transition-colors duration-500 pointer-events-none ${isActive ? 'border-black/50' : 'border-white/5 group-hover:border-white/10'}`}></div>
+
+                    <div className="absolute inset-0 opacity-[0.04] mix-blend-overlay pointer-events-none" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 200 200\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noiseFilter\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.9\' numOctaves=\'3\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23noiseFilter)\'/%3E%3C/svg%3E")' }}></div>
+
+                    <div 
+                      className={`absolute inset-0 opacity-0 transition-opacity duration-700 blur-2xl pointer-events-none ${isActive ? 'opacity-30' : 'group-hover:opacity-10'}`}
+                      style={{ backgroundColor: isActive ? stem.shadow : '#ffffff' }}
+                    ></div>
+                    
+                    <div className="flex justify-between items-start w-full relative z-10">
+                      <div className="flex items-center gap-2">
+                        <div className={`w-1.5 h-1.5 rounded-full transition-all duration-500 ${isActive ? `${stem.color}` : 'bg-white/20'}`} style={{ boxShadow: isActive ? `0 0 10px ${stem.shadow}, 0 0 20px ${stem.shadow}` : 'none' }}></div>
+                        <span className={`text-[8px] md:text-[9px] tracking-widest uppercase transition-colors ${isActive ? 'text-white font-bold' : 'text-white/30'}`}>{isActive ? 'ON' : 'OFF'}</span>
+                      </div>
+                      <span className="text-[8px] md:text-[10px] font-mono tracking-widest text-white/20 font-light">{stem.num}</span>
+                    </div>
+
+                    <div className="text-left relative z-10 w-full mt-auto">
+                      <span className={`text-xs md:text-sm lg:text-base font-modern tracking-[0.2em] transition-colors ${isActive ? 'text-white' : 'text-[#9ca3af] group-hover:text-white/80'}`}>
+                        {stem.name}
+                      </span>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          <div className="flex flex-col items-center gap-2 mt-4 relative z-10">
+            <span className="text-[9px] uppercase tracking-[0.3em] text-white/30 text-center">Scroll to explore</span>
+            <div className="w-[1px] h-12 bg-gradient-to-b from-white/30 to-transparent"></div>
+          </div>
+        </section>
+
+        <section id="about" className="min-h-screen w-full flex items-center px-6 md:px-20 py-32 border-t border-white/5 relative z-10 bg-[#050505]/60 backdrop-blur-sm">
+           <div className="max-w-7xl mx-auto grid lg:grid-cols-12 gap-16 lg:gap-20 items-center">
+              
+              <div className="lg:col-span-7 flex flex-col justify-center">
+                  <h2 className="text-[10px] tracking-[0.5em] text-[#9D4EDD] mb-8">01. THE MANIFESTO</h2>
+                  <h3 className="font-modern text-3xl md:text-5xl lg:text-6xl xl:text-7xl font-light text-white leading-tight md:leading-snug mb-10 relative z-10">
+                    I build <span className="font-serif italic text-white/50 tracking-normal pr-2">immersive</span> sonic landscapes where technology meets raw emotion.
+                  </h3>
+                  <div className="flex flex-col gap-8 text-xs md:text-sm tracking-wide leading-loose text-[#9ca3af] font-light relative z-10 max-w-2xl">
+                    <p>
+                      I’m <span className="text-white">Napbak</span>: sound designer, music producer, and <a href="https://napbak.dev" target="_blank" rel="noreferrer" className="text-[#9D4EDD] hover:text-[#E0AAFF] transition-colors border-b border-[#9D4EDD]/30 hover:border-[#E0AAFF]/60 pb-[1px] group inline-flex items-center gap-1">creative developer <span className="text-[8px] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform">↗</span></a>. For me, sound isn’t just something you hear—it’s something you live. My work erases the border between software and modern music production.
+                    </p>
+                    <p>
+                      Every sample, every line of code, and every frequency has a purpose; everything is built to create a solid universe. From atmospheric ambient to rhythms that hit you head-on.
+                    </p>
+                  </div>
+              </div>
+
+              <div className="lg:col-span-5 relative group w-full max-w-md mx-auto lg:max-w-full">
+                 
+                 <div className="absolute -top-4 -right-4 w-16 h-16 md:w-24 md:h-24 border-t border-r border-[#9D4EDD]/30 transition-all duration-700 group-hover:-top-2 group-hover:-right-2 z-20 pointer-events-none"></div>
+                 <div className="absolute -bottom-4 -left-4 w-16 h-16 md:w-24 md:h-24 border-b border-l border-[#9D4EDD]/30 transition-all duration-700 group-hover:-bottom-2 group-hover:-left-2 z-20 pointer-events-none"></div>
+                 
+                 <div className="absolute inset-0 bg-[#9D4EDD] opacity-0 group-hover:opacity-10 blur-[100px] transition-opacity duration-1000 z-0 pointer-events-none"></div>
+                 
+                 <div className="relative w-full aspect-[3/4] overflow-hidden bg-[#0a0a0a] z-10 border border-white/5">
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-transparent to-transparent z-10 opacity-90 group-hover:opacity-40 transition-opacity duration-700 pointer-events-none"></div>
+                    
+                    <img 
+                      src="https://i.imgur.com/39HXelI.png" 
+                      alt="Napbak Portrait"
+                      className="w-full h-full object-cover grayscale opacity-60 group-hover:opacity-100 group-hover:grayscale-0 scale-105 group-hover:scale-100 transition-all duration-1000 ease-[cubic-bezier(0.25,1,0.5,1)] origin-center mix-blend-luminosity group-hover:mix-blend-normal"
+                    />
+
+                    <div className="absolute bottom-6 left-6 z-20 overflow-hidden pointer-events-none">
+                       <span className="block font-serif italic text-3xl md:text-5xl text-white/80 translate-y-full group-hover:translate-y-0 transition-transform duration-700 ease-out">
+                         Napbak.
+                       </span>
+                    </div>
+                 </div>
+
+                 <div className="absolute top-1/2 -right-10 -translate-y-1/2 rotate-90 origin-center text-[7px] tracking-[0.4em] text-white/20 uppercase hidden lg:block pointer-events-none">
+                   SYS.01 // PRODUCER_DEV
+                 </div>
+              </div>
+
+           </div>
+        </section>
+
+        <section id="works" className="min-h-screen w-full px-6 md:px-20 py-32 border-t border-white/5 relative z-10 bg-[#050505]/80 backdrop-blur-md">
+          <div className="max-w-7xl mx-auto">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-16 gap-6 relative z-10">
+              <div>
+                <h2 className="text-[10px] tracking-[0.5em] text-[#9D4EDD] mb-4">02. DISCOGRAPHY</h2>
+                <h3 className="font-modern text-4xl md:text-6xl text-white font-light">Selected Works</h3>
+              </div>
+              <a href="https://open.spotify.com/intl-es/artist/1mc3f2GvIm1g6f61hVvyJt" target="_blank" rel="noreferrer" className="text-[10px] tracking-widest border-b border-white/20 pb-1 hover:text-white hover:border-[#9D4EDD] hover:text-[#9D4EDD] transition-all flex items-center gap-2 group">
+                OPEN IN SPOTIFY <span className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform">↗</span>
+              </a>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 relative z-10">
+              {works.map((work) => {
+                const isPlaying = activeSnippet === work.id;
+                
+                return (
+                  <div key={work.id} className="group cursor-pointer">
+                    
+                    <div 
+                      onClick={() => handlePlaySnippet(work.id, work.snippetUrl)}
+                      className={`w-full aspect-square bg-[#0a0a0a] border relative overflow-hidden mb-6 flex items-center justify-center transition-all duration-500
+                        ${isPlaying ? 'border-[#9D4EDD]/50 shadow-[0_0_30px_rgba(157,78,221,0.2)]' : 'border-white/5'}
+                      `}
+                    >
+                      <img 
+                        src={work.cover} 
+                        alt={work.title}
+                        className={`absolute inset-0 w-full h-full object-cover transition-all duration-700 
+                          ${isPlaying ? 'scale-105 opacity-80' : 'grayscale-[0.5] opacity-60 group-hover:grayscale-0 group-hover:scale-105 group-hover:opacity-80'}
+                        `}
+                      />
+
+                      <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-transparent to-black/80 z-10 opacity-60 group-hover:opacity-40 transition-opacity"></div>
+                      
+                      <a 
+                        href={work.spotifyUrl} 
+                        target="_blank" 
+                        rel="noreferrer"
+                        onClick={(e) => e.stopPropagation()}
+                        className="absolute top-4 right-4 z-30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-[8px] tracking-widest border border-white/20 px-3 py-1 rounded-full hover:bg-[#1DB954] hover:border-[#1DB954] hover:text-black flex items-center gap-1.5"
+                      >
+                        <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.84.241 1.2zM20.16 9.6C16.44 7.38 9.54 7.2 5.58 8.4c-.6.18-1.2-.18-1.38-.72-.18-.6.18-1.2.72-1.38 4.68-1.38 12.36-1.2 16.62 1.32.54.3.72 1.02.42 1.56-.24.6-.96.72-1.8.42z"/></svg>
+                        FULL TRACK
+                      </a>
+
+                      <div className={`absolute z-20 w-16 h-16 rounded-full border flex items-center justify-center transition-all duration-500 backdrop-blur-sm
+                        ${isPlaying 
+                          ? 'border-[#9D4EDD] bg-[#9D4EDD]/10 opacity-100 scale-100' 
+                          : 'border-white/20 opacity-0 group-hover:opacity-100 group-hover:scale-110'
+                        }
+                      `}>
+                        {isPlaying ? (
+                          <div className="flex gap-1 items-end h-4">
+                            <div className="w-1 h-full bg-[#E0AAFF] eq-bar" style={{ animationDelay: '0.1s' }}></div>
+                            <div className="w-1 h-full bg-[#E0AAFF] eq-bar" style={{ animationDelay: '0.3s' }}></div>
+                            <div className="w-1 h-full bg-[#E0AAFF] eq-bar" style={{ animationDelay: '0.2s' }}></div>
+                          </div>
+                        ) : (
+                          <div className="w-0 h-0 border-t-[6px] border-t-transparent border-l-[10px] border-l-white border-b-[6px] border-b-transparent ml-1"></div>
+                        )}
+                      </div>
+                    </div>
+                    
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <h4 className={`text-lg font-modern tracking-wide mb-1 transition-colors ${isPlaying ? 'text-[#E0AAFF]' : 'text-white'}`}>
+                          {work.title}
+                        </h4>
+                        <p className="text-[10px] uppercase tracking-widest text-[#9ca3af]">{work.type}</p>
+                      </div>
+                      <span className={`text-[9px] px-2 py-1 border rounded uppercase transition-colors
+                        ${isPlaying ? 'border-[#9D4EDD]/50 text-[#E0AAFF] bg-[#9D4EDD]/10' : 'border-white/10 text-[#9D4EDD]'}
+                      `}>
+                        {work.tag}
+                      </span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+
+        <footer className="w-full py-12 border-t border-white/5 flex flex-col items-center justify-center gap-6 relative z-10 bg-[#050505]">
+          <h1 className="font-modern text-2xl text-white font-light tracking-tighter lowercase">
+            napbak<span 
+              className={`font-serif italic text-white tracking-normal transition-opacity duration-300 px-[1px] cursor-pointer dot-slot ${isDotStolen ? 'opacity-0' : 'opacity-100'}`}
+              onMouseEnter={() => setIsDotStolen(true)}
+              onClick={() => setIsDotStolen(false)}
+            >.</span><span className="font-serif italic text-white/70 tracking-normal">studio</span><span className="animate-pulse text-white/30 font-mono ml-1">_</span>
+          </h1>
+          <div className="flex gap-6 text-[10px] tracking-widest uppercase text-[#9ca3af] items-center">
+            <a href="https://www.instagram.com/napbak.studio" target="_blank" rel="noreferrer" className="hover:text-white transition-colors">Instagram</a>
+            <a href="https://open.spotify.com/intl-es/artist/1mc3f2GvIm1g6f61hVvyJt" target="_blank" rel="noreferrer" className="hover:text-white transition-colors">Spotify</a>
+            <div className="w-[1px] h-3 bg-white/10 hidden md:block"></div>
+            <a href="https://napbak.dev" target="_blank" rel="noreferrer" className="text-[#9D4EDD] hover:text-[#E0AAFF] transition-colors flex items-center gap-1 group">
+              DEV HUB <span className="group-hover:translate-x-[2px] group-hover:-translate-y-[2px] transition-transform text-[8px]">↗</span>
+            </a>
+          </div>
+          <p className="text-[9px] tracking-widest text-white/20 mt-8">© {new Date().getFullYear()} ALL RIGHTS RESERVED.</p>
+        </footer>
+
+      </main>
+
+      <div className={`fixed inset-0 z-[200] bg-[#050505]/95 backdrop-blur-xl flex flex-col justify-center items-center transition-all duration-700 ${isContactOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
+        <button 
+          onClick={() => setIsContactOpen(false)} 
+          className="absolute top-8 right-8 md:top-12 md:right-12 text-[10px] tracking-[0.3em] uppercase text-white/50 hover:text-white transition-colors flex items-center gap-2 group"
+        >
+          CLOSE <span className="group-hover:rotate-90 transition-transform duration-300">✕</span>
+        </button>
+        
+        <h2 className="text-[10px] tracking-[0.5em] text-[#9D4EDD] mb-8">INITIATE CONNECTION</h2>
+        
+        <div className="flex flex-col items-center gap-12 text-center">
+          <button 
+            onClick={handleCopyEmail} 
+            className="group relative inline-block"
+          >
+            <span className={`block font-serif italic text-4xl md:text-7xl lg:text-8xl transition-colors duration-500 ${copied ? 'text-[#1DB954]' : 'text-white group-hover:text-[#9D4EDD]'}`}>
+              {copied ? 'Copied to clipboard.' : 'hello@napbak.studio'}
+            </span>
+            <span className={`absolute -bottom-6 left-1/2 -translate-x-1/2 text-[9px] tracking-widest uppercase transition-opacity duration-300 ${copied ? 'opacity-0' : 'opacity-0 group-hover:opacity-50'}`}>
+              Click to copy
+            </span>
+          </button>
+          
+          <div className="flex flex-col items-center gap-6 mt-8">
+            <p className="text-[9px] tracking-[0.4em] text-white/30 uppercase">Or reach out via</p>
+            <div className="flex gap-4 md:gap-8">
+              <a href="https://wa.me/1234567890" target="_blank" rel="noreferrer" className="border border-white/20 px-6 py-3 rounded-full text-[10px] tracking-widest uppercase hover:bg-white hover:text-black transition-all">
+                WhatsApp
+              </a>
+              <a href="https://www.instagram.com/napbak.studio" target="_blank" rel="noreferrer" className="border border-white/20 px-6 py-3 rounded-full text-[10px] tracking-widest uppercase hover:bg-white hover:text-black transition-all">
+                Instagram
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  );
+}
