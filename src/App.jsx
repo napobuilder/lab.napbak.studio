@@ -281,6 +281,13 @@ export default function App() {
               Analyzer
             </a>
             <a 
+              href="#features" 
+              onClick={(e) => scrollTo(e, 'features')} 
+              className="hover:text-white transition-colors cursor-pointer text-white/70 font-bold"
+            >
+              Features
+            </a>
+            <a 
               href="#pricing" 
               onClick={(e) => scrollTo(e, 'pricing')} 
               className="hover:text-white transition-colors cursor-pointer text-white/70 font-bold"
@@ -321,53 +328,75 @@ export default function App() {
 
       <main className="transition-opacity duration-1000 delay-300 opacity-100">
         
-        {/* Hero Section */}
-        <section className="relative min-h-[75vh] w-full flex flex-col items-center justify-center pt-32 pb-10 px-6 text-center z-10">
-          <div className="max-w-4xl mx-auto flex flex-col items-center">
+        {/* Mastering & Spectrum Analyzer directly in Hero position */}
+        <div className="pt-24">
+          <MasterAnalyzer />
+        </div>
+
+        {/* Features / Marketing Section */}
+        <section id="features" className="py-24 border-t border-white/5 relative z-10 bg-[#050505]/20 backdrop-blur-sm">
+          <div className="max-w-5xl mx-auto px-6">
             
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-white/5 border border-white/10 rounded-full text-[9px] tracking-[0.2em] uppercase text-white/50 mb-6 backdrop-blur-sm">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#9D4EDD] animate-ping"></span>
-              Streaming Loudness Standards
+            <div className="flex flex-col items-center text-center mb-16">
+              <h2 className="text-[10px] tracking-[0.5em] text-[#9D4EDD] mb-4">01. ENGINE FEATURES</h2>
+              <h3 className="font-modern text-3xl md:text-5xl font-light text-white tracking-tighter">
+                Tecnología de precisión para tu <span className="font-serif italic text-white/70">sonido</span>
+              </h3>
+              <p className="text-xs text-[#9ca3af]/60 uppercase tracking-[0.2em] font-mono mt-2">
+                Monitorea el comportamiento de tu masterización según los estándares internacionales
+              </p>
             </div>
 
-            <h1 className="font-modern text-4xl md:text-7xl font-light text-white tracking-tighter leading-tight mb-6">
-              Master your track. <br />
-              <span className="font-serif italic text-white/70">Know your numbers.</span>
-            </h1>
+            <div className="grid md:grid-cols-3 gap-6">
+              {/* Feature 1 */}
+              <div className="border border-white/5 bg-[#0a0a0a]/30 backdrop-blur-sm rounded-2xl p-6 hover:border-[#9D4EDD]/20 transition-all duration-300 group hover:-translate-y-1">
+                <div className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center mb-4 group-hover:bg-[#9D4EDD]/10 transition-colors">
+                  <svg className="w-5 h-5 text-[#E0AAFF]" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="1.5">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19.114 5.636a9 9 0 0 1 0 12.728M16.463 8.288a5.25 5.25 0 0 1 0 7.424M6.75 8.25l4.72-4.72a.75.75 0 0 1 1.28.53v15.88a.75.75 0 0 1-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.009 9.009 0 0 1 2.25 12c0-.83.112-1.633.322-2.396C2.806 8.756 3.63 8.25 4.51 8.25H6.75Z" />
+                  </svg>
+                </div>
+                <h4 className="text-sm font-modern text-white font-bold tracking-wider uppercase mb-2">Loudness Integrado (EBU R128)</h4>
+                <p className="text-xs leading-relaxed text-white/50 font-mono">
+                  Calcula la sonoridad integrada acumulada real de tu tema. Evita que las plataformas compriman dinámicamente tu audio de forma indeseada.
+                </p>
+              </div>
 
-            <p className="text-xs md:text-sm text-[#9ca3af] font-mono tracking-widest max-w-xl uppercase leading-relaxed mb-10 opacity-80">
-              Analiza volumen integrado, True Peak y rango dinámico contra estándares profesionales de distribución.
-            </p>
+              {/* Feature 2 */}
+              <div className="border border-white/5 bg-[#0a0a0a]/30 backdrop-blur-sm rounded-2xl p-6 hover:border-[#9D4EDD]/20 transition-all duration-300 group hover:-translate-y-1">
+                <div className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center mb-4 group-hover:bg-[#9D4EDD]/10 transition-colors">
+                  <svg className="w-5 h-5 text-[#E0AAFF]" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="1.5">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v5.25c0 .621-.504 1.125-1.125 1.125h-2.25A1.125 1.125 0 0 1 3 18.375v-5.25ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125v-9.75ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v14.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z" />
+                  </svg>
+                </div>
+                <h4 className="text-sm font-modern text-white font-bold tracking-wider uppercase mb-2">Estimador True Peak (4x Oversampling)</h4>
+                <p className="text-xs leading-relaxed text-white/50 font-mono">
+                  Detecta los picos inter-sample que generan distorsión de clipping al codificar tu audio digital en formatos comprimidos de streaming (Ogg, AAC, MP3).
+                </p>
+              </div>
 
-            <div className="flex gap-4">
-              <a 
-                href="#analyzer" 
-                onClick={(e) => scrollTo(e, 'analyzer')}
-                className="text-[10px] tracking-widest bg-white text-black px-6 py-3.5 rounded-full font-bold hover:bg-[#9D4EDD] hover:text-white transition-all shadow-xl shadow-white/5"
-              >
-                START ANALYZING
-              </a>
-              <a 
-                href="#pricing" 
-                onClick={(e) => scrollTo(e, 'pricing')}
-                className="text-[10px] tracking-widest border border-white/20 px-6 py-3.5 rounded-full hover:bg-white hover:text-black transition-all"
-              >
-                VIEW PRICING
-              </a>
+              {/* Feature 3 */}
+              <div className="border border-white/5 bg-[#0a0a0a]/30 backdrop-blur-sm rounded-2xl p-6 hover:border-[#9D4EDD]/20 transition-all duration-300 group hover:-translate-y-1">
+                <div className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center mb-4 group-hover:bg-[#9D4EDD]/10 transition-colors">
+                  <svg className="w-5 h-5 text-[#E0AAFF]" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="1.5">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 21 3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5" />
+                  </svg>
+                </div>
+                <h4 className="text-sm font-modern text-white font-bold tracking-wider uppercase mb-2">Rango Dinámico (LRA)</h4>
+                <p className="text-xs leading-relaxed text-white/50 font-mono">
+                  Evalúa la diferencia de volumen real en unidades LU entre los momentos más expresivos y los de menor intensidad para balancear tu mezcla.
+                </p>
+              </div>
             </div>
-            
+
           </div>
         </section>
-
-        {/* Mastering & Spectrum Analyzer Section */}
-        <MasterAnalyzer />
 
         {/* Pricing / Suscripción Section */}
         <section id="pricing" className="py-24 border-t border-white/5 relative z-10 bg-[#050505]/40 backdrop-blur-sm">
           <div className="max-w-5xl mx-auto px-6">
             
             <div className="flex flex-col items-center text-center mb-16">
-              <h2 className="text-[10px] tracking-[0.5em] text-[#9D4EDD] mb-4">01. MEMBERSHIP</h2>
+              <h2 className="text-[10px] tracking-[0.5em] text-[#9D4EDD] mb-4">02. MEMBERSHIP</h2>
               <h3 className="font-modern text-3xl md:text-5xl font-light text-white tracking-tighter">
                 Simple, transparent <span className="font-serif italic text-white/70">plans</span>
               </h3>

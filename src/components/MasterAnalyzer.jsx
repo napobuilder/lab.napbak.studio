@@ -44,16 +44,14 @@ export default function MasterAnalyzer({ onPlaybackStart }) {
   const audioContextRef = useRef(null);
   const analyserRef = useRef(null);
   const sourceNodeRef = useRef(null);
-  const isPlayingRef = useRef(false); // Ref to avoid stale closure in rAF loop
+  const isPlayingRef = useRef(false);
 
   useEffect(() => {
     const checkStatus = () => {
-      // Check if user is Pro
       const localProStatus = localStorage.getItem('napbak_pro') === 'true';
       setIsPro(localProStatus);
 
-      // Daily limit calculation
-      const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+      const today = new Date().toISOString().split('T')[0];
       const limitObjStr = localStorage.getItem('napbak_analyzer_limit');
       
       if (limitObjStr) {
@@ -62,12 +60,10 @@ export default function MasterAnalyzer({ onPlaybackStart }) {
           if (limitObj.date === today) {
             setRemainingFreeRuns(Math.max(0, 3 - limitObj.count));
           } else {
-            // Reset for new day
             localStorage.setItem('napbak_analyzer_limit', JSON.stringify({ date: today, count: 0 }));
             setRemainingFreeRuns(3);
           }
         } catch (e) {
-          // Corrupted item, reset
           localStorage.setItem('napbak_analyzer_limit', JSON.stringify({ date: today, count: 0 }));
           setRemainingFreeRuns(3);
         }
@@ -88,22 +84,18 @@ export default function MasterAnalyzer({ onPlaybackStart }) {
     };
   }, []);
 
-  // Stable ref callback — useCallback so it's not recreated on every render
   const waveformRefCallback = useCallback((node) => {
     canvasRef.current = node;
   }, []);
 
-  // Redraw waveform whenever playback time, duration or analysis data changes
   useEffect(() => {
     if (analysisResult && canvasRef.current) {
-      // Small defer so the canvas has been laid out and has real dimensions
       requestAnimationFrame(() => {
         drawWaveform(analysisResult.peaks, playbackTime, duration);
       });
     }
   }, [playbackTime, duration, analysisResult]);
 
-  // Clean up audio context & visualizers on unmount
   useEffect(() => {
     return () => {
       if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current);
@@ -112,8 +104,6 @@ export default function MasterAnalyzer({ onPlaybackStart }) {
       }
     };
   }, []);
-
-  // --- Functions ---
 
   const handleDragOver = (e) => {
     e.preventDefault();
@@ -158,7 +148,6 @@ export default function MasterAnalyzer({ onPlaybackStart }) {
       return;
     }
 
-    // Check freemium limit
     if (!isPro && remainingFreeRuns <= 0) {
       setShowPaywall(true);
       return;
@@ -174,7 +163,6 @@ export default function MasterAnalyzer({ onPlaybackStart }) {
       audioRef.current.currentTime = 0;
     }
     
-    // Revoke old URL if existing
     if (audioUrl) {
       URL.revokeObjectURL(audioUrl);
     }
@@ -182,7 +170,6 @@ export default function MasterAnalyzer({ onPlaybackStart }) {
     const url = URL.createObjectURL(selectedFile);
     setAudioUrl(url);
     
-    // Auto trigger analysis
     analyzeAudioFile(selectedFile);
   };
 
@@ -192,25 +179,15 @@ export default function MasterAnalyzer({ onPlaybackStart }) {
     
     try {
       const arrayBuffer = await audioFile.arrayBuffer();
-      
-      // Standard decoding context
       const ACClass = window.AudioContext || window.webkitAudioContext;
       const decContext = new ACClass();
       const decodedBuffer = await decContext.decodeAudioData(arrayBuffer);
       decContext.close();
 
       setDuration(decodedBuffer.duration);
-
-      // 1. Calculate LUFS
       const lufs = calculateIntegratedLUFS(decodedBuffer);
-
-      // 2. Calculate LRA
       const lra = calculateLoudnessRange(decodedBuffer);
-
-      // 3. Estimate True Peak
       const truePeak = await estimateTruePeak(decodedBuffer);
-
-      // 4. Generate downsampled peak data for rendering the waveform
       const peaks = getWaveformPeaks(decodedBuffer, 300);
 
       setAnalysisResult({
@@ -220,7 +197,6 @@ export default function MasterAnalyzer({ onPlaybackStart }) {
         peaks
       });
 
-      // Initially draw static waveform
       setTimeout(() => {
         if (canvasRef.current) {
           drawWaveform(peaks, 0, decodedBuffer.duration);
@@ -237,7 +213,6 @@ export default function MasterAnalyzer({ onPlaybackStart }) {
     }
   };
 
-  // Extract maximum peaks for waveform visualization
   const getWaveformPeaks = (audioBuffer, width) => {
     const channelData = audioBuffer.getChannelData(0);
     const step = Math.floor(channelData.length / width);
@@ -256,15 +231,12 @@ export default function MasterAnalyzer({ onPlaybackStart }) {
     return peaks;
   };
 
-  // Draw Waveform and Playhead
   const drawWaveform = (peaks, currentSec, totalSec) => {
     const canvas = canvasRef.current;
     if (!canvas || !peaks || peaks.length === 0) return;
     const ctx = canvas.getContext('2d');
     const dpr = window.devicePixelRatio || 1;
 
-    // getBoundingClientRect can return 0 for absolute-positioned elements before paint.
-    // Fall back to the parent container's dimensions.
     const rect = canvas.getBoundingClientRect();
     let clientWidth = rect.width;
     let clientHeight = rect.height;
@@ -275,7 +247,6 @@ export default function MasterAnalyzer({ onPlaybackStart }) {
       clientHeight = parent?.clientHeight || 80;
     }
 
-    // Set physical pixel size and scale context so we draw in CSS-pixel coordinates
     canvas.width = clientWidth * dpr;
     canvas.height = clientHeight * dpr;
     ctx.scale(dpr, dpr);
@@ -289,25 +260,21 @@ export default function MasterAnalyzer({ onPlaybackStart }) {
 
     const playRatio = totalSec > 0 ? currentSec / totalSec : 0;
     const playheadPixel = width * playRatio;
-
-    // Draw waveform bars
     const barWidth = width / peaks.length;
 
     for (let i = 0; i < peaks.length; i++) {
-      const barHeight = Math.max(2, peaks[i] * innerHeight); // Minimum 2px so silence is still visible
+      const barHeight = Math.max(2, peaks[i] * innerHeight);
       const x = i * barWidth;
       const y = padding + (innerHeight - barHeight) / 2;
-
       const isPlayed = x <= playheadPixel;
 
       ctx.fillStyle = isPlayed
-        ? 'rgba(157, 78, 221, 0.9)'   // Purple — already played
-        : 'rgba(255, 255, 255, 0.3)'; // White  — not yet played
+        ? 'rgba(157, 78, 221, 0.9)'
+        : 'rgba(255, 255, 255, 0.3)';
 
       ctx.fillRect(x, y, Math.max(1, barWidth - 1), barHeight);
     }
 
-    // Draw playhead line
     if (playRatio > 0) {
       ctx.strokeStyle = 'rgba(224, 170, 255, 0.95)';
       ctx.lineWidth = 2;
@@ -318,7 +285,6 @@ export default function MasterAnalyzer({ onPlaybackStart }) {
     }
   };
 
-  // Initialize live Web Audio Analyzer for Spectrum
   const initLiveAudioContext = () => {
     if (audioContextRef.current) return;
 
@@ -347,7 +313,6 @@ export default function MasterAnalyzer({ onPlaybackStart }) {
       setIsPlaying(false);
       if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current);
     } else {
-      // Notify parent app (mixer) to pause stems playback and avoid dual audio clutter
       if (onPlaybackStart) {
         onPlaybackStart();
       }
@@ -362,7 +327,6 @@ export default function MasterAnalyzer({ onPlaybackStart }) {
       isPlayingRef.current = true;
       setIsPlaying(true);
       
-      // Start spectrum visualizer loop
       renderSpectrumFrame();
     }
   };
@@ -381,13 +345,11 @@ export default function MasterAnalyzer({ onPlaybackStart }) {
   };
 
   const renderSpectrumFrame = () => {
-    // Use ref instead of state to avoid stale closure (state reads the value at function creation time)
     if (!isPlayingRef.current || !analyserRef.current || !spectrumCanvasRef.current) return;
 
     const canvas = spectrumCanvasRef.current;
     const ctx = canvas.getContext('2d');
     
-    // Get precise layout size via getBoundingClientRect for absolute positioning reliability
     const rect = canvas.getBoundingClientRect();
     const clientWidth = rect.width || canvas.offsetWidth || canvas.clientWidth || 300;
     const clientHeight = rect.height || canvas.offsetHeight || canvas.clientHeight || 80;
@@ -402,17 +364,16 @@ export default function MasterAnalyzer({ onPlaybackStart }) {
     const dataArray = new Uint8Array(bufferLength);
     analyserRef.current.getByteFrequencyData(dataArray);
 
-    ctx.fillStyle = 'rgba(5, 5, 5, 0.3)'; // Trail effect
+    ctx.fillStyle = 'rgba(5, 5, 5, 0.3)';
     ctx.fillRect(0, 0, width, height);
 
-    // Draw Spectrum logarithmic curve
-    const activeCutoff = Math.floor(bufferLength * 0.75); // Skip hyper highs (above 15kHz mostly flat)
+    const activeCutoff = Math.floor(bufferLength * 0.75);
     const barWidth = width / activeCutoff;
     
     const gradient = ctx.createLinearGradient(0, height, 0, 0);
-    gradient.addColorStop(0, '#3b82f6');    // Blue base
-    gradient.addColorStop(0.5, '#ec4899');  // Pink mid
-    gradient.addColorStop(1, '#9D4EDD');    // Purple peaks
+    gradient.addColorStop(0, '#3b82f6');
+    gradient.addColorStop(0.5, '#ec4899');
+    gradient.addColorStop(1, '#9D4EDD');
 
     ctx.beginPath();
     ctx.moveTo(0, height);
@@ -421,7 +382,6 @@ export default function MasterAnalyzer({ onPlaybackStart }) {
       const rawVal = dataArray[i] / 255.0;
       const ampHeight = rawVal * height * 0.95;
       
-      // Draw smooth coordinates
       const x = i * barWidth;
       const y = height - ampHeight;
       ctx.lineTo(x, y);
@@ -432,7 +392,6 @@ export default function MasterAnalyzer({ onPlaybackStart }) {
     ctx.fillStyle = gradient;
     ctx.fill();
 
-    // Outline path for visual crispness
     ctx.beginPath();
     ctx.moveTo(0, height);
     for (let i = 0; i < activeCutoff; i++) {
@@ -449,7 +408,6 @@ export default function MasterAnalyzer({ onPlaybackStart }) {
     animationFrameRef.current = requestAnimationFrame(renderSpectrumFrame);
   };
 
-  // Simulated Pro Purchase Completion
   const handleSimulatePayment = () => {
     localStorage.setItem('napbak_pro', 'true');
     setIsPro(true);
@@ -467,7 +425,6 @@ export default function MasterAnalyzer({ onPlaybackStart }) {
     setShowPaywall(false);
   };
 
-  // Helper to format time (MM:SS)
   const formatSecs = (secs) => {
     if (isNaN(secs)) return '00:00';
     const m = Math.floor(secs / 60).toString().padStart(2, '0');
@@ -475,13 +432,11 @@ export default function MasterAnalyzer({ onPlaybackStart }) {
     return `${m}:${s}`;
   };
 
-  // --- Platform Compliance Checkers ---
   const getCompliance = (metric, platform) => {
     const lufsVal = analysisResult?.lufs ?? -100;
     const peakVal = analysisResult?.truePeak ?? -100;
 
     const targetLUFS = platform === 'apple' ? -16 : -14;
-    const targetPeak = -1.0;
 
     if (metric === 'lufs') {
       const diff = lufsVal - targetLUFS;
@@ -490,53 +445,53 @@ export default function MasterAnalyzer({ onPlaybackStart }) {
           status: 'warning',
           text: `${lufsVal.toFixed(1)} LUFS — Spotify/Apple bajarán el volumen ~${diff.toFixed(1)} dB`,
           badge: 'SOBRE EL OBJETIVO',
-          context: 'Si es Metal, EDM, Hip-Hop o cualquier género de alta densidad sonora, esto puede ser una decisión artística válida. Las plataformas solo atenuarán el volumen de forma pasiva — sin distorsión.'
+          context: 'Si es Metal, EDM, Hip-Hop o cualquier género de alta densidad sonora, esto puede ser una decisión artística válida. Las plataformas atenuarán el volumen de forma pasiva.'
         };
       } else if (diff < -2.0) {
         return {
           status: 'fail',
           text: `${lufsVal.toFixed(1)} LUFS — Nivel muy bajo`,
           badge: 'MUY SILENCIOSO',
-          context: 'Las plataformas subirán el volumen artificialmente, activando limitadores internos que pueden dañar tus transitorios. Aplica más ganancia o limitación en el máster.'
+          context: 'Las plataformas subirán el volumen artificialmente, activando limitadores internos. Aplica más ganancia o limitación en el máster.'
         };
       } else {
         return {
           status: 'pass',
           text: `${lufsVal.toFixed(1)} LUFS — Rango ideal`,
           badge: 'PERFECTO',
-          context: 'Tu loudness está en el sweet spot. Las plataformas no modificarán agresivamente el nivel y se preservará la dinámica original.'
+          context: 'Tu loudness está en el sweet spot. Las plataformas no modificarán agresivamente el nivel.'
         };
       }
-    } else { // True Peak
+    } else {
       if (peakVal >= -0.2) {
         return {
           status: 'fail',
           text: `${peakVal.toFixed(1)} dBTP — Riesgo de clipping`,
           badge: 'CLIPPING RISK',
-          context: 'Al codificar a MP3/OGG/AAC para streaming, los picos inter-sample pueden generar distorsión audible. Baja el limitador final a -1.0 dBTP.'
+          context: 'Los picos inter-sample generarán distorsión al codificar para streaming. Baja el limitador final a -1.0 dBTP.'
         };
-      } else if (peakVal >= targetPeak) {
+      } else if (peakVal >= -1.0) {
         return {
           status: 'warning',
           text: `${peakVal.toFixed(1)} dBTP — En el límite`,
           badge: 'PICOS ALTOS',
-          context: 'Estás en el límite tolerado. Para distribución segura en todas las plataformas, se recomienda -1.0 dBTP como techo máximo.'
+          context: 'Límite tolerado. Se recomienda -1.0 dBTP como techo máximo para distribución segura.'
         };
       } else {
         return {
           status: 'pass',
           text: `${peakVal.toFixed(1)} dBTP — Seguro`,
           badge: 'LIMPIO',
-          context: 'Tus picos están dentro del estándar. No habrá distorsión inter-sample al comprimir a formatos de streaming.'
+          context: 'Tus picos están dentro del estándar. Sin distorsión inter-sample al comprimir.'
         };
       }
     }
   };
 
+  const isLocked = !isPro && remainingFreeRuns <= 0;
+
   return (
-    <div id="analyzer" className="relative w-full max-w-4xl mx-auto py-16 md:py-24 px-6 border-t border-white/5 bg-[#050505] z-10">
-      
-      {/* Waveform hidden element (Permanently mounted to avoid MediaElementAudioSourceNode disconnection error) */}
+    <div id="analyzer" className="relative w-full max-w-4xl mx-auto pt-24 pb-16 px-6 z-10">
       <audio
         ref={audioRef}
         src={audioUrl || undefined}
@@ -544,24 +499,24 @@ export default function MasterAnalyzer({ onPlaybackStart }) {
         onEnded={handleAudioEnded}
       />
 
-      {/* Title */}
-      <div className="flex flex-col items-center text-center mb-10">
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-white/5 border border-white/10 rounded-full text-[9px] tracking-[0.2em] uppercase text-white/50 mb-3">
-          <Sparkles className="w-3 h-3 text-[#9D4EDD]" />
-          Mastering Lab
+      {/* Hero Header */}
+      <div className="flex flex-col items-center text-center mb-12">
+        <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-white/5 border border-white/10 rounded-full text-[9px] tracking-[0.2em] uppercase text-white/50 mb-6 backdrop-blur-sm">
+          <Sparkles className="w-3 h-3 text-[#9D4EDD] animate-ping" />
+          Streaming Loudness Standards
         </div>
-        <h2 className="font-modern text-3xl md:text-5xl text-white font-light tracking-tighter lowercase">
-          Mastering <span className="font-serif italic text-white/70">Analyzer</span>
-        </h2>
-        <p className="text-xs text-[#9ca3af]/60 uppercase tracking-[0.2em] mt-2 font-mono max-w-lg">
-          Analiza volumen, picos inter-muestreo y dinámicas contra los estándares de Spotify, Apple y Tidal.
+        <h1 className="font-modern text-4xl md:text-7xl font-light text-white tracking-tighter leading-tight mb-6">
+          Master your track. <br />
+          <span className="font-serif italic text-white/70">Know your numbers.</span>
+        </h1>
+        <p className="text-xs md:text-sm text-[#9ca3af] font-mono tracking-widest max-w-xl uppercase leading-relaxed opacity-80">
+          Analiza volumen integrado, True Peak y rango dinámico contra estándares profesionales de distribución.
         </p>
       </div>
 
-      {/* Outer Panel Glass Box */}
+      {/* Main Drag & Drop / Results Panel Box */}
       <div className="relative border border-white/10 bg-white/[0.01] backdrop-blur-md rounded-3xl overflow-hidden p-6 md:p-8 min-h-[350px] shadow-2xl flex flex-col justify-between">
         
-        {/* Error Alert Bar */}
         {errorMsg && (
           <div className="absolute top-4 inset-x-6 z-20 bg-red-950/80 border border-red-500/30 rounded-xl px-4 py-3 text-red-300 text-xs font-mono text-center flex items-center justify-center gap-2">
             <XCircle className="w-4 h-4 text-red-500 flex-shrink-0" />
@@ -569,25 +524,35 @@ export default function MasterAnalyzer({ onPlaybackStart }) {
           </div>
         )}
 
-        {/* Freemium usage bar */}
+        {/* Freemium Limit Bar */}
         <div className="flex justify-between items-center mb-6 text-[10px] tracking-widest uppercase font-mono text-white/40 pb-4 border-b border-white/5">
           <div>
             STATUS: <span className={isPro ? 'text-[#E0AAFF] font-bold' : 'text-white/60'}>{isPro ? 'PRO SUBSCRIPTION' : 'FREE PLAN'}</span>
           </div>
           {!isPro && (
             <div className="flex items-center gap-2">
-              LÍMITE DIARIO: <span className={`font-bold ${remainingFreeRuns === 0 ? 'text-red-400' : 'text-white'}`}>{remainingFreeRuns} / 3 RESTANTES</span>
+              LÍMITE DIARIO: <span className={`font-bold ${remainingFreeRuns === 0 ? 'text-red-400 animate-pulse' : 'text-white'}`}>{remainingFreeRuns} / 3 RESTANTES</span>
             </div>
           )}
         </div>
 
-        {/* Dynamic Inner views: 1. Analyzer NotLoaded, 2. Analyzing, 3. LoadedResult */}
+        {/* 1. Drag & Drop box (Locked or Active) */}
         {!file && !isAnalyzing && (
           <div 
-            onDragOver={handleDragOver}
-            onDrop={handleDrop}
-            onClick={() => fileInputRef.current?.click()}
-            className="flex-1 border border-dashed border-white/10 hover:border-[#9D4EDD]/40 hover:bg-[#9D4EDD]/[0.02] rounded-2xl p-10 flex flex-col items-center justify-center text-center cursor-pointer transition-all duration-300 group min-h-[220px]"
+            onDragOver={!isLocked ? handleDragOver : undefined}
+            onDrop={!isLocked ? handleDrop : undefined}
+            onClick={() => {
+              if (!isLocked) {
+                fileInputRef.current?.click();
+              } else {
+                setShowPaywall(true);
+              }
+            }}
+            className={`flex-1 border border-dashed rounded-2xl p-10 flex flex-col items-center justify-center text-center cursor-pointer transition-all duration-300 group min-h-[250px]
+              ${!isLocked 
+                ? 'border-white/10 hover:border-[#9D4EDD]/40 hover:bg-[#9D4EDD]/[0.02]' 
+                : 'border-red-500/20 bg-red-950/[0.02] hover:bg-red-950/[0.04]'
+              }`}
           >
             <input 
               type="file" 
@@ -595,22 +560,39 @@ export default function MasterAnalyzer({ onPlaybackStart }) {
               onChange={handleFileSelect} 
               accept="audio/*" 
               className="hidden" 
+              disabled={isLocked}
             />
-            <div className="w-14 h-14 bg-white/[0.03] border border-white/10 rounded-full flex items-center justify-center group-hover:bg-[#9D4EDD]/10 group-hover:border-[#9D4EDD]/20 transition-all duration-300 mb-4 shadow-xl">
-              <Upload className="w-6 h-6 text-white/50 group-hover:text-white transition-all duration-300" />
-            </div>
-            <p className="text-sm font-modern text-white/80 group-hover:text-white transition-colors">
-              Arrastra tu máster final en audio o haz clic para buscar
-            </p>
-            <p className="text-[10px] text-white/40 font-mono tracking-widest mt-2 uppercase">
-              Soporta WAV, MP3, M4A, OGG
-            </p>
+            {isLocked ? (
+              <>
+                <div className="w-16 h-16 bg-red-500/10 border border-red-500/20 rounded-full flex items-center justify-center mb-4 shadow-xl animate-pulse">
+                  <Lock className="w-6 h-6 text-red-400" />
+                </div>
+                <p className="text-sm font-modern text-red-300 font-bold uppercase tracking-wider">
+                  Límite de análisis gratuitos alcanzado
+                </p>
+                <p className="text-[10px] text-red-400/60 font-mono tracking-widest mt-2 uppercase">
+                  Haz clic para desbloquear el Acceso Pro
+                </p>
+              </>
+            ) : (
+              <>
+                <div className="w-16 h-16 bg-white/[0.03] border border-white/10 rounded-full flex items-center justify-center group-hover:bg-[#9D4EDD]/10 group-hover:border-[#9D4EDD]/20 transition-all duration-300 mb-4 shadow-xl">
+                  <Upload className="w-6 h-6 text-white/50 group-hover:text-white transition-all duration-300" />
+                </div>
+                <p className="text-base font-modern text-white/80 group-hover:text-white transition-colors">
+                  Arrastra tu máster final en audio o haz clic para buscar
+                </p>
+                <p className="text-[10px] text-white/40 font-mono tracking-widest mt-2 uppercase">
+                  Soporta WAV, MP3, M4A, OGG
+                </p>
+              </>
+            )}
           </div>
         )}
 
-        {/* Loading Spacing */}
+        {/* 2. Loading state */}
         {isAnalyzing && (
-          <div className="flex-1 flex flex-col items-center justify-center text-center p-12 min-h-[220px]">
+          <div className="flex-1 flex flex-col items-center justify-center text-center p-12 min-h-[250px]">
             <div className="relative w-12 h-12 mb-4">
               <div className="absolute inset-0 rounded-full border-2 border-[#9D4EDD]/20 border-t-[#9D4EDD] animate-spin"></div>
             </div>
@@ -623,11 +605,11 @@ export default function MasterAnalyzer({ onPlaybackStart }) {
           </div>
         )}
 
-        {/* Results Screen */}
+        {/* 3. Results view */}
         {file && analysisResult && !isAnalyzing && (
           <div className="flex-1 flex flex-col gap-6">
             
-            {/* Upper Panel: File loaded & controls */}
+            {/* File info bar */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white/[0.02] border border-white/5 p-4 rounded-xl">
               <div className="flex items-center gap-3 overflow-hidden">
                 <div className="p-2 bg-[#9D4EDD]/10 rounded-lg border border-[#9D4EDD]/20 flex-shrink-0">
@@ -673,10 +655,8 @@ export default function MasterAnalyzer({ onPlaybackStart }) {
               </div>
             </div>
 
-            {/* Middle Panel: Waveform and Spectrum side-by-side or stacked */}
+            {/* Waveform and FFT Spectrum player */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              
-              {/* Waveform Player Canvas */}
               <div className="border border-white/10 bg-[#070707] rounded-xl p-4 flex flex-col justify-between">
                 <div className="flex justify-between items-center mb-2">
                   <span className="text-[9px] tracking-wider uppercase text-white/40 font-mono">FORMA DE ONDA OFFLINE</span>
@@ -689,7 +669,6 @@ export default function MasterAnalyzer({ onPlaybackStart }) {
                 </div>
               </div>
 
-              {/* Real-time Spectrum canvas */}
               <div className="border border-white/10 bg-[#070707] rounded-xl p-4 flex flex-col justify-between">
                 <div className="flex justify-between items-center mb-2">
                   <span className="text-[9px] tracking-wider uppercase text-white/40 font-mono">ESPECTRO FRECUENCIA (FFT)</span>
@@ -708,7 +687,6 @@ export default function MasterAnalyzer({ onPlaybackStart }) {
 
             {/* Metrics cards grid */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              {/* LUFS Box */}
               <div className="bg-white/[0.02] border border-white/10 p-4 rounded-xl flex flex-col justify-between relative overflow-hidden">
                 <div className="text-[9px] text-white/40 tracking-wider uppercase font-mono">Loudness Integrado</div>
                 <div className="flex items-baseline gap-1 my-3">
@@ -722,7 +700,6 @@ export default function MasterAnalyzer({ onPlaybackStart }) {
                 </div>
               </div>
 
-              {/* True Peak Box */}
               <div className="bg-white/[0.02] border border-white/10 p-4 rounded-xl flex flex-col justify-between relative overflow-hidden">
                 <div className="text-[9px] text-white/40 tracking-wider uppercase font-mono">Max True Peak (4x)</div>
                 <div className="flex items-baseline gap-1 my-3">
@@ -736,7 +713,6 @@ export default function MasterAnalyzer({ onPlaybackStart }) {
                 </div>
               </div>
 
-              {/* LRA Box — now doubles as Genre Badge */}
               <div className="bg-white/[0.02] border border-white/10 p-4 rounded-xl flex flex-col justify-between relative overflow-hidden">
                 <div className="text-[9px] text-white/40 tracking-wider uppercase font-mono">Rango Dinámico (LRA)</div>
                 <div className="flex items-baseline gap-1 my-3">
@@ -751,16 +727,13 @@ export default function MasterAnalyzer({ onPlaybackStart }) {
               </div>
             </div>
 
-
-
-            {/* Target Compliance Table Checklist */}
+            {/* Target Compliance Checklist */}
             <div className="bg-white/[0.01] border border-white/5 rounded-2xl p-5 md:p-6 mt-2">
               <h3 className="text-[10px] tracking-[0.22em] uppercase text-white/50 mb-4 font-mono font-bold">
                 CHEQUEO DE ESTÁNDARES EN PLATAFORMAS
               </h3>
               
               <div className="space-y-4">
-                {/* Platform: Spotify */}
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 py-3 border-b border-white/5">
                   <div className="flex items-center gap-2">
                     <span className="text-xs font-modern text-white font-semibold">Spotify / Tidal / YouTube</span>
@@ -773,26 +746,15 @@ export default function MasterAnalyzer({ onPlaybackStart }) {
                       {getCompliance('lufs', 'spotify').status === 'fail'    && <XCircle         className="w-3.5 h-3.5 text-red-500" />}
                       <span className="text-white/80 font-mono">{getCompliance('lufs', 'spotify').text}</span>
                     </div>
-                    {getCompliance('lufs', 'spotify').context && (
-                      <p className="text-[9px] text-white/30 font-mono text-right max-w-xs leading-relaxed mt-0.5">
-                        {getCompliance('lufs', 'spotify').context}
-                      </p>
-                    )}
                     <div className="flex items-center gap-1.5 mt-0.5">
                       {getCompliance('peak', 'spotify').status === 'pass'    && <CheckCircle    className="w-3.5 h-3.5 text-green-500" />}
                       {getCompliance('peak', 'spotify').status === 'warning' && <AlertTriangle   className="w-3.5 h-3.5 text-yellow-500" />}
                       {getCompliance('peak', 'spotify').status === 'fail'    && <XCircle         className="w-3.5 h-3.5 text-red-500" />}
                       <span className="text-white/80 font-mono">{getCompliance('peak', 'spotify').text}</span>
                     </div>
-                    {getCompliance('peak', 'spotify').context && (
-                      <p className="text-[9px] text-white/30 font-mono text-right max-w-xs leading-relaxed mt-0.5">
-                        {getCompliance('peak', 'spotify').context}
-                      </p>
-                    )}
                   </div>
                 </div>
 
-                {/* Platform: Apple Music */}
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 py-3 border-b border-white/5">
                   <div className="flex items-center gap-2">
                     <span className="text-xs font-modern text-white font-semibold">Apple Music</span>
@@ -815,7 +777,7 @@ export default function MasterAnalyzer({ onPlaybackStart }) {
                 </div>
               </div>
 
-              {/* Verdict Summary block */}
+              {/* Verdict Recommendation */}
               <div className="mt-4 p-4 bg-white/[0.02] border border-white/5 rounded-xl text-[10px] text-white/60 font-mono space-y-2 leading-relaxed">
                 <span className="text-[#E0AAFF] font-bold">RECOMENDACIÓN FINAL DEL MASTERING:</span>
                 {analysisResult.truePeak >= -0.2 ? (
@@ -828,7 +790,7 @@ export default function MasterAnalyzer({ onPlaybackStart }) {
                   </p>
                 ) : analysisResult.lufs < -16.5 ? (
                   <p>
-                    ⚠️ ADVERTENCIA: La sonoridad es muy baja ({analysisResult.lufs.toFixed(1)} LUFS). Las plataformas subirán el volumen de forma artificial activando limitadores internos que pueden destruir tu transitorio y dinámica original. <strong className="text-white">Aplica un limitador o gain sutil para empujar el master a unos -14 LUFS.</strong>
+                    ⚠️ ADVERTENCIA: La sonoridad es muy baja ({analysisResult.lufs.toFixed(1)} LUFS). Las plataformas subirán el volumen de forma artificial activando limitadores internos. <strong className="text-white">Aplica un limitador o gain sutil para empujar el master a unos -14 LUFS.</strong>
                   </p>
                 ) : (
                   <p>
@@ -841,9 +803,15 @@ export default function MasterAnalyzer({ onPlaybackStart }) {
           </div>
         )}
 
-        {/* Simulated Paywall / Limits Hit Screen overlay */}
+        {/* Dynamic Paywall Overlay screen */}
         {showPaywall && (
-          <div className="absolute inset-0 bg-[#050505]/80 backdrop-blur-xl z-30 flex flex-col justify-center items-center text-center p-6 transition-all duration-500">
+          <div className="absolute inset-0 bg-[#050505]/95 backdrop-blur-xl z-30 flex flex-col justify-center items-center text-center p-6 transition-all duration-500">
+            <button 
+              onClick={() => setShowPaywall(false)}
+              className="absolute top-6 right-6 text-[10px] tracking-widest text-white/40 hover:text-white uppercase font-mono transition-colors"
+            >
+              ✕ Cerrar
+            </button>
             <div className="w-16 h-16 bg-[#9D4EDD]/10 border border-[#9D4EDD]/30 rounded-2xl flex items-center justify-center mb-5 shadow-2xl">
               <Lock className="w-7 h-7 text-[#E0AAFF]" />
             </div>
@@ -851,7 +819,7 @@ export default function MasterAnalyzer({ onPlaybackStart }) {
               Límite diario alcanzado
             </h3>
             <p className="text-xs text-white/50 font-mono tracking-wide max-w-sm mb-6 leading-relaxed uppercase">
-              Has agotado tus 3 análisis de masterización gratuitos del día. Pásate a Pro para análisis ilimitados, curvas de referencia y exportación de reportes PDF.
+              Has agotado tus 3 análisis de masterización gratuitos del día. Pásate a Pro para análisis ilimitados, medición precisa de LRA y recomendaciones avanzadas de streaming.
             </p>
             <div className="flex flex-col gap-3 w-full max-w-xs">
               <button 
@@ -873,7 +841,6 @@ export default function MasterAnalyzer({ onPlaybackStart }) {
 
       </div>
 
-      {/* Pro Reset debug button (visible only in Pro, placed below context) */}
       {isPro && (
         <div className="flex justify-center mt-4">
           <button
