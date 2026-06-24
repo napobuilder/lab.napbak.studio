@@ -2,7 +2,6 @@ import React, { useState, useRef, useEffect } from 'react';
 import MasterAnalyzer from './components/MasterAnalyzer';
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState('analyzer'); // 'analyzer' | 'about'
   const [isScrolled, setIsScrolled] = useState(false);
   const [isDotStolen, setIsDotStolen] = useState(false);
   const [isContactOpen, setIsContactOpen] = useState(false);
@@ -194,19 +193,9 @@ export default function App() {
 
   const scrollTo = (e, id) => {
     e.preventDefault();
-    if (activeTab !== 'analyzer') {
-      setActiveTab('analyzer');
-      setTimeout(() => {
-        const element = document.getElementById(id);
-        if (element) {
-          element.scrollIntoView({ behavior: 'smooth' });
-        }
-      }, 100);
-    } else {
-      const element = document.getElementById(id);
-      if (element) {
-        element.scrollIntoView({ behavior: 'smooth' });
-      }
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
     }
   };
 
@@ -284,25 +273,20 @@ export default function App() {
 
         <div className="absolute inset-0 hidden md:flex justify-center items-center pointer-events-none z-20">
           <div className="flex gap-8 text-[10px] tracking-widest uppercase pointer-events-auto">
-            <button 
-              onClick={() => setActiveTab('analyzer')} 
-              className={`hover:text-white transition-colors cursor-pointer font-bold ${activeTab === 'analyzer' ? 'text-[#9D4EDD]' : 'text-white/70'}`}
+            <a 
+              href="#analyzer" 
+              onClick={(e) => scrollTo(e, 'analyzer')} 
+              className="hover:text-white transition-colors cursor-pointer text-[#9D4EDD] font-bold"
             >
               Analyzer
-            </button>
+            </a>
             <a 
               href="#pricing" 
               onClick={(e) => scrollTo(e, 'pricing')} 
-              className="hover:text-white transition-colors cursor-pointer text-white/70"
+              className="hover:text-white transition-colors cursor-pointer text-white/70 font-bold"
             >
               Pricing
             </a>
-            <button 
-              onClick={() => setActiveTab('about')} 
-              className={`hover:text-white transition-colors cursor-pointer font-bold ${activeTab === 'about' ? 'text-[#9D4EDD]' : 'text-white/70'}`}
-            >
-              About
-            </button>
           </div>
         </div>
 
@@ -337,200 +321,146 @@ export default function App() {
 
       <main className="transition-opacity duration-1000 delay-300 opacity-100">
         
-        {activeTab === 'analyzer' ? (
-          <>
-            {/* Hero Section */}
-            <section className="relative min-h-[75vh] w-full flex flex-col items-center justify-center pt-32 pb-10 px-6 text-center z-10">
-              <div className="max-w-4xl mx-auto flex flex-col items-center">
-                
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-white/5 border border-white/10 rounded-full text-[9px] tracking-[0.2em] uppercase text-white/50 mb-6 backdrop-blur-sm">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#9D4EDD] animate-ping"></span>
-                  Streaming Loudness Standards
-                </div>
+        {/* Hero Section */}
+        <section className="relative min-h-[75vh] w-full flex flex-col items-center justify-center pt-32 pb-10 px-6 text-center z-10">
+          <div className="max-w-4xl mx-auto flex flex-col items-center">
+            
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-white/5 border border-white/10 rounded-full text-[9px] tracking-[0.2em] uppercase text-white/50 mb-6 backdrop-blur-sm">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#9D4EDD] animate-ping"></span>
+              Streaming Loudness Standards
+            </div>
 
-                <h1 className="font-modern text-4xl md:text-7xl font-light text-white tracking-tighter leading-tight mb-6">
-                  Master your track. <br />
-                  <span className="font-serif italic text-white/70">Know your numbers.</span>
-                </h1>
+            <h1 className="font-modern text-4xl md:text-7xl font-light text-white tracking-tighter leading-tight mb-6">
+              Master your track. <br />
+              <span className="font-serif italic text-white/70">Know your numbers.</span>
+            </h1>
 
-                <p className="text-xs md:text-sm text-[#9ca3af] font-mono tracking-widest max-w-xl uppercase leading-relaxed mb-10 opacity-80">
-                  Analiza volumen integrado, True Peak y rango dinámico contra estándares profesionales de distribución.
-                </p>
+            <p className="text-xs md:text-sm text-[#9ca3af] font-mono tracking-widest max-w-xl uppercase leading-relaxed mb-10 opacity-80">
+              Analiza volumen integrado, True Peak y rango dinámico contra estándares profesionales de distribución.
+            </p>
 
-                <div className="flex gap-4">
-                  <a 
-                    href="#analyzer" 
-                    onClick={(e) => scrollTo(e, 'analyzer')}
-                    className="text-[10px] tracking-widest bg-white text-black px-6 py-3.5 rounded-full font-bold hover:bg-[#9D4EDD] hover:text-white transition-all shadow-xl shadow-white/5"
-                  >
-                    START ANALYZING
-                  </a>
-                  <a 
-                    href="#pricing" 
-                    onClick={(e) => scrollTo(e, 'pricing')}
-                    className="text-[10px] tracking-widest border border-white/20 px-6 py-3.5 rounded-full hover:bg-white hover:text-black transition-all"
-                  >
-                    VIEW PRICING
-                  </a>
-                </div>
-                
-              </div>
-            </section>
+            <div className="flex gap-4">
+              <a 
+                href="#analyzer" 
+                onClick={(e) => scrollTo(e, 'analyzer')}
+                className="text-[10px] tracking-widest bg-white text-black px-6 py-3.5 rounded-full font-bold hover:bg-[#9D4EDD] hover:text-white transition-all shadow-xl shadow-white/5"
+              >
+                START ANALYZING
+              </a>
+              <a 
+                href="#pricing" 
+                onClick={(e) => scrollTo(e, 'pricing')}
+                className="text-[10px] tracking-widest border border-white/20 px-6 py-3.5 rounded-full hover:bg-white hover:text-black transition-all"
+              >
+                VIEW PRICING
+              </a>
+            </div>
+            
+          </div>
+        </section>
 
-            {/* Mastering & Spectrum Analyzer Section */}
-            <MasterAnalyzer />
+        {/* Mastering & Spectrum Analyzer Section */}
+        <MasterAnalyzer />
 
-            {/* Pricing / Suscripción Section */}
-            <section id="pricing" className="py-24 border-t border-white/5 relative z-10 bg-[#050505]/40 backdrop-blur-sm">
-              <div className="max-w-5xl mx-auto px-6">
-                
-                <div className="flex flex-col items-center text-center mb-16">
-                  <h2 className="text-[10px] tracking-[0.5em] text-[#9D4EDD] mb-4">01. MEMBERSHIP</h2>
-                  <h3 className="font-modern text-3xl md:text-5xl font-light text-white tracking-tighter">
-                    Simple, transparent <span className="font-serif italic text-white/70">plans</span>
-                  </h3>
-                  <p className="text-xs text-[#9ca3af]/60 uppercase tracking-[0.2em] font-mono mt-2">
-                    Libera el verdadero potencial de tu música sin límites
-                  </p>
-                </div>
+        {/* Pricing / Suscripción Section */}
+        <section id="pricing" className="py-24 border-t border-white/5 relative z-10 bg-[#050505]/40 backdrop-blur-sm">
+          <div className="max-w-5xl mx-auto px-6">
+            
+            <div className="flex flex-col items-center text-center mb-16">
+              <h2 className="text-[10px] tracking-[0.5em] text-[#9D4EDD] mb-4">01. MEMBERSHIP</h2>
+              <h3 className="font-modern text-3xl md:text-5xl font-light text-white tracking-tighter">
+                Simple, transparent <span className="font-serif italic text-white/70">plans</span>
+              </h3>
+              <p className="text-xs text-[#9ca3af]/60 uppercase tracking-[0.2em] font-mono mt-2">
+                Libera el verdadero potencial de tu música sin límites
+              </p>
+            </div>
 
-                <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto items-stretch">
-                  
-                  {/* Plan Free */}
-                  <div className="border border-white/5 bg-[#0a0a0a]/30 backdrop-blur-sm rounded-3xl p-8 flex flex-col justify-between hover:border-white/10 transition-colors">
+            <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto items-stretch">
+              
+              {/* Plan Free */}
+              <div className="border border-white/5 bg-[#0a0a0a]/30 backdrop-blur-sm rounded-3xl p-8 flex flex-col justify-between hover:border-white/10 transition-colors">
+                <div>
+                  <div className="flex justify-between items-start mb-6">
                     <div>
-                      <div className="flex justify-between items-start mb-6">
-                        <div>
-                          <h4 className="text-lg font-modern text-white tracking-widest uppercase">FREE</h4>
-                          <p className="text-xs text-white/40 font-mono mt-1">Pruebas rápidas</p>
-                        </div>
-                        <span className="font-serif italic text-2xl text-white/80">$0</span>
-                      </div>
-                      <ul className="text-xs font-mono space-y-4 text-white/60 mb-8 border-t border-white/5 pt-6">
-                        <li className="flex items-center gap-2">
-                          <span className="text-[#9D4EDD]">✓</span> 3 análisis de master al día
-                        </li>
-                        <li className="flex items-center gap-2">
-                          <span className="text-[#9D4EDD]">✓</span> Medición de LUFS Integrados
-                        </li>
-                        <li className="flex items-center gap-2">
-                          <span className="text-[#9D4EDD]">✓</span> Estimador de True Peak
-                        </li>
-                        <li className="flex items-center gap-2 text-white/30">
-                          <span>✕</span> Sin recomendaciones avanzadas
-                        </li>
-                      </ul>
+                      <h4 className="text-lg font-modern text-white tracking-widest uppercase">FREE</h4>
+                      <p className="text-xs text-white/40 font-mono mt-1">Pruebas rápidas</p>
                     </div>
-                    <button 
-                      onClick={() => {
-                        localStorage.removeItem('napbak_pro');
-                        window.dispatchEvent(new Event('napbak_pro_changed'));
-                        const element = document.getElementById('analyzer');
-                        element?.scrollIntoView({ behavior: 'smooth' });
-                      }}
-                      className="w-full py-3 rounded-full border border-white/10 text-[9px] tracking-widest uppercase hover:bg-white/5 transition-colors font-mono"
-                    >
-                      Active Free Plan
-                    </button>
+                    <span className="font-serif italic text-2xl text-white/80">$0</span>
                   </div>
-
-                  {/* Plan Pro */}
-                  <div className="border border-[#9D4EDD]/30 bg-[#0a0a0a]/60 backdrop-blur-sm rounded-3xl p-8 flex flex-col justify-between hover:border-[#9D4EDD]/60 transition-colors relative shadow-[0_0_50px_rgba(157,78,221,0.05)]">
-                    <div className="absolute -top-3 right-6 bg-[#9D4EDD] text-white text-[8px] font-mono tracking-widest uppercase px-3 py-1 rounded-full">
-                      POPULAR
-                    </div>
-                    <div>
-                      <div className="flex justify-between items-start mb-6">
-                        <div>
-                          <h4 className="text-lg font-modern text-[#E0AAFF] tracking-widest uppercase font-bold">PRO ACCESS</h4>
-                          <p className="text-xs text-[#E0AAFF]/40 font-mono mt-1">Sin restricciones</p>
-                        </div>
-                        <span className="font-serif italic text-2xl text-[#E0AAFF] font-bold">$9<span className="text-xs font-mono lowercase text-white/50">/mo</span></span>
-                      </div>
-                      <ul className="text-xs font-mono space-y-4 text-white/80 mb-8 border-t border-[#9D4EDD]/20 pt-6">
-                        <li className="flex items-center gap-2">
-                          <span className="text-[#9D4EDD]">✓</span> Análisis ilimitados (Sin cupos diarios)
-                        </li>
-                        <li className="flex items-center gap-2">
-                          <span className="text-[#9D4EDD]">✓</span> Medición precisa de LRA (Loudness Range)
-                        </li>
-                        <li className="flex items-center gap-2">
-                          <span className="text-[#9D4EDD]">✓</span> Sugerencias de distorsión y clipping
-                        </li>
-                        <li className="flex items-center gap-2">
-                          <span className="text-[#9D4EDD]">✓</span> Recomendaciones avanzadas de streaming
-                        </li>
-                      </ul>
-                    </div>
-                    <button 
-                      onClick={() => {
-                        localStorage.setItem('napbak_pro', 'true');
-                        window.dispatchEvent(new Event('napbak_pro_changed'));
-                        const element = document.getElementById('analyzer');
-                        element?.scrollIntoView({ behavior: 'smooth' });
-                      }}
-                      className="w-full py-3 rounded-full bg-[#9D4EDD] text-white hover:bg-[#E0AAFF] hover:text-black transition-colors text-[9px] tracking-widest uppercase font-bold shadow-xl shadow-[#9D4EDD]/10"
-                    >
-                      Get Pro Access (Simulate)
-                    </button>
-                  </div>
-
+                  <ul className="text-xs font-mono space-y-4 text-white/60 mb-8 border-t border-white/5 pt-6">
+                    <li className="flex items-center gap-2">
+                      <span className="text-[#9D4EDD]">✓</span> 3 análisis de master al día
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <span className="text-[#9D4EDD]">✓</span> Medición de LUFS Integrados
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <span className="text-[#9D4EDD]">✓</span> Estimador de True Peak
+                    </li>
+                    <li className="flex items-center gap-2 text-white/30">
+                      <span>✕</span> Sin recomendaciones avanzadas
+                    </li>
+                  </ul>
                 </div>
-
+                <button 
+                  onClick={() => {
+                    localStorage.removeItem('napbak_pro');
+                    window.dispatchEvent(new Event('napbak_pro_changed'));
+                    const element = document.getElementById('analyzer');
+                    element?.scrollIntoView({ behavior: 'smooth' });
+                  }}
+                  className="w-full py-3 rounded-full border border-white/10 text-[9px] tracking-widest uppercase hover:bg-white/5 transition-colors font-mono"
+                >
+                  Active Free Plan
+                </button>
               </div>
-            </section>
-          </>
-        ) : (
-          /* About Section / Tab */
-          <section id="about" className="min-h-screen w-full flex items-center px-6 md:px-20 py-32 relative z-10 bg-[#050505]/60 backdrop-blur-sm">
-            <div className="max-w-7xl mx-auto grid lg:grid-cols-12 gap-16 lg:gap-20 items-center">
-                
-                <div className="lg:col-span-7 flex flex-col justify-center">
-                    <h2 className="text-[10px] tracking-[0.5em] text-[#9D4EDD] mb-8">THE MANIFESTO</h2>
-                    <h3 className="font-modern text-3xl md:text-5xl lg:text-6xl xl:text-7xl font-light text-white leading-tight md:leading-snug mb-10 relative z-10">
-                      I build <span className="font-serif italic text-white/50 tracking-normal pr-2">immersive</span> sonic landscapes where technology meets raw emotion.
-                    </h3>
-                    <div className="flex flex-col gap-8 text-xs md:text-sm tracking-wide leading-loose text-[#9ca3af] font-light relative z-10 max-w-2xl">
-                      <p>
-                        I’m <span className="text-white">Napbak</span>: sound designer, music producer, and <a href="https://napbak.dev" target="_blank" rel="noreferrer" className="text-[#9D4EDD] hover:text-[#E0AAFF] transition-colors border-b border-[#9D4EDD]/30 hover:border-[#E0AAFF]/60 pb-[1px] group inline-flex items-center gap-1">creative developer <span className="text-[8px] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform">↗</span></a>. For me, sound isn’t just something you hear—it’s something you live. My work erases the border between software and modern music production.
-                      </p>
-                      <p>
-                        Every sample, every line of code, and every frequency has a purpose; everything is built to create a solid universe. From atmospheric ambient to rhythms that hit you head-on.
-                      </p>
+
+              {/* Plan Pro */}
+              <div className="border border-[#9D4EDD]/30 bg-[#0a0a0a]/60 backdrop-blur-sm rounded-3xl p-8 flex flex-col justify-between hover:border-[#9D4EDD]/60 transition-colors relative shadow-[0_0_50px_rgba(157,78,221,0.05)]">
+                <div className="absolute -top-3 right-6 bg-[#9D4EDD] text-white text-[8px] font-mono tracking-widest uppercase px-3 py-1 rounded-full">
+                  POPULAR
+                </div>
+                <div>
+                  <div className="flex justify-between items-start mb-6">
+                    <div>
+                      <h4 className="text-lg font-modern text-[#E0AAFF] tracking-widest uppercase font-bold">PRO ACCESS</h4>
+                      <p className="text-xs text-[#E0AAFF]/40 font-mono mt-1">Sin restricciones</p>
                     </div>
+                    <span className="font-serif italic text-2xl text-[#E0AAFF] font-bold">$9<span className="text-xs font-mono lowercase text-white/50">/mo</span></span>
+                  </div>
+                  <ul className="text-xs font-mono space-y-4 text-white/80 mb-8 border-t border-[#9D4EDD]/20 pt-6">
+                    <li className="flex items-center gap-2">
+                      <span className="text-[#9D4EDD]">✓</span> Análisis ilimitados (Sin cupos diarios)
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <span className="text-[#9D4EDD]">✓</span> Medición precisa de LRA (Loudness Range)
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <span className="text-[#9D4EDD]">✓</span> Sugerencias de distorsión y clipping
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <span className="text-[#9D4EDD]">✓</span> Recomendaciones avanzadas de streaming
+                    </li>
+                  </ul>
                 </div>
+                <button 
+                  onClick={() => {
+                    localStorage.setItem('napbak_pro', 'true');
+                    window.dispatchEvent(new Event('napbak_pro_changed'));
+                    const element = document.getElementById('analyzer');
+                    element?.scrollIntoView({ behavior: 'smooth' });
+                  }}
+                  className="w-full py-3 rounded-full bg-[#9D4EDD] text-white hover:bg-[#E0AAFF] hover:text-black transition-colors text-[9px] tracking-widest uppercase font-bold shadow-xl shadow-[#9D4EDD]/10"
+                >
+                  Get Pro Access (Simulate)
+                </button>
+              </div>
 
-                <div className="lg:col-span-5 relative group w-full max-w-md mx-auto lg:max-w-full">
-                   
-                   <div className="absolute -top-4 -right-4 w-16 h-16 md:w-24 md:h-24 border-t border-r border-[#9D4EDD]/30 transition-all duration-700 group-hover:-top-2 group-hover:-right-2 z-20 pointer-events-none"></div>
-                   <div className="absolute -bottom-4 -left-4 w-16 h-16 md:w-24 md:h-24 border-b border-l border-[#9D4EDD]/30 transition-all duration-700 group-hover:-bottom-2 group-hover:-left-2 z-20 pointer-events-none"></div>
-                   
-                   <div className="absolute inset-0 bg-[#9D4EDD] opacity-0 group-hover:opacity-10 blur-[100px] transition-opacity duration-1000 z-0 pointer-events-none"></div>
-                   
-                   <div className="relative w-full aspect-[3/4] overflow-hidden bg-[#0a0a0a] z-10 border border-white/5">
-                      <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-transparent to-transparent z-10 opacity-90 group-hover:opacity-40 transition-opacity duration-700 pointer-events-none"></div>
-                      
-                      <img 
-                        src="https://i.imgur.com/39HXelI.png" 
-                        alt="Napbak Portrait"
-                        className="w-full h-full object-cover grayscale opacity-60 group-hover:opacity-100 group-hover:grayscale-0 scale-105 group-hover:scale-100 transition-all duration-1000 ease-[cubic-bezier(0.25,1,0.5,1)] origin-center mix-blend-luminosity group-hover:mix-blend-normal"
-                      />
+            </div>
 
-                      <div className="absolute bottom-6 left-6 z-20 overflow-hidden pointer-events-none">
-                         <span className="block font-serif italic text-3xl md:text-5xl text-white/80 translate-y-full group-hover:translate-y-0 transition-transform duration-700 ease-out">
-                           Napbak.
-                         </span>
-                      </div>
-                   </div>
-
-                   <div className="absolute top-1/2 -right-10 -translate-y-1/2 rotate-90 origin-center text-[7px] tracking-[0.4em] text-white/20 uppercase hidden lg:block pointer-events-none">
-                     SYS.01 // PRODUCER_DEV
-                   </div>
-                </div>
-
-             </div>
-          </section>
-        )}
+          </div>
+        </section>
 
         <footer className="w-full py-12 border-t border-white/5 flex flex-col items-center justify-center gap-6 relative z-10 bg-[#050505]">
           <h1 className="font-modern text-2xl text-white font-light tracking-tighter lowercase">
