@@ -12,12 +12,9 @@ import {
   Volume2,
   Info
 } from 'lucide-react';
-import { 
-  calculateIntegratedLUFS, 
-  calculateLoudnessRange, 
-  estimateTruePeak
-} from '../utils/audioDsp';
+import { calculateIntegratedLUFS, calculateLoudnessRange, estimateTruePeak } from '../utils/audioDsp';
 import { useProStore } from '../store/useProStore';
+import { verifyGumroadLicense } from '../utils/gumroad';
 
 export default function MasterAnalyzer({ onPlaybackStart }) {
   // --- States ---
@@ -70,7 +67,7 @@ export default function MasterAnalyzer({ onPlaybackStart }) {
   const monoGainNodeRef = useRef(null);
 
   useEffect(() => {
-    const checkStatus = () => {
+    const checkStatus = async () => {
       // 1. URL Auto-Verification
       const params = new URLSearchParams(window.location.search);
       const licenseKey = params.get('license_key');
@@ -78,16 +75,20 @@ export default function MasterAnalyzer({ onPlaybackStart }) {
       if (licenseKey && !isPro) {
         setIsVerifying(true);
         setShowPaywall(true);
+        setErrorMsg('');
         
-        // Simulating API call to Gumroad (api.gumroad.com/v2/licenses/verify)
-        setTimeout(() => {
+        const result = await verifyGumroadLicense(licenseKey);
+        if (result.success) {
           unlockPro(licenseKey);
           window.history.replaceState({}, document.title, window.location.pathname);
           setTimeout(() => {
             setShowPaywall(false);
             setIsVerifying(false);
           }, 800);
-        }, 2000);
+        } else {
+          setIsVerifying(false);
+          setErrorMsg(result.message);
+        }
       }
 
       const today = new Date().toISOString().split('T')[0];
@@ -121,7 +122,7 @@ export default function MasterAnalyzer({ onPlaybackStart }) {
       window.removeEventListener('storage', checkStatus);
       window.removeEventListener('napbak_pro_changed', checkStatus);
     };
-  }, []);
+  }, [isPro, unlockPro]);
 
   const waveformRefCallback = useCallback((node) => {
     canvasRef.current = node;
@@ -733,11 +734,7 @@ export default function MasterAnalyzer({ onPlaybackStart }) {
     animationFrameRef.current = requestAnimationFrame(renderSpectrumFrame);
   };
 
-  const handleSimulatePayment = () => {
-    localStorage.setItem('napbak_pro', 'true');
-    setIsPro(true);
-    setShowPaywall(false);
-  };
+
 
   const handleResetLimits = () => {
     lockPro();
@@ -1431,15 +1428,24 @@ export default function MasterAnalyzer({ onPlaybackStart }) {
                 </p>
                 <div className="flex flex-col gap-3 w-full max-w-xs">
                   <a 
-                    href="https://napbak.gumroad.com/l/dummy-pro" 
+                    href="https://napoacademy.gumroad.com/l/pro-monthly" 
                     className="w-full relative overflow-hidden rounded-full border border-[#9D4EDD]/50 hover:border-[#b56ef5]/80 bg-gradient-to-r from-[#9D4EDD]/40 to-[#ec4899]/30 hover:to-[#ec4899]/50 text-white font-mono text-[10px] tracking-widest font-bold uppercase py-3.5 transition-all duration-300 shadow-[0_0_30px_rgba(157,78,221,0.2)] hover:scale-[1.02] active:scale-[0.98] text-center block"
                   >
                     Upgrade to Pro — $4.99
                   </a>
                   
+                  {errorMsg && (
+                    <div className="text-[10px] text-red-400 font-mono tracking-wider text-center mt-2 bg-red-500/10 border border-red-500/20 py-1.5 px-3 rounded-lg">
+                      {errorMsg}
+                    </div>
+                  )}
+
                   {!showManualInput ? (
                     <button 
-                      onClick={() => setShowManualInput(true)}
+                      onClick={() => {
+                        setShowManualInput(true);
+                        setErrorMsg('');
+                      }}
                       className="text-[9px] tracking-widest uppercase font-mono text-white/40 hover:text-[#E0AAFF] mt-2 transition-colors"
                     >
                       [ I HAVE A LICENSE KEY ]
@@ -1450,14 +1456,25 @@ export default function MasterAnalyzer({ onPlaybackStart }) {
                         type="text" 
                         placeholder="ENTER LICENSE KEY"
                         value={manualKey}
-                        onChange={(e) => setManualKey(e.target.value)}
+                        onChange={(e) => {
+                          setManualKey(e.target.value);
+                          setErrorMsg('');
+                        }}
                         className="bg-transparent border-b border-white/20 focus:border-[#E0AAFF] text-white font-mono text-[10px] tracking-widest text-center py-2 outline-none w-full uppercase placeholder:text-white/20 transition-colors"
                       />
                       <button 
-                        onClick={() => {
-                          if (manualKey) {
-                            window.location.search = `?license_key=${manualKey}`;
+                        onClick={async () => {
+                          if (!manualKey) return;
+                          setIsVerifying(true);
+                          setErrorMsg('');
+                          const result = await verifyGumroadLicense(manualKey);
+                          if (result.success) {
+                            unlockPro(manualKey);
+                            setShowPaywall(false);
+                          } else {
+                            setErrorMsg(result.message);
                           }
+                          setIsVerifying(false);
                         }}
                         className="text-[9px] tracking-widest uppercase font-mono text-[#E0AAFF] hover:text-white transition-colors"
                       >
@@ -1473,30 +1490,32 @@ export default function MasterAnalyzer({ onPlaybackStart }) {
 
       </div>
 
-      <div className="flex justify-center gap-3 mt-4">
-        <button
-          onClick={handleResetLimits}
-          className="text-[8px] tracking-[0.3em] font-mono uppercase text-white/30 hover:text-white/60 border border-white/5 hover:border-white/10 px-3 py-1.5 rounded-full transition-all bg-black/40"
-        >
-          [ DEV: Reset Limits (3 Left) ]
-        </button>
-        <button
-          onClick={() => {
-            if (isPro) {
-              lockPro();
-              localStorage.removeItem('napbak_pro');
-              localStorage.removeItem('napbak_pro_storage');
-            } else {
-              localStorage.setItem('napbak_pro', 'true');
-              unlockPro('dev-toggle');
-              setShowPaywall(false);
-            }
-          }}
-          className="text-[8px] tracking-[0.3em] font-mono uppercase text-white/30 hover:text-white/60 border border-white/5 hover:border-white/10 px-3 py-1.5 rounded-full transition-all bg-black/40"
-        >
-          [ DEV: Toggle Pro Mode ({isPro ? 'ON' : 'OFF'}) ]
-        </button>
-      </div>
+      {import.meta.env.DEV && (
+        <div className="flex justify-center gap-3 mt-4">
+          <button
+            onClick={handleResetLimits}
+            className="text-[8px] tracking-[0.3em] font-mono uppercase text-white/30 hover:text-white/60 border border-white/5 hover:border-white/10 px-3 py-1.5 rounded-full transition-all bg-black/40"
+          >
+            [ DEV: Reset Limits (3 Left) ]
+          </button>
+          <button
+            onClick={() => {
+              if (isPro) {
+                lockPro();
+                localStorage.removeItem('napbak_pro');
+                localStorage.removeItem('napbak_pro_storage');
+              } else {
+                localStorage.setItem('napbak_pro', 'true');
+                unlockPro('dev-toggle');
+                setShowPaywall(false);
+              }
+            }}
+            className="text-[8px] tracking-[0.3em] font-mono uppercase text-white/30 hover:text-white/60 border border-white/5 hover:border-white/10 px-3 py-1.5 rounded-full transition-all bg-black/40"
+          >
+            [ DEV: Toggle Pro Mode ({isPro ? 'ON' : 'OFF'}) ]
+          </button>
+        </div>
+      )}
     </div>
   );
 }

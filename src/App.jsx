@@ -354,16 +354,12 @@ export default function App() {
               PRO ACTIVE
             </span>
           ) : (
-            <button 
-              onClick={() => {
-                unlockPro('nav-click');
-                const element = document.getElementById('analyzer');
-                element?.scrollIntoView({ behavior: 'smooth' });
-              }} 
-              className="text-[9px] md:text-[10px] tracking-widest bg-[#9D4EDD] text-white border border-[#9D4EDD] px-4 py-2 rounded-full hover:bg-[#E0AAFF] hover:border-[#E0AAFF] hover:text-black transition-all font-bold hidden sm:block shadow-lg shadow-[#9D4EDD]/10"
+            <a 
+              href="https://napoacademy.gumroad.com/l/pro-monthly" 
+              className="text-[9px] md:text-[10px] tracking-widest bg-[#9D4EDD] text-white border border-[#9D4EDD] px-4 py-2 rounded-full hover:bg-[#E0AAFF] hover:border-[#E0AAFF] hover:text-black transition-all font-bold hidden sm:block shadow-lg shadow-[#9D4EDD]/10 text-center"
             >
               GET PRO
-            </button>
+            </a>
           )}
         </div>
       </nav>
@@ -527,28 +523,20 @@ export default function App() {
                         </button>
                       </td>
                       <td className="p-6 md:p-8 border-l border-white/5 bg-[#9D4EDD]/[0.02] align-bottom">
-                        <button 
-                          onClick={() => {
-                            unlockPro('monthly');
-                            const element = document.getElementById('analyzer');
-                            element?.scrollIntoView({ behavior: 'smooth' });
-                          }}
-                          className="w-full max-w-[200px] py-3.5 rounded-full border border-[#9D4EDD]/50 text-[#E0AAFF] hover:bg-[#9D4EDD]/20 hover:border-[#9D4EDD] transition-colors text-[9px] tracking-widest uppercase font-bold mx-auto block"
+                        <a 
+                          href="https://napoacademy.gumroad.com/l/pro-monthly"
+                          className="w-full max-w-[200px] py-3.5 rounded-full border border-[#9D4EDD]/50 text-[#E0AAFF] hover:bg-[#9D4EDD]/20 hover:border-[#9D4EDD] transition-colors text-[9px] tracking-widest uppercase font-bold mx-auto flex items-center justify-center"
                         >
                           Subscribe Monthly
-                        </button>
+                        </a>
                       </td>
                       <td className="p-6 md:p-8 border-l border-white/5 bg-[#9D4EDD]/[0.04] align-bottom">
-                        <button 
-                          onClick={() => {
-                            unlockPro('lifetime');
-                            const element = document.getElementById('analyzer');
-                            element?.scrollIntoView({ behavior: 'smooth' });
-                          }}
-                          className="w-full max-w-[200px] py-3.5 rounded-full bg-gradient-to-r from-[#9D4EDD] to-[#ec4899] text-white hover:from-[#E0AAFF] hover:to-[#fbcfe8] hover:text-black transition-colors text-[9px] tracking-widest uppercase font-bold shadow-[0_0_30px_rgba(157,78,221,0.3)] hover:shadow-[0_0_40px_rgba(236,72,153,0.5)] mx-auto block"
+                        <a 
+                          href="https://napoacademy.gumroad.com/l/ctrl-pro-lifetime"
+                          className="w-full max-w-[200px] py-3.5 rounded-full bg-gradient-to-r from-[#9D4EDD] to-[#ec4899] text-white hover:from-[#E0AAFF] hover:to-[#fbcfe8] hover:text-black transition-colors text-[9px] tracking-widest uppercase font-bold shadow-[0_0_30px_rgba(157,78,221,0.3)] hover:shadow-[0_0_40px_rgba(236,72,153,0.5)] mx-auto flex items-center justify-center"
                         >
                           Get Lifetime Access
-                        </button>
+                        </a>
                       </td>
                     </tr>
                   </tbody>
@@ -601,16 +589,12 @@ export default function App() {
                     <li className="flex items-center gap-2">✓ Platform & Device Simulation</li>
                   </ul>
                 </div>
-                <button 
-                  onClick={() => {
-                    unlockPro('monthly');
-                    const element = document.getElementById('analyzer');
-                    element?.scrollIntoView({ behavior: 'smooth' });
-                  }}
-                  className="w-full py-3.5 rounded-full border border-[#9D4EDD]/50 text-[#E0AAFF] hover:bg-[#9D4EDD]/20 hover:border-[#9D4EDD] transition-colors text-[9px] tracking-widest uppercase font-bold"
+                <a 
+                  href="https://napoacademy.gumroad.com/l/pro-monthly"
+                  className="w-full py-3.5 rounded-full border border-[#9D4EDD]/50 text-[#E0AAFF] hover:bg-[#9D4EDD]/20 hover:border-[#9D4EDD] transition-colors text-[9px] tracking-widest uppercase font-bold flex items-center justify-center"
                 >
                   Subscribe Monthly
-                </button>
+                </a>
               </div>
 
               {/* Lifetime Access */}
@@ -630,16 +614,12 @@ export default function App() {
                     <li className="flex items-center gap-2">✓ Platform & Device Simulation</li>
                   </ul>
                 </div>
-                <button 
-                  onClick={() => {
-                    unlockPro('lifetime');
-                    const element = document.getElementById('analyzer');
-                    element?.scrollIntoView({ behavior: 'smooth' });
-                  }}
-                  className="w-full py-3.5 rounded-full bg-gradient-to-r from-[#9D4EDD] to-[#ec4899] text-white hover:from-[#E0AAFF] hover:to-[#fbcfe8] hover:text-black transition-colors text-[9px] tracking-widest uppercase font-bold shadow-[0_0_30px_rgba(157,78,221,0.3)]"
+                <a 
+                  href="https://napoacademy.gumroad.com/l/ctrl-pro-lifetime"
+                  className="w-full py-3.5 rounded-full bg-gradient-to-r from-[#9D4EDD] to-[#ec4899] text-white hover:from-[#E0AAFF] hover:to-[#fbcfe8] hover:text-black transition-colors text-[9px] tracking-widest uppercase font-bold shadow-[0_0_30px_rgba(157,78,221,0.3)] flex items-center justify-center"
                 >
                   Get Lifetime Access
-                </button>
+                </a>
               </div>
 
             </div>
