@@ -4,6 +4,12 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://ctrl.napbak.studio/" />
+    
+    <!-- Robots -->
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+
     <!-- Branding & Favicons -->
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
@@ -11,31 +17,202 @@
     <link rel="manifest" href="/site.webmanifest">
     <meta name="theme-color" content="#050505">
 
-    <!-- SEO & Social Sharing -->
-    <title>CTRL by Napbak | Free LUFS Meter, Loudness Penalty & Device Simulator</title>
-    <meta name="description" content="Free online mastering analyzer & loudness penalty simulator. Measure LUFS, True Peak, and simulate how your mix sounds on Spotify, Apple Music, or device speakers (iPhone, Car, Headphones) in real-time.">
-    <meta name="keywords" content="mastering analyzer, online loudness meter, free lufs analyzer, true peak meter, Spotify loudness compliance, R128 meter, loudness penalty simulator, speaker emulation, mix translation check online, iphone speaker simulator, car mix check online, mono compatibility tool, Napbak, creative developer, music producer, sound design">
+    <!-- SEO Primary -->
+    <title>CTRL by Napbak | Free Online LUFS Meter, Loudness Penalty Checker & Speaker Simulator</title>
+    <meta name="description" content="Free online LUFS meter and mastering analyzer. Measure integrated loudness (EBU R128), true peak (dBTP), dynamic range (LRA), and preview how your mix sounds on Spotify, Apple Music, YouTube, iPhone speakers, car stereos, and headphones — all in real-time, 100% in your browser.">
+    <meta name="keywords" content="free LUFS meter online, loudness penalty checker, mastering analyzer, true peak meter, EBU R128 meter, Spotify loudness check, Apple Music loudness, YouTube loudness normalization, dynamic range LRA, speaker simulator, iPhone speaker test, car speaker simulation, headphone mix check, online audio analyzer, mix translation tool, loudness units full scale, streaming loudness compliance, music production tool, audio mastering online, Napbak Studio">
     <meta name="author" content="Napbak Studio">
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://napbak.studio/">
-    <meta property="og:title" content="CTRL by Napbak | Free LUFS Meter, Loudness Penalty & Device Simulator">
-    <meta property="og:description" content="Free online mastering analyzer & loudness penalty simulator. Measure LUFS, True Peak, and simulate how your mix sounds on Spotify, Apple Music, or device speakers (iPhone, Car, Headphones) in real-time.">
+    <meta property="og:url" content="https://ctrl.napbak.studio/">
+    <meta property="og:title" content="CTRL by Napbak | Free Online LUFS Meter & Loudness Penalty Checker">
+    <meta property="og:description" content="Measure LUFS, True Peak, Dynamic Range (LRA) and simulate how your master sounds on Spotify, Apple Music, YouTube, iPhone, Car stereos & more — free, in real-time, 100% in your browser.">
     <meta property="og:image" content="https://i.imgur.com/39HXelI.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="CTRL by Napbak — Free online LUFS meter and loudness analyzer interface">
+    <meta property="og:site_name" content="CTRL by Napbak">
+    <meta property="og:locale" content="en_US">
 
     <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="https://napbak.studio/">
-    <meta property="twitter:title" content="CTRL by Napbak | Free LUFS Meter, Loudness Penalty & Device Simulator">
-    <meta property="twitter:description" content="Free online mastering analyzer & loudness penalty simulator. Measure LUFS, True Peak, and simulate how your mix sounds on Spotify, Apple Music, or device speakers (iPhone, Car, Headphones) in real-time.">
-    <meta property="twitter:image" content="https://i.imgur.com/39HXelI.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://ctrl.napbak.studio/">
+    <meta name="twitter:title" content="CTRL by Napbak | Free Online LUFS Meter & Loudness Penalty Checker">
+    <meta name="twitter:description" content="Measure LUFS, True Peak, Dynamic Range (LRA) and simulate how your master sounds on Spotify, Apple Music, YouTube, iPhone, Car stereos & more — free, in real-time, 100% in your browser.">
+    <meta name="twitter:image" content="https://i.imgur.com/39HXelI.png">
+    <meta name="twitter:image:alt" content="CTRL by Napbak — Free online LUFS meter and loudness analyzer interface">
+
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Outfit:wght@100..900&display=swap" rel="stylesheet">
+    
+    <!-- Gumroad -->
     <script src="https://gumroad.com/js/gumroad.js"></script>
+
+    <!-- Schema.org: WebApplication -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "CTRL by Napbak",
+      "url": "https://ctrl.napbak.studio/",
+      "description": "Free online LUFS meter and mastering analyzer. Measure integrated loudness (EBU R128), true peak, dynamic range (LRA), and simulate how your music sounds on Spotify, Apple Music, YouTube, and different speakers — 100% in your browser.",
+      "applicationCategory": "MultimediaApplication",
+      "operatingSystem": "Web Browser",
+      "browserRequirements": "Requires a modern browser with Web Audio API support",
+      "offers": [
+        {
+          "@type": "Offer",
+          "name": "Free Plan",
+          "price": "0",
+          "priceCurrency": "USD",
+          "description": "3 daily analyses, LUFS & True Peak measurement, Platform & Device Simulation"
+        },
+        {
+          "@type": "Offer",
+          "name": "Pro Monthly",
+          "price": "4.99",
+          "priceCurrency": "USD",
+          "description": "Unlimited analyses, Dynamic Range (LRA) analysis, all features"
+        },
+        {
+          "@type": "Offer",
+          "name": "Lifetime Access",
+          "price": "29.99",
+          "priceCurrency": "USD",
+          "description": "One-time payment, unlimited analyses, Dynamic Range (LRA) analysis, all features forever"
+        }
+      ],
+      "featureList": [
+        "EBU R128 / ITU-R BS.1770 compliant integrated loudness measurement (LUFS)",
+        "True Peak detection with 4x oversampling (dBTP)",
+        "Dynamic Range analysis (LRA)",
+        "Real-time streaming platform loudness penalty preview",
+        "Device speaker simulation (iPhone, Car, Laptop, Headphones)",
+        "Mono compatibility check",
+        "Real-time spectrum analyzer",
+        "100% client-side processing"
+      ],
+      "screenshot": "https://i.imgur.com/39HXelI.png",
+      "creator": {
+        "@type": "Organization",
+        "name": "Napbak Studio",
+        "url": "https://napbak.studio",
+        "email": "hello@napbak.studio",
+        "sameAs": [
+          "https://www.instagram.com/napbak.studio"
+        ]
+      }
+    }
+    </script>
+
+    <!-- Schema.org: FAQPage -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "My track is -8 LUFS, what does this mean?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "A master at -8 LUFS is powerful, dense, and competitive. You are in the ideal zone for modern commercial music. While platforms normalize playback to around -14 LUFS, a master at -8 LUFS retains the energy, body, and punch needed for clubs, festivals, car audio, and download platforms."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is -14 LUFS a must for streaming platforms?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Absolutely not! -14 LUFS is simply an alignment target for streaming services, not a creative rule for audio production. Most modern commercial masters sit comfortably between -6 and -12 LUFS integrated. Focus on mix dynamics and overall translation rather than chasing a single loudness target."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Why do streaming platforms normalize audio levels?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Normalization provides a consistent listening experience across playlists, preventing listeners from constantly adjusting their volume. However, normalization is simple gain reduction, not dynamic compression. If your master is loud, it retains all its saturation, transient details, and punch even when turned down."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What's the difference between LUFS and dB?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "dB measures raw signal levels (peaks), while LUFS (Loudness Units Full Scale) measures perceived loudness — how loud a track actually sounds to human ears by accounting for frequency sensitivity. Think of dB like a speedometer and LUFS like how fast the car feels. Mastering to LUFS gives more consistent results across different playback systems."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Should I master differently for each streaming platform?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Focus on creating one outstanding master that sounds incredible overall. Platforms use different targets (Spotify at -14, Apple Music at -16, SoundCloud and Beatport with no normalization). Master your track to its optimal dynamic sweet spot and let the platforms handle volume adjustments."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How loud are popular songs really?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Usually much louder than streaming targets! Modern electronic music regularly hits -6 to -8 LUFS, hip-hop averages -8 to -9 LUFS, and rock releases sit between -7 and -9 LUFS. The average commercial upload is around -10 LUFS. Artists choose loudness for artistic reasons, not platform guidelines."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How can I make my track louder while staying LUFS-safe?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Use saturation to add harmonics and increase perceived loudness without raising peak levels. Apply compression in stages. Control sub-bass frequencies that eat up headroom. Always leave a ceiling of -1.0 dBTP on your final limiter to prevent distortion when converting to lossy streaming formats (AAC/Ogg)."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How accurate are these loudness simulations?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "The platform penalty calculations are fully compliant with standard EBU R128 and ITU-R BS.1770 algorithms, matching streaming normalization engines with 100% accuracy. The device EQ profiles are modeled from actual speaker responses."
+          }
+        }
+      ]
+    }
+    </script>
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
+
+    <!-- Noscript fallback: SEO content for crawlers that don't execute JavaScript -->
+    <noscript>
+      <div style="max-width:800px;margin:40px auto;padding:20px;font-family:system-ui,sans-serif;color:#333;">
+        <h1>CTRL by Napbak — Free Online LUFS Meter & Loudness Penalty Checker</h1>
+        <p>CTRL is a free, browser-based audio mastering analyzer built by Napbak Studio. Measure integrated loudness (LUFS) using the EBU R128 standard, detect true peak levels (dBTP) with 4x oversampling, analyze dynamic range (LRA), and simulate how your music sounds across streaming platforms and playback devices — all in real-time, 100% in your browser.</p>
+        
+        <h2>Features</h2>
+        <ul>
+          <li>EBU R128 / ITU-R BS.1770 compliant integrated loudness measurement (LUFS)</li>
+          <li>True Peak detection with 4x oversampling (dBTP)</li>
+          <li>Dynamic Range analysis (LRA — Loudness Range)</li>
+          <li>Real-time streaming platform loudness penalty preview: Spotify, Apple Music, YouTube, Tidal, Amazon Music, SoundCloud, Beatport, Deezer, Pandora</li>
+          <li>Device speaker simulation: iPhone, Car, Laptop, Headphones, AirPods, Bluetooth Speaker, Gaming Headset, Tablet</li>
+          <li>Mono compatibility check</li>
+          <li>Real-time spectrum analyzer visualization</li>
+          <li>100% client-side — no audio data leaves your browser</li>
+        </ul>
+
+        <h2>Pricing</h2>
+        <ul>
+          <li><strong>Free:</strong> 3 analyses per day, LUFS & True Peak, Platform & Device Simulation</li>
+          <li><strong>Pro Monthly ($4.99/mo):</strong> Unlimited analyses, Dynamic Range (LRA)</li>
+          <li><strong>Lifetime ($29.99 one-time):</strong> Unlimited analyses, Dynamic Range (LRA), all features forever</li>
+        </ul>
+        
+        <p>Please enable JavaScript to use the CTRL analyzer.</p>
+        <p>Contact: <a href="mailto:hello@napbak.studio">hello@napbak.studio</a> | <a href="https://www.instagram.com/napbak.studio">Instagram</a></p>
+      </div>
+    </noscript>
   </body>
 </html>

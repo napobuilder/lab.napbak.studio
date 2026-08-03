@@ -302,10 +302,10 @@ export default function App() {
 
       <div className="noise-overlay"></div>
 
-      <nav className={`fixed top-0 w-full px-6 md:px-10 flex justify-between items-center z-40 transition-all duration-500 opacity-100 ${isScrolled ? 'py-4 md:py-6 bg-[#050505]/90 backdrop-blur-md border-b border-white/5 shadow-[0_4px_30px_rgba(0,0,0,0.5)]' : 'py-6 md:py-10 bg-transparent'}`}>
+      <nav aria-label="Main navigation" className={`fixed top-0 w-full px-6 md:px-10 flex justify-between items-center z-40 transition-all duration-500 opacity-100 ${isScrolled ? 'py-4 md:py-6 bg-[#050505]/90 backdrop-blur-md border-b border-white/5 shadow-[0_4px_30px_rgba(0,0,0,0.5)]' : 'py-6 md:py-10 bg-transparent'}`}>
         
         <div className="flex flex-col relative z-10 flex-1 items-start group">
-          <span className="font-modern text-2xl md:text-3xl text-white font-light tracking-tighter relative z-10 flex items-center">
+          <h1 className="font-modern text-2xl md:text-3xl text-white font-light tracking-tighter relative z-10 flex items-center">
             <span className="text-white/30 mr-1 font-mono">[</span>
             <span className="font-bold tracking-widest text-white uppercase">CTRL</span>
             <span className="text-white/30 ml-1 font-mono">]</span>
@@ -317,7 +317,7 @@ export default function App() {
                 onClick={() => setIsDotStolen(false)}
               >.</span>
             </span>
-          </span>
+          </h1>
           <span className="text-[8px] tracking-[0.4em] text-[#9ca3af] uppercase mt-1">SPOTIFY LOUDNESS CHECKER</span>
         </div>
 
@@ -364,7 +364,7 @@ export default function App() {
         </div>
       </nav>
 
-      <main className="transition-opacity duration-1000 delay-300 opacity-100">
+      <main role="main" className="transition-opacity duration-1000 delay-300 opacity-100">
         
         {/* Mastering & Spectrum Analyzer directly in Hero position */}
         <div className="pt-24">
@@ -372,7 +372,7 @@ export default function App() {
         </div>
 
         {/* Features / Marketing Section */}
-        <section id="features" className="py-24 border-t border-white/5 relative z-10 bg-[#050505]/20 backdrop-blur-sm">
+        <section id="features" aria-label="Engine features and capabilities" className="py-24 border-t border-white/5 relative z-10 bg-[#050505]/20 backdrop-blur-sm">
           <div className="max-w-5xl mx-auto px-6">
             
             <div className="flex flex-col items-center text-center mb-16">
@@ -443,7 +443,7 @@ export default function App() {
         </section>
 
         {/* Pricing / Suscripción Section */}
-        <section id="pricing" className="py-24 border-t border-white/5 relative z-10 bg-[#050505]/40 backdrop-blur-sm">
+        <section id="pricing" aria-label="Pricing plans and membership options" className="py-24 border-t border-white/5 relative z-10 bg-[#050505]/40 backdrop-blur-sm">
           <div className="max-w-5xl mx-auto px-6">
             
             <div className="flex flex-col items-center text-center mb-16">
@@ -661,7 +661,7 @@ export default function App() {
         </section>
 
         {/* FAQ Section */}
-        <section id="faq" className="py-24 border-t border-white/5 relative z-10 bg-[#050505]/20 backdrop-blur-sm">
+        <section id="faq" aria-label="Frequently asked questions about loudness and mastering" className="py-24 border-t border-white/5 relative z-10 bg-[#050505]/20 backdrop-blur-sm">
           <div className="max-w-4xl mx-auto px-6">
             <div className="flex flex-col items-center text-center mb-16">
               <h2 className="text-[10px] tracking-[0.5em] text-[#9D4EDD] mb-4">03. FAQ</h2>
@@ -710,7 +710,7 @@ export default function App() {
             
             {/* Column 1: Brand Info */}
             <div className="flex flex-col items-start gap-4">
-              <h1 className="font-modern text-2xl text-white font-light tracking-tighter flex items-center">
+              <div className="font-modern text-2xl text-white font-light tracking-tighter flex items-center">
                 <span className="text-white/30 mr-1 font-mono">[</span>
                 <span className="font-bold tracking-widest uppercase">CTRL</span>
                 <span className="text-white/30 ml-1 font-mono">]</span>
@@ -722,7 +722,7 @@ export default function App() {
                     onClick={() => setIsDotStolen(false)}
                   >.</span>
                 </span>
-              </h1>
+              </div>
               <p className="text-[10px] leading-relaxed text-white/40 font-mono max-w-[220px]">
                 Free offline EBU R128 loudness compliance meter, true peak estimator, and streaming platform simulation.
               </p>

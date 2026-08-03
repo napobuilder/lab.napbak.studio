@@ -1,0 +1,57 @@
+# CTRL by Napbak
+
+> Free online mastering analyzer, loudness penalty simulator, and device speaker emulator for music producers and audio engineers.
+
+## What is CTRL?
+
+CTRL is a free, browser-based audio mastering analyzer built by Napbak Studio. It measures integrated loudness (LUFS) using the EBU R128 / ITU-R BS.1770 standard, estimates true peak levels with 4x oversampling, calculates dynamic range (LRA), and simulates how your music will sound across streaming platforms (Spotify, Apple Music, YouTube, Tidal, Amazon Music, SoundCloud, Beatport, Deezer, Pandora) and playback devices (iPhone, Car Speakers, Laptop, Headphones, AirPods, Bluetooth Speakers, Gaming Headsets, Tablets) in real-time.
+
+All audio processing happens 100% client-side in the browser using the Web Audio API. No audio data is ever uploaded to a server. Your music stays private and secure.
+
+## Key Features
+
+- EBU R128 / ITU-R BS.1770 compliant integrated loudness measurement (LUFS)
+- True Peak detection with 4x oversampling (dBTP)
+- Dynamic Range analysis (LRA - Loudness Range in LU)
+- Real-time streaming platform loudness penalty preview for Spotify, Apple Music, YouTube, Tidal, Amazon Music, SoundCloud, Beatport, Deezer, and Pandora
+- Device speaker simulation: iPhone, Car, Laptop, Headphones, AirPods, Bluetooth Speaker, Gaming Headset, Tablet
+- Mono compatibility check
+- Real-time spectrum analyzer visualization
+- 100% client-side processing — zero data leaves your browser
+- Works with WAV, MP3, FLAC, AAC, OGG, and other browser-supported audio formats
+- Custom handcrafted mastering service available for $20
+
+## Who is it for?
+
+Music producers, audio engineers, mastering engineers, mixing engineers, podcasters, content creators, and anyone who wants to check how loud their audio is and how it will sound on different streaming platforms and playback devices.
+
+## Common Questions
+
+### Is -14 LUFS a must for streaming platforms?
+No. -14 LUFS is an alignment target for streaming services, not a creative rule. Most modern commercial masters sit between -6 and -12 LUFS integrated. Focus on mix dynamics and translation rather than chasing a single loudness target.
+
+### What's the difference between LUFS and dB?
+dB measures raw signal peaks, while LUFS measures perceived loudness — how loud a track actually sounds to human ears by accounting for frequency sensitivity. Mastering to LUFS gives more consistent results across playback systems.
+
+### How accurate are the platform penalty calculations?
+Fully compliant with EBU R128 and ITU-R BS.1770 algorithms, matching streaming normalization engines with 100% accuracy.
+
+## Pricing
+
+- Free Plan: 3 analyses per day, LUFS & True Peak, Platform & Device Simulation
+- Pro Monthly ($4.99/mo): Unlimited analyses, Dynamic Range (LRA) analysis
+- Lifetime ($29.99 one-time): Unlimited analyses, Dynamic Range (LRA) analysis
+
+## URL
+
+https://ctrl.napbak.studio
+
+## Contact
+
+- Email: hello@napbak.studio
+- Instagram: https://www.instagram.com/napbak.studio
+- WhatsApp: https://wa.me/5804121479466
+
+## About Napbak Studio
+
+Napbak Studio is an independent creative studio specializing in music production, audio engineering, sound design, and developer tools for musicians. Based on 25+ years of experience in audio production and Silicon Valley-level software development.
