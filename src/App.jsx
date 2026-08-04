@@ -356,6 +356,7 @@ export default function App() {
           ) : (
             <a 
               href="https://napoacademy.gumroad.com/l/pro-monthly" 
+              data-gumroad-overlay-checkout="true"
               className="text-[9px] md:text-[10px] tracking-widest bg-[#9D4EDD] text-white border border-[#9D4EDD] px-4 py-2 rounded-full hover:bg-[#E0AAFF] hover:border-[#E0AAFF] hover:text-black transition-all font-bold hidden sm:block shadow-lg shadow-[#9D4EDD]/10 text-center"
             >
               GET PRO
@@ -525,6 +526,7 @@ export default function App() {
                       <td className="p-6 md:p-8 border-l border-white/5 bg-[#9D4EDD]/[0.02] align-bottom">
                         <a 
                           href="https://napoacademy.gumroad.com/l/pro-monthly"
+                          data-gumroad-overlay-checkout="true"
                           className="w-full max-w-[200px] py-3.5 rounded-full border border-[#9D4EDD]/50 text-[#E0AAFF] hover:bg-[#9D4EDD]/20 hover:border-[#9D4EDD] transition-colors text-[9px] tracking-widest uppercase font-bold mx-auto flex items-center justify-center"
                         >
                           Subscribe Monthly
@@ -533,6 +535,7 @@ export default function App() {
                       <td className="p-6 md:p-8 border-l border-white/5 bg-[#9D4EDD]/[0.04] align-bottom">
                         <a 
                           href="https://napoacademy.gumroad.com/l/ctrl-pro-lifetime"
+                          data-gumroad-overlay-checkout="true"
                           className="w-full max-w-[200px] py-3.5 rounded-full bg-gradient-to-r from-[#9D4EDD] to-[#ec4899] text-white hover:from-[#E0AAFF] hover:to-[#fbcfe8] hover:text-black transition-colors text-[9px] tracking-widest uppercase font-bold shadow-[0_0_30px_rgba(157,78,221,0.3)] hover:shadow-[0_0_40px_rgba(236,72,153,0.5)] mx-auto flex items-center justify-center"
                         >
                           Get Lifetime Access
@@ -591,6 +594,7 @@ export default function App() {
                 </div>
                 <a 
                   href="https://napoacademy.gumroad.com/l/pro-monthly"
+                  data-gumroad-overlay-checkout="true"
                   className="w-full py-3.5 rounded-full border border-[#9D4EDD]/50 text-[#E0AAFF] hover:bg-[#9D4EDD]/20 hover:border-[#9D4EDD] transition-colors text-[9px] tracking-widest uppercase font-bold flex items-center justify-center"
                 >
                   Subscribe Monthly
@@ -616,6 +620,7 @@ export default function App() {
                 </div>
                 <a 
                   href="https://napoacademy.gumroad.com/l/ctrl-pro-lifetime"
+                  data-gumroad-overlay-checkout="true"
                   className="w-full py-3.5 rounded-full bg-gradient-to-r from-[#9D4EDD] to-[#ec4899] text-white hover:from-[#E0AAFF] hover:to-[#fbcfe8] hover:text-black transition-colors text-[9px] tracking-widest uppercase font-bold shadow-[0_0_30px_rgba(157,78,221,0.3)] flex items-center justify-center"
                 >
                   Get Lifetime Access

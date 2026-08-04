@@ -6,8 +6,9 @@ export const useProStore = create(
     (set) => ({
       isPro: false,
       licenseKey: null,
-      unlockPro: (key) => set({ isPro: true, licenseKey: key }),
-      lockPro: () => set({ isPro: false, licenseKey: null }),
+      activatedAt: null,
+      unlockPro: (key) => set({ isPro: true, licenseKey: key, activatedAt: Date.now() }),
+      lockPro: () => set({ isPro: false, licenseKey: null, activatedAt: null }),
     }),
     { 
       name: 'napbak-pro-storage' 

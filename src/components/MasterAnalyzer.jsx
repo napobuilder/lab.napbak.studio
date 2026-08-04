@@ -36,7 +36,7 @@ export default function MasterAnalyzer({ onPlaybackStart }) {
   const [isMono, setIsMono] = useState(false);
 
   // Freemium States
-  const { isPro, unlockPro, lockPro } = useProStore();
+  const { isPro, licenseKey: storedLicenseKey, unlockPro, lockPro } = useProStore();
   const [remainingFreeRuns, setRemainingFreeRuns] = useState(3);
   const [showPaywall, setShowPaywall] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
@@ -44,6 +44,7 @@ export default function MasterAnalyzer({ onPlaybackStart }) {
   const [isVerifying, setIsVerifying] = useState(false);
   const [showManualInput, setShowManualInput] = useState(false);
   const [manualKey, setManualKey] = useState('');
+  const [showActivateInput, setShowActivateInput] = useState(false);
 
   // --- Refs ---
   const fileInputRef = useRef(null);
@@ -66,9 +67,30 @@ export default function MasterAnalyzer({ onPlaybackStart }) {
   const stereoGainNodeRef = useRef(null);
   const monoGainNodeRef = useRef(null);
 
+  // Listener for automatic post-purchase capture via Gumroad Overlay
+  useEffect(() => {
+    const handleGumroadSale = (event) => {
+      try {
+        if (typeof event.data === 'string') {
+          const data = JSON.parse(event.data);
+          if (data.post_message_name === 'sale') {
+            // Gumroad overlay sends license_key, sale_id, email, etc.
+            const key = data.license_key || `gumroad-sale-${data.sale_id || Date.now()}`;
+            unlockPro(key);
+            setShowPaywall(false);
+            setShowActivateInput(false);
+            setErrorMsg('');
+          }
+        }
+      } catch (e) { /* ignore non-JSON messages */ }
+    };
+    window.addEventListener('message', handleGumroadSale);
+    return () => window.removeEventListener('message', handleGumroadSale);
+  }, [unlockPro]);
+
   useEffect(() => {
     const checkStatus = async () => {
-      // 1. URL Auto-Verification
+      // 1. URL Auto-Verification (fallback for direct links with license_key param)
       const params = new URLSearchParams(window.location.search);
       const licenseKey = params.get('license_key');
       
@@ -91,6 +113,20 @@ export default function MasterAnalyzer({ onPlaybackStart }) {
         }
       }
 
+      // 2. Silent re-verification of stored license key
+      if (isPro && storedLicenseKey && !storedLicenseKey.startsWith('dev-') && !storedLicenseKey.startsWith('gumroad-sale-') && !storedLicenseKey.startsWith('legacy-')) {
+        try {
+          const result = await verifyGumroadLicense(storedLicenseKey);
+          if (!result.success) {
+            lockPro(); // License expired, refunded, or cancelled
+          }
+        } catch (e) {
+          // Network error — don't lock Pro, keep current state
+          console.warn('Could not re-verify license, keeping current state:', e);
+        }
+      }
+
+      // 3. Free usage limits
       const today = new Date().toISOString().split('T')[0];
       const limitObjStr = localStorage.getItem('napbak_analyzer_limit');
       
@@ -122,7 +158,7 @@ export default function MasterAnalyzer({ onPlaybackStart }) {
       window.removeEventListener('storage', checkStatus);
       window.removeEventListener('napbak_pro_changed', checkStatus);
     };
-  }, [isPro, unlockPro]);
+  }, [isPro, storedLicenseKey, unlockPro, lockPro]);
 
   const waveformRefCallback = useCallback((node) => {
     canvasRef.current = node;
@@ -846,13 +882,66 @@ export default function MasterAnalyzer({ onPlaybackStart }) {
         )}
 
         {/* Freemium Limit Bar */}
-        <div className="flex justify-between items-center mb-6 text-[10px] tracking-widest uppercase font-mono text-white/40 pb-4 border-b border-white/5">
-          <div>
-            STATUS: <span className={isPro ? 'text-[#E0AAFF] font-bold' : 'text-white/60'}>{isPro ? 'PRO SUBSCRIPTION' : 'FREE PLAN'}</span>
+        <div className="flex flex-col gap-3 mb-6 text-[10px] tracking-widest uppercase font-mono text-white/40 pb-4 border-b border-white/5">
+          <div className="flex justify-between items-center">
+            <div>
+              STATUS: <span className={isPro ? 'text-[#E0AAFF] font-bold' : 'text-white/60'}>{isPro ? 'PRO SUBSCRIPTION' : 'FREE PLAN'}</span>
+            </div>
+            <div className="flex items-center gap-3">
+              {!isPro && (
+                <span className="flex items-center gap-2">
+                  DAILY LIMIT: <span className={`font-bold ${remainingFreeRuns === 0 ? 'text-red-400 animate-pulse' : 'text-white'}`}>{remainingFreeRuns} / 3 REMAINING</span>
+                </span>
+              )}
+              {!isPro && (
+                <button
+                  onClick={() => setShowActivateInput(prev => !prev)}
+                  className="text-[#E0AAFF]/70 hover:text-[#E0AAFF] transition-colors border border-[#9D4EDD]/20 hover:border-[#9D4EDD]/50 px-3 py-1 rounded-full hover:bg-[#9D4EDD]/10"
+                >
+                  {showActivateInput ? '✕ CLOSE' : '⚡ ACTIVATE KEY'}
+                </button>
+              )}
+            </div>
           </div>
-          {!isPro && (
-            <div className="flex items-center gap-2">
-              DAILY LIMIT: <span className={`font-bold ${remainingFreeRuns === 0 ? 'text-red-400 animate-pulse' : 'text-white'}`}>{remainingFreeRuns} / 3 REMAINING</span>
+          {/* Inline License Key Activation (always accessible, no paywall needed) */}
+          {showActivateInput && !isPro && (
+            <div className="flex items-center gap-3 bg-[#9D4EDD]/5 border border-[#9D4EDD]/15 rounded-xl px-4 py-3 animate-in">
+              <input
+                type="text"
+                placeholder="PASTE YOUR LICENSE KEY HERE"
+                value={manualKey}
+                onChange={(e) => {
+                  setManualKey(e.target.value);
+                  setErrorMsg('');
+                }}
+                className="flex-1 bg-transparent border-b border-white/20 focus:border-[#E0AAFF] text-white font-mono text-[10px] tracking-widest py-1.5 outline-none uppercase placeholder:text-white/20 transition-colors"
+              />
+              <button
+                onClick={async () => {
+                  if (!manualKey) return;
+                  setIsVerifying(true);
+                  setErrorMsg('');
+                  const result = await verifyGumroadLicense(manualKey);
+                  if (result.success) {
+                    unlockPro(manualKey);
+                    setShowActivateInput(false);
+                    setShowPaywall(false);
+                    setManualKey('');
+                  } else {
+                    setErrorMsg(result.message);
+                  }
+                  setIsVerifying(false);
+                }}
+                disabled={isVerifying}
+                className="text-[9px] tracking-widest uppercase font-mono text-[#E0AAFF] hover:text-white transition-colors border border-[#9D4EDD]/30 hover:border-[#9D4EDD] px-4 py-1.5 rounded-full hover:bg-[#9D4EDD]/20 disabled:opacity-50"
+              >
+                {isVerifying ? 'VERIFYING...' : 'VERIFY'}
+              </button>
+            </div>
+          )}
+          {showActivateInput && errorMsg && (
+            <div className="text-[10px] text-red-400 font-mono tracking-wider text-center bg-red-500/10 border border-red-500/20 py-1.5 px-3 rounded-lg">
+              {errorMsg}
             </div>
           )}
         </div>
@@ -1429,6 +1518,7 @@ export default function MasterAnalyzer({ onPlaybackStart }) {
                 <div className="flex flex-col gap-3 w-full max-w-xs">
                   <a 
                     href="https://napoacademy.gumroad.com/l/pro-monthly" 
+                    data-gumroad-overlay-checkout="true"
                     className="w-full relative overflow-hidden rounded-full border border-[#9D4EDD]/50 hover:border-[#b56ef5]/80 bg-gradient-to-r from-[#9D4EDD]/40 to-[#ec4899]/30 hover:to-[#ec4899]/50 text-white font-mono text-[10px] tracking-widest font-bold uppercase py-3.5 transition-all duration-300 shadow-[0_0_30px_rgba(157,78,221,0.2)] hover:scale-[1.02] active:scale-[0.98] text-center block"
                   >
                     Upgrade to Pro — $4.99
