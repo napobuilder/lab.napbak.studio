@@ -10,7 +10,8 @@ import {
   Lock, 
   RotateCcw,
   Volume2,
-  Info
+  Info,
+  KeyRound
 } from 'lucide-react';
 import { calculateIntegratedLUFS, calculateLoudnessRange, estimateTruePeak } from '../utils/audioDsp';
 import { useProStore } from '../store/useProStore';
@@ -882,12 +883,12 @@ export default function MasterAnalyzer({ onPlaybackStart }) {
         )}
 
         {/* Freemium Limit Bar */}
-        <div className="flex flex-col gap-3 mb-6 text-[10px] tracking-widest uppercase font-mono text-white/40 pb-4 border-b border-white/5">
-          <div className="flex justify-between items-center">
+        <div className="flex flex-col gap-2 mb-6 pb-4 border-b border-white/5">
+          <div className="flex justify-between items-center text-[10px] tracking-widest uppercase font-mono text-white/40">
             <div>
               STATUS: <span className={isPro ? 'text-[#E0AAFF] font-bold' : 'text-white/60'}>{isPro ? 'PRO SUBSCRIPTION' : 'FREE PLAN'}</span>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-4">
               {!isPro && (
                 <span className="flex items-center gap-2">
                   DAILY LIMIT: <span className={`font-bold ${remainingFreeRuns === 0 ? 'text-red-400 animate-pulse' : 'text-white'}`}>{remainingFreeRuns} / 3 REMAINING</span>
@@ -896,52 +897,64 @@ export default function MasterAnalyzer({ onPlaybackStart }) {
               {!isPro && (
                 <button
                   onClick={() => setShowActivateInput(prev => !prev)}
-                  className="text-[#E0AAFF]/70 hover:text-[#E0AAFF] transition-colors border border-[#9D4EDD]/20 hover:border-[#9D4EDD]/50 px-3 py-1 rounded-full hover:bg-[#9D4EDD]/10"
+                  className="flex items-center gap-1.5 text-[#E0AAFF]/60 hover:text-[#E0AAFF] transition-all duration-200 border border-[#9D4EDD]/20 hover:border-[#9D4EDD]/60 px-3 py-1 rounded-full hover:bg-[#9D4EDD]/10 group"
                 >
-                  {showActivateInput ? '✕ CLOSE' : '⚡ ACTIVATE KEY'}
+                  {showActivateInput
+                    ? <XCircle className="w-3 h-3" />
+                    : <KeyRound className="w-3 h-3 group-hover:rotate-12 transition-transform duration-200" />
+                  }
+                  <span>{showActivateInput ? 'CLOSE' : 'ACTIVATE KEY'}</span>
                 </button>
               )}
             </div>
           </div>
-          {/* Inline License Key Activation (always accessible, no paywall needed) */}
+
+          {/* License Key Activation — sección dedicada, debajo del status bar */}
           {showActivateInput && !isPro && (
-            <div className="flex items-center gap-3 bg-[#9D4EDD]/5 border border-[#9D4EDD]/15 rounded-xl px-4 py-3 animate-in">
-              <input
-                type="text"
-                placeholder="PASTE YOUR LICENSE KEY HERE"
-                value={manualKey}
-                onChange={(e) => {
-                  setManualKey(e.target.value);
-                  setErrorMsg('');
-                }}
-                className="flex-1 bg-transparent border-b border-white/20 focus:border-[#E0AAFF] text-white font-mono text-[10px] tracking-widest py-1.5 outline-none uppercase placeholder:text-white/20 transition-colors"
-              />
-              <button
-                onClick={async () => {
-                  if (!manualKey) return;
-                  setIsVerifying(true);
-                  setErrorMsg('');
-                  const result = await verifyGumroadLicense(manualKey);
-                  if (result.success) {
-                    unlockPro(manualKey);
-                    setShowActivateInput(false);
-                    setShowPaywall(false);
-                    setManualKey('');
-                  } else {
-                    setErrorMsg(result.message);
-                  }
-                  setIsVerifying(false);
-                }}
-                disabled={isVerifying}
-                className="text-[9px] tracking-widest uppercase font-mono text-[#E0AAFF] hover:text-white transition-colors border border-[#9D4EDD]/30 hover:border-[#9D4EDD] px-4 py-1.5 rounded-full hover:bg-[#9D4EDD]/20 disabled:opacity-50"
-              >
-                {isVerifying ? 'VERIFYING...' : 'VERIFY'}
-              </button>
-            </div>
-          )}
-          {showActivateInput && errorMsg && (
-            <div className="text-[10px] text-red-400 font-mono tracking-wider text-center bg-red-500/10 border border-red-500/20 py-1.5 px-3 rounded-lg">
-              {errorMsg}
+            <div className="mt-3 rounded-2xl border border-[#9D4EDD]/20 bg-gradient-to-br from-[#9D4EDD]/5 to-transparent overflow-hidden">
+              <div className="flex items-center gap-2 px-4 pt-3 pb-1">
+                <KeyRound className="w-3.5 h-3.5 text-[#9D4EDD]/60 flex-shrink-0" />
+                <span className="text-[9px] font-mono tracking-[0.2em] uppercase text-[#9D4EDD]/60">License Activation</span>
+              </div>
+              <div className="flex items-center gap-3 px-4 pb-3 pt-1">
+                <input
+                  type="text"
+                  placeholder="XXXXXXXX-XXXXXXXX-XXXXXXXX-XXXXXXXX"
+                  value={manualKey}
+                  onChange={(e) => {
+                    setManualKey(e.target.value);
+                    setErrorMsg('');
+                  }}
+                  className="flex-1 bg-transparent border-b border-[#9D4EDD]/20 focus:border-[#E0AAFF]/60 text-white font-mono text-[11px] tracking-widest py-2 outline-none uppercase placeholder:text-white/15 transition-colors"
+                />
+                <button
+                  onClick={async () => {
+                    if (!manualKey) return;
+                    setIsVerifying(true);
+                    setErrorMsg('');
+                    const result = await verifyGumroadLicense(manualKey);
+                    if (result.success) {
+                      unlockPro(manualKey);
+                      setShowActivateInput(false);
+                      setShowPaywall(false);
+                      setManualKey('');
+                    } else {
+                      setErrorMsg(result.message);
+                    }
+                    setIsVerifying(false);
+                  }}
+                  disabled={isVerifying}
+                  className="text-[9px] tracking-widest uppercase font-mono text-[#E0AAFF] hover:text-white transition-all duration-200 border border-[#9D4EDD]/30 hover:border-[#9D4EDD] px-5 py-2 rounded-xl hover:bg-[#9D4EDD]/20 disabled:opacity-40 flex-shrink-0"
+                >
+                  {isVerifying ? 'VERIFYING...' : 'VERIFY'}
+                </button>
+              </div>
+              {errorMsg && (
+                <div className="flex items-center gap-2 px-4 py-2 bg-red-500/10 border-t border-red-500/15 text-[10px] text-red-400 font-mono tracking-wider">
+                  <XCircle className="w-3 h-3 flex-shrink-0" />
+                  {errorMsg}
+                </div>
+              )}
             </div>
           )}
         </div>
