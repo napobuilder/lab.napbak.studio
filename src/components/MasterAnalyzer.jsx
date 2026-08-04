@@ -883,7 +883,7 @@ export default function MasterAnalyzer({ onPlaybackStart }) {
         )}
 
         {/* Freemium Limit Bar */}
-        <div className="flex flex-col gap-2 mb-6 pb-4 border-b border-white/5">
+        <div className="flex flex-col gap-2 mb-6 pt-3 pb-4 border-b border-white/5 relative z-10">
           <div className="flex justify-between items-center text-[10px] tracking-widest uppercase font-mono text-white/40">
             <div>
               STATUS: <span className={isPro ? 'text-[#E0AAFF] font-bold' : 'text-white/60'}>{isPro ? 'PRO SUBSCRIPTION' : 'FREE PLAN'}</span>
