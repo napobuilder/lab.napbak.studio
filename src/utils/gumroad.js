@@ -8,7 +8,7 @@
 
 // Product IDs for CTRL PRO products (from Gumroad Dashboard > Content tab)
 const CTRL_PRO_PRODUCT_IDS = [
-  'cz2M8k0ImJU1I8FLSlL1yg==',   // CTRL PRO Monthly
+  'cz2M8k0lmJU1l8FLSIL1yg==',   // CTRL PRO Monthly  ← ID verificado via API
   '3nkkWxZTDDOanW-4mxvgng==',   // CTRL PRO Lifetime
 ];
 
