@@ -463,51 +463,62 @@ export default function App() {
                 <table className="w-full text-center border-collapse min-w-[700px]">
                   <thead>
                     <tr className="border-b border-white/10">
-                      <th className="p-6 md:p-8 font-modern text-white tracking-widest text-lg uppercase w-1/3">
+                      <th className="p-6 md:p-8 font-modern text-white tracking-widest text-lg uppercase w-1/4">
                         FREE
                         <span className="text-[10px] text-white/40 font-mono tracking-widest block mt-1">(Status: Active)</span>
                       </th>
-                      <th className="p-6 md:p-8 font-modern text-[#E0AAFF] tracking-widest text-lg uppercase w-1/3 border-l border-white/5 bg-[#9D4EDD]/[0.02]">
+                      <th className="p-6 md:p-8 font-modern text-[#E0AAFF] tracking-widest text-lg uppercase w-1/4 border-l border-white/5 bg-[#9D4EDD]/[0.02]">
                         PRO
                         <span className="text-[10px] text-[#E0AAFF]/50 font-mono tracking-widest block mt-1">(Monthly)</span>
                       </th>
-                      <th className="p-6 md:p-8 font-modern text-[#E0AAFF] tracking-widest text-lg uppercase w-1/3 relative border-l border-white/5 bg-[#9D4EDD]/[0.04]">
-                        LIFETIME
-                        <span className="text-[10px] text-[#E0AAFF]/50 font-mono tracking-widest block mt-1">(One-Time)</span>
+                      <th className="p-6 md:p-8 font-modern text-[#E0AAFF] tracking-widest text-lg uppercase w-1/4 relative border-l border-white/5 border-t-2 border-t-[#9D4EDD] bg-[#9D4EDD]/[0.06]">
+                        PRO
+                        <span className="text-[10px] text-[#E0AAFF]/50 font-mono tracking-widest block mt-1">(Annual)</span>
                         <div className="absolute top-4 right-4 bg-[#9D4EDD] text-white text-[8px] font-mono tracking-widest uppercase px-3 py-1 rounded-full hidden sm:block shadow-[0_0_15px_rgba(157,78,221,0.5)]">
                           BEST VALUE
                         </div>
+                      </th>
+                      <th className="p-6 md:p-8 font-modern text-[#E0AAFF] tracking-widest text-lg uppercase w-1/4 border-l border-white/5 bg-[#9D4EDD]/[0.02]">
+                        LIFETIME
+                        <span className="text-[10px] text-[#E0AAFF]/50 font-mono tracking-widest block mt-1">(One-Time)</span>
                       </th>
                     </tr>
                   </thead>
                   <tbody className="text-xs font-mono text-white/70">
                     <tr className="border-b border-white/5 hover:bg-white/[0.02] transition-colors">
-                      <td className="p-6 md:px-8 py-5 text-white/80">3 Daily Analyses</td>
+                      <td className="p-6 md:px-8 py-5 text-white/80">3 Analyses / Week</td>
                       <td className="p-6 md:px-8 py-5 text-[#E0AAFF] border-l border-white/5 bg-[#9D4EDD]/[0.02] font-bold">Unlimited Analyses</td>
-                      <td className="p-6 md:px-8 py-5 text-[#E0AAFF] border-l border-white/5 bg-[#9D4EDD]/[0.04] font-bold">Unlimited Analyses</td>
+                      <td className="p-6 md:px-8 py-5 text-[#E0AAFF] border-l border-white/5 bg-[#9D4EDD]/[0.06] font-bold">Unlimited Analyses</td>
+                      <td className="p-6 md:px-8 py-5 text-[#E0AAFF] border-l border-white/5 bg-[#9D4EDD]/[0.02] font-bold">Unlimited Analyses</td>
                     </tr>
                     <tr className="border-b border-white/5 hover:bg-white/[0.02] transition-colors">
                       <td className="p-6 md:px-8 py-5 text-white/80">LUFS & True Peak</td>
                       <td className="p-6 md:px-8 py-5 text-[#E0AAFF] border-l border-white/5 bg-[#9D4EDD]/[0.02] font-bold">Dynamic Range (LRA)</td>
-                      <td className="p-6 md:px-8 py-5 text-[#E0AAFF] border-l border-white/5 bg-[#9D4EDD]/[0.04] font-bold">Dynamic Range (LRA)</td>
+                      <td className="p-6 md:px-8 py-5 text-[#E0AAFF] border-l border-white/5 bg-[#9D4EDD]/[0.06] font-bold">Dynamic Range (LRA)</td>
+                      <td className="p-6 md:px-8 py-5 text-[#E0AAFF] border-l border-white/5 bg-[#9D4EDD]/[0.02] font-bold">Dynamic Range (LRA)</td>
                     </tr>
                     <tr className="border-b border-white/5 hover:bg-white/[0.02] transition-colors">
                       <td className="p-6 md:px-8 py-5 text-white/80">100% Client-Side Processing</td>
                       <td className="p-6 md:px-8 py-5 text-[#E0AAFF] border-l border-white/5 bg-[#9D4EDD]/[0.02] font-bold">100% Client-Side Processing</td>
-                      <td className="p-6 md:px-8 py-5 text-[#E0AAFF] border-l border-white/5 bg-[#9D4EDD]/[0.04] font-bold">100% Client-Side Processing</td>
+                      <td className="p-6 md:px-8 py-5 text-[#E0AAFF] border-l border-white/5 bg-[#9D4EDD]/[0.06] font-bold">100% Client-Side Processing</td>
+                      <td className="p-6 md:px-8 py-5 text-[#E0AAFF] border-l border-white/5 bg-[#9D4EDD]/[0.02] font-bold">100% Client-Side Processing</td>
                     </tr>
                     <tr className="border-b border-white/5 hover:bg-white/[0.02] transition-colors">
                       <td className="p-6 md:px-8 py-5 text-white/80">Platform & Device Simulation</td>
                       <td className="p-6 md:px-8 py-5 text-[#E0AAFF] border-l border-white/5 bg-[#9D4EDD]/[0.02] font-bold">Platform & Device Simulation</td>
-                      <td className="p-6 md:px-8 py-5 text-[#E0AAFF] border-l border-white/5 bg-[#9D4EDD]/[0.04] font-bold">Platform & Device Simulation</td>
+                      <td className="p-6 md:px-8 py-5 text-[#E0AAFF] border-l border-white/5 bg-[#9D4EDD]/[0.06] font-bold">Platform & Device Simulation</td>
+                      <td className="p-6 md:px-8 py-5 text-[#E0AAFF] border-l border-white/5 bg-[#9D4EDD]/[0.02] font-bold">Platform & Device Simulation</td>
                     </tr>
                     <tr className="border-b border-white/10 hover:bg-white/[0.02] transition-colors">
                       <td className="p-6 md:px-8 py-6 font-serif italic text-3xl text-white/80">$0</td>
                       <td className="p-6 md:px-8 py-6 border-l border-white/5 bg-[#9D4EDD]/[0.02]">
-                        <span className="font-serif italic text-3xl text-[#E0AAFF] font-bold">$4.99<span className="text-xs font-mono lowercase text-[#E0AAFF]/50 not-italic font-normal"> / mo</span></span>
+                        <span className="font-serif italic text-3xl text-[#E0AAFF] font-bold">$9.99<span className="text-xs font-mono lowercase text-[#E0AAFF]/50 not-italic font-normal"> / mo</span></span>
                       </td>
-                      <td className="p-6 md:px-8 py-6 border-l border-white/5 bg-[#9D4EDD]/[0.04]">
-                        <span className="font-serif italic text-3xl text-[#E0AAFF] font-bold">$29.99<span className="text-[10px] tracking-widest font-mono uppercase text-[#E0AAFF]/50 not-italic font-normal ml-2">(One-Time)</span></span>
+                      <td className="p-6 md:px-8 py-6 border-l border-white/5 bg-[#9D4EDD]/[0.06]">
+                        <span className="font-serif italic text-3xl text-[#E0AAFF] font-bold">$79<span className="text-xs font-mono lowercase text-[#E0AAFF]/50 not-italic font-normal"> / yr</span></span>
+                      </td>
+                      <td className="p-6 md:px-8 py-6 border-l border-white/5 bg-[#9D4EDD]/[0.02]">
+                        <span className="font-serif italic text-3xl text-[#E0AAFF] font-bold">$99<span className="text-[10px] tracking-widest font-mono uppercase text-[#E0AAFF]/50 not-italic font-normal ml-2">(One-Time)</span></span>
                       </td>
                     </tr>
                     <tr>
@@ -532,11 +543,20 @@ export default function App() {
                           Subscribe Monthly
                         </a>
                       </td>
-                      <td className="p-6 md:p-8 border-l border-white/5 bg-[#9D4EDD]/[0.04] align-bottom">
+                      <td className="p-6 md:p-8 border-l border-white/5 bg-[#9D4EDD]/[0.06] align-bottom border-b-2 border-b-[#9D4EDD]">
+                        <a 
+                          href="https://napoacademy.gumroad.com/l/pro-annual"
+                          data-gumroad-overlay-checkout="true"
+                          className="w-full max-w-[200px] py-3.5 rounded-full bg-gradient-to-r from-[#9D4EDD] to-[#ec4899] text-white hover:from-[#E0AAFF] hover:to-[#fbcfe8] hover:text-black transition-colors text-[9px] tracking-widest uppercase font-bold shadow-[0_0_30px_rgba(157,78,221,0.3)] hover:shadow-[0_0_40px_rgba(236,72,153,0.5)] mx-auto flex items-center justify-center"
+                        >
+                          Subscribe Annually
+                        </a>
+                      </td>
+                      <td className="p-6 md:p-8 border-l border-white/5 bg-[#9D4EDD]/[0.02] align-bottom">
                         <a 
                           href="https://napoacademy.gumroad.com/l/ctrl-pro-lifetime"
                           data-gumroad-overlay-checkout="true"
-                          className="w-full max-w-[200px] py-3.5 rounded-full bg-gradient-to-r from-[#9D4EDD] to-[#ec4899] text-white hover:from-[#E0AAFF] hover:to-[#fbcfe8] hover:text-black transition-colors text-[9px] tracking-widest uppercase font-bold shadow-[0_0_30px_rgba(157,78,221,0.3)] hover:shadow-[0_0_40px_rgba(236,72,153,0.5)] mx-auto flex items-center justify-center"
+                          className="w-full max-w-[200px] py-3.5 rounded-full border border-[#9D4EDD]/50 text-[#E0AAFF] hover:bg-[#9D4EDD]/20 hover:border-[#9D4EDD] transition-colors text-[9px] tracking-widest uppercase font-bold mx-auto flex items-center justify-center"
                         >
                           Get Lifetime Access
                         </a>
@@ -559,7 +579,7 @@ export default function App() {
                   </div>
                   <div className="font-serif italic text-4xl text-white mb-6">$0</div>
                   <ul className="text-xs font-mono text-white/70 space-y-3 mb-8">
-                    <li className="flex items-center gap-2">✓ 3 Daily Analyses</li>
+                    <li className="flex items-center gap-2">✓ 3 Analyses / Week</li>
                     <li className="flex items-center gap-2">✓ LUFS & True Peak</li>
                     <li className="flex items-center gap-2">✓ 100% Client-Side Processing</li>
                     <li className="flex items-center gap-2">✓ Platform & Device Simulation</li>
@@ -584,7 +604,7 @@ export default function App() {
                     <span className="font-modern text-[#E0AAFF] tracking-widest text-lg font-bold uppercase">PRO</span>
                     <span className="text-[9px] text-[#E0AAFF]/70 font-mono tracking-widest uppercase border border-[#9D4EDD]/20 px-2 py-0.5 rounded">MONTHLY</span>
                   </div>
-                  <div className="font-serif italic text-4xl text-[#E0AAFF] font-bold mb-6">$4.99<span className="text-xs font-mono lowercase text-[#E0AAFF]/50 not-italic font-normal">/mo</span></div>
+                  <div className="font-serif italic text-4xl text-[#E0AAFF] font-bold mb-6">$9.99<span className="text-xs font-mono lowercase text-[#E0AAFF]/50 not-italic font-normal">/mo</span></div>
                   <ul className="text-xs font-mono text-[#E0AAFF]/80 space-y-3 mb-8">
                     <li className="flex items-center gap-2">✓ Unlimited Analyses</li>
                     <li className="flex items-center gap-2">✓ Dynamic Range (LRA)</li>
@@ -601,16 +621,40 @@ export default function App() {
                 </a>
               </div>
 
-              {/* Lifetime Access */}
-              <div className="border border-[#9D4EDD]/40 bg-[#9D4EDD]/[0.04] backdrop-blur-sm rounded-3xl p-6 relative shadow-[0_0_30px_rgba(157,78,221,0.05)] flex flex-col justify-between">
+              {/* Pro Annual */}
+              <div className="border border-[#9D4EDD] bg-[#9D4EDD]/[0.06] backdrop-blur-sm rounded-3xl p-6 relative shadow-[0_0_30px_rgba(157,78,221,0.2)] flex flex-col justify-between">
                 <div className="absolute top-4 right-4 bg-[#9D4EDD] text-white text-[8px] font-mono tracking-widest uppercase px-3 py-1 rounded-full">
                   BEST VALUE
                 </div>
                 <div>
                   <div className="flex justify-between items-center mb-4 mt-2">
+                    <span className="font-modern text-[#E0AAFF] tracking-widest text-lg font-bold uppercase">PRO</span>
+                    <span className="text-[9px] text-[#E0AAFF]/70 font-mono tracking-widest uppercase border border-[#9D4EDD]/20 px-2 py-0.5 rounded">ANNUAL</span>
+                  </div>
+                  <div className="font-serif italic text-4xl text-[#E0AAFF] font-bold mb-6">$79<span className="text-xs font-mono lowercase text-[#E0AAFF]/50 not-italic font-normal">/yr</span></div>
+                  <ul className="text-xs font-mono text-[#E0AAFF]/80 space-y-3 mb-8">
+                    <li className="flex items-center gap-2">✓ Unlimited Analyses</li>
+                    <li className="flex items-center gap-2">✓ Dynamic Range (LRA)</li>
+                    <li className="flex items-center gap-2">✓ 100% Client-Side Processing</li>
+                    <li className="flex items-center gap-2">✓ Platform & Device Simulation</li>
+                  </ul>
+                </div>
+                <a 
+                  href="https://napoacademy.gumroad.com/l/pro-annual"
+                  data-gumroad-overlay-checkout="true"
+                  className="w-full py-3.5 rounded-full bg-gradient-to-r from-[#9D4EDD] to-[#ec4899] text-white hover:from-[#E0AAFF] hover:to-[#fbcfe8] hover:text-black transition-colors text-[9px] tracking-widest uppercase font-bold shadow-[0_0_30px_rgba(157,78,221,0.3)] flex items-center justify-center"
+                >
+                  Subscribe Annually
+                </a>
+              </div>
+
+              {/* Lifetime Access */}
+              <div className="border border-[#9D4EDD]/40 bg-[#9D4EDD]/[0.02] backdrop-blur-sm rounded-3xl p-6 relative shadow-[0_0_30px_rgba(157,78,221,0.05)] flex flex-col justify-between">
+                <div>
+                  <div className="flex justify-between items-center mb-4 mt-2">
                     <span className="font-modern text-[#E0AAFF] tracking-widest text-lg font-bold uppercase">LIFETIME</span>
                   </div>
-                  <div className="font-serif italic text-4xl text-[#E0AAFF] font-bold mb-6">$29.99<span className="text-[10px] tracking-widest font-mono uppercase text-[#E0AAFF]/50 not-italic font-normal ml-2">(One-Time)</span></div>
+                  <div className="font-serif italic text-4xl text-[#E0AAFF] font-bold mb-6">$99<span className="text-[10px] tracking-widest font-mono uppercase text-[#E0AAFF]/50 not-italic font-normal ml-2">(One-Time)</span></div>
                   <ul className="text-xs font-mono text-[#E0AAFF]/80 space-y-3 mb-8">
                     <li className="flex items-center gap-2">✓ Unlimited Analyses</li>
                     <li className="flex items-center gap-2">✓ Dynamic Range (LRA)</li>
@@ -621,7 +665,7 @@ export default function App() {
                 <a 
                   href="https://napoacademy.gumroad.com/l/ctrl-pro-lifetime"
                   data-gumroad-overlay-checkout="true"
-                  className="w-full py-3.5 rounded-full bg-gradient-to-r from-[#9D4EDD] to-[#ec4899] text-white hover:from-[#E0AAFF] hover:to-[#fbcfe8] hover:text-black transition-colors text-[9px] tracking-widest uppercase font-bold shadow-[0_0_30px_rgba(157,78,221,0.3)] flex items-center justify-center"
+                  className="w-full py-3.5 rounded-full border border-[#9D4EDD]/50 text-[#E0AAFF] hover:bg-[#9D4EDD]/20 hover:border-[#9D4EDD] transition-colors text-[9px] tracking-widest uppercase font-bold flex items-center justify-center"
                 >
                   Get Lifetime Access
                 </a>

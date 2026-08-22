@@ -128,25 +128,29 @@ export default function MasterAnalyzer({ onPlaybackStart }) {
       }
 
       // 3. Free usage limits
-      const today = new Date().toISOString().split('T')[0];
-      const limitObjStr = localStorage.getItem('napbak_analyzer_limit');
+      const now = new Date();
+      const firstUseStr = localStorage.getItem('ctrl_first_use');
       
-      if (limitObjStr) {
-        try {
-          const limitObj = JSON.parse(limitObjStr);
-          if (limitObj.date === today) {
-            setRemainingFreeRuns(Math.max(0, 3 - limitObj.count));
-          } else {
-            localStorage.setItem('napbak_analyzer_limit', JSON.stringify({ date: today, count: 0 }));
-            setRemainingFreeRuns(3);
-          }
-        } catch (e) {
-          localStorage.setItem('napbak_analyzer_limit', JSON.stringify({ date: today, count: 0 }));
-          setRemainingFreeRuns(3);
-        }
+      let isPhase1 = false;
+      let log = [];
+      try { log = JSON.parse(localStorage.getItem('ctrl_analysis_log') || '[]'); } catch(e){}
+
+      if (!firstUseStr) {
+        // Not used yet, Phase 1 will start on first use
+        isPhase1 = true;
       } else {
-        localStorage.setItem('napbak_analyzer_limit', JSON.stringify({ date: today, count: 0 }));
-        setRemainingFreeRuns(3);
+        const firstUse = new Date(firstUseStr);
+        const diffDays = (now - firstUse) / (1000 * 60 * 60 * 24);
+        if (diffDays <= 7) isPhase1 = true;
+      }
+
+      // Filter log for past 7 days
+      log = log.filter(d => (now - new Date(d)) <= 7 * 24 * 60 * 60 * 1000);
+
+      if (isPhase1) {
+        setRemainingFreeRuns(log.length >= 30 ? 0 : 999);
+      } else {
+        setRemainingFreeRuns(Math.max(0, 3 - log.length));
       }
     };
 
@@ -208,21 +212,32 @@ export default function MasterAnalyzer({ onPlaybackStart }) {
 
   const incrementUsageCounter = () => {
     if (isPro) return;
-    const today = new Date().toISOString().split('T')[0];
-    const limitObjStr = localStorage.getItem('napbak_analyzer_limit');
-    let count = 0;
-    if (limitObjStr) {
-      try {
-        const limitObj = JSON.parse(limitObjStr);
-        count = limitObj.date === today ? limitObj.count + 1 : 1;
-      } catch (e) {
-        count = 1;
-      }
-    } else {
-      count = 1;
+    
+    let firstUseStr = localStorage.getItem('ctrl_first_use');
+    const now = new Date();
+    
+    if (!firstUseStr) {
+      firstUseStr = now.toISOString();
+      localStorage.setItem('ctrl_first_use', firstUseStr);
     }
-    localStorage.setItem('napbak_analyzer_limit', JSON.stringify({ date: today, count }));
-    setRemainingFreeRuns(Math.max(0, 3 - count));
+    
+    let log = [];
+    try { log = JSON.parse(localStorage.getItem('ctrl_analysis_log') || '[]'); } catch(e){}
+    
+    log.push(now.toISOString());
+    // Only keep last 7 days of logs
+    log = log.filter(d => (now - new Date(d)) <= 7 * 24 * 60 * 60 * 1000);
+    
+    localStorage.setItem('ctrl_analysis_log', JSON.stringify(log));
+
+    const firstUse = new Date(firstUseStr);
+    const diffDays = (now - firstUse) / (1000 * 60 * 60 * 24);
+    
+    if (diffDays <= 7) {
+      setRemainingFreeRuns(log.length >= 30 ? 0 : 999);
+    } else {
+      setRemainingFreeRuns(Math.max(0, 3 - log.length));
+    }
   };
 
   const processSelectedFile = (selectedFile) => {
@@ -891,7 +906,7 @@ export default function MasterAnalyzer({ onPlaybackStart }) {
             <div className="flex items-center gap-4">
               {!isPro && (
                 <span className="flex items-center gap-2">
-                  DAILY LIMIT: <span className={`font-bold ${remainingFreeRuns === 0 ? 'text-red-400 animate-pulse' : 'text-white'}`}>{remainingFreeRuns} / 3 REMAINING</span>
+                  LIMIT: <span className={`font-bold ${remainingFreeRuns === 0 ? 'text-red-400 animate-pulse' : 'text-[#E0AAFF]'}`}>{remainingFreeRuns > 100 ? 'UNLIMITED (7 DAYS)' : `${remainingFreeRuns} / 3 WEEKLY REMAINING`}</span>
                 </span>
               )}
               {!isPro && (
@@ -1523,10 +1538,10 @@ export default function MasterAnalyzer({ onPlaybackStart }) {
                   <Lock className="w-7 h-7 text-[#E0AAFF]" />
                 </div>
                 <h3 className="font-modern text-2xl text-white font-light tracking-tight mb-2">
-                  Daily limit reached
+                  Tuviste 7 días de análisis ilimitados 🎚️
                 </h3>
-                <p className="text-xs text-white/50 font-mono tracking-wide max-w-sm mb-6 leading-relaxed uppercase">
-                  You've used your 3 free mastering analyses for today. Upgrade to Pro for unlimited analyses, precise LRA measurement, and advanced streaming recommendations.
+                <p className="text-[10px] text-white/60 font-mono tracking-wide max-w-sm mb-6 leading-relaxed uppercase">
+                  Ahora te quedan 3 análisis por semana en el plan gratis. Si estás en medio de un master, no te frenes.
                 </p>
                 <div className="flex flex-col gap-3 w-full max-w-xs">
                   <a 
@@ -1534,9 +1549,18 @@ export default function MasterAnalyzer({ onPlaybackStart }) {
                     data-gumroad-overlay-checkout="true"
                     className="w-full relative overflow-hidden rounded-full border border-[#9D4EDD]/50 hover:border-[#b56ef5]/80 bg-gradient-to-r from-[#9D4EDD]/40 to-[#ec4899]/30 hover:to-[#ec4899]/50 text-white font-mono text-[10px] tracking-widest font-bold uppercase py-3.5 transition-all duration-300 shadow-[0_0_30px_rgba(157,78,221,0.2)] hover:scale-[1.02] active:scale-[0.98] text-center block"
                   >
-                    Upgrade to Pro — $4.99
+                    Desbloquear ilimitado — $9.99/mes
                   </a>
-                  
+                  <button
+                    onClick={() => {
+                      setShowPaywall(false);
+                      const element = document.getElementById('pricing');
+                      element?.scrollIntoView({ behavior: 'smooth' });
+                    }}
+                    className="w-full py-2 text-[9px] tracking-widest text-white/40 hover:text-white uppercase font-mono transition-colors"
+                  >
+                    Ver todos los planes
+                  </button>
                   {errorMsg && (
                     <div className="text-[10px] text-red-400 font-mono tracking-wider text-center mt-2 bg-red-500/10 border border-red-500/20 py-1.5 px-3 rounded-lg">
                       {errorMsg}
