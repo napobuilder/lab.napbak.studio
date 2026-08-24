@@ -185,23 +185,26 @@
     </script>
   </head>
   <body>
-    <div id="root">
-      <!-- Static SEO pre-render: Google reads this on first crawl. React replaces it on mount. -->
-      <main style="max-width:900px;margin:0 auto;padding:40px 20px;font-family:system-ui,sans-serif;color:#e0e0e0;background:#050505;">
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
 
-        <h1 style="font-size:2rem;font-weight:800;color:#fff;margin-bottom:12px;">
-          CTRL by Napbak — Free Online LUFS Meter &amp; Loudness Penalty Checker
-        </h1>
-
-        <p style="font-size:1.1rem;line-height:1.7;margin-bottom:24px;">
-          CTRL is a free, browser-based audio mastering analyzer built by <a href="https://napbak.studio" style="color:#a78bfa;">Napbak Studio</a>.
+    <!--
+      SEO CONTENT BLOCK — visually hidden from users, fully readable by search crawlers.
+      Uses the "visually-hidden" technique: content is in the DOM for Google/Bing bots
+      but completely invisible and non-interactive for real users.
+      React mounts in #root above, so there is zero FOUC (flash of unstyled content).
+    -->
+    <div aria-hidden="true" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">
+      <main>
+        <h1>CTRL by Napbak — Free Online LUFS Meter &amp; Loudness Penalty Checker</h1>
+        <p>
+          CTRL is a free, browser-based audio mastering analyzer built by <a href="https://napbak.studio">Napbak Studio</a>.
           Measure integrated loudness (LUFS) using the EBU R128 / ITU-R BS.1770 standard, detect true peak levels (dBTP)
           with 4x oversampling, calculate dynamic range (LRA), and simulate how your music sounds across all major
           streaming platforms and playback devices — 100% in your browser, no uploads, no data leaving your machine.
         </p>
-
-        <h2 style="font-size:1.4rem;font-weight:700;color:#fff;margin-bottom:12px;">Free LUFS Meter Features</h2>
-        <ul style="line-height:2;padding-left:20px;margin-bottom:24px;">
+        <h2>Free LUFS Meter Features</h2>
+        <ul>
           <li>EBU R128 / ITU-R BS.1770 compliant integrated loudness measurement (LUFS / LKFS)</li>
           <li>True Peak detection with 4x oversampling (dBTP) — streaming safe mastering</li>
           <li>Dynamic Range analysis (LRA — Loudness Range in Loudness Units)</li>
@@ -212,49 +215,35 @@
           <li>Works with WAV, MP3, FLAC, AAC, OGG — all major audio formats</li>
           <li>100% client-side processing — your audio never leaves your browser</li>
         </ul>
-
-        <h2 style="font-size:1.4rem;font-weight:700;color:#fff;margin-bottom:12px;">Who is CTRL for?</h2>
-        <p style="line-height:1.7;margin-bottom:24px;">
+        <h2>Who is CTRL for?</h2>
+        <p>
           Music producers, mixing engineers, mastering engineers, audio engineers, beatmakers, podcasters, and content creators
           who need to check loudness levels, ensure streaming compliance, and hear how their mix translates across devices
           before releasing on Spotify, Apple Music, YouTube, or any streaming platform.
           Whether you need a free LUFS meter, a loudness penalty checker, or a speaker simulator — CTRL does it all, free, online.
         </p>
-
-        <h2 style="font-size:1.4rem;font-weight:700;color:#fff;margin-bottom:12px;">Pricing</h2>
-        <ul style="line-height:2;padding-left:20px;margin-bottom:24px;">
+        <h2>Pricing</h2>
+        <ul>
           <li><strong>Free Plan:</strong> 3 analyses per day — LUFS meter, True Peak, Platform loudness penalty checker, Device speaker simulation</li>
           <li><strong>Pro Monthly ($4.99/month):</strong> Unlimited analyses, Dynamic Range (LRA) analysis, all features</li>
           <li><strong>Lifetime Access ($29.99 one-time):</strong> Unlimited analyses, Dynamic Range (LRA), all features forever — best value</li>
           <li><strong>Custom Mastering Service ($20):</strong> Handcrafted professional mastering by Napbak Studio engineers</li>
         </ul>
-
-        <h2 style="font-size:1.4rem;font-weight:700;color:#fff;margin-bottom:12px;">Common Loudness Questions</h2>
-        <dl style="line-height:1.8;margin-bottom:24px;">
-          <dt style="font-weight:700;">What LUFS should I master to for Spotify?</dt>
-          <dd style="margin-bottom:12px;padding-left:16px;">Spotify normalizes playback to -14 LUFS integrated. However, most commercial releases sit between -6 and -10 LUFS. Mastering to -14 LUFS is not required — focus on how your track sounds and let platforms handle normalization.</dd>
-          <dt style="font-weight:700;">What is the difference between LUFS and dBTP?</dt>
-          <dd style="margin-bottom:12px;padding-left:16px;">LUFS measures perceived loudness over time (how loud it sounds). dBTP (decibels True Peak) measures the absolute peak signal level. For streaming, keep True Peak at -1.0 dBTP or lower to avoid inter-sample clipping during lossy encoding (AAC, OGG).</dd>
-          <dt style="font-weight:700;">Is CTRL free to use?</dt>
-          <dd style="padding-left:16px;">Yes. CTRL offers 3 free analyses per day with no sign-up required. Upgrade to Pro for unlimited access.</dd>
+        <h2>Common Loudness Questions</h2>
+        <dl>
+          <dt>What LUFS should I master to for Spotify?</dt>
+          <dd>Spotify normalizes playback to -14 LUFS integrated. However, most commercial releases sit between -6 and -10 LUFS. Mastering to -14 LUFS is not required — focus on how your track sounds and let platforms handle normalization.</dd>
+          <dt>What is the difference between LUFS and dBTP?</dt>
+          <dd>LUFS measures perceived loudness over time (how loud it sounds). dBTP (decibels True Peak) measures the absolute peak signal level. For streaming, keep True Peak at -1.0 dBTP or lower to avoid inter-sample clipping during lossy encoding (AAC, OGG).</dd>
+          <dt>Is CTRL free to use?</dt>
+          <dd>Yes. CTRL offers 3 free analyses per day with no sign-up required. Upgrade to Pro for unlimited access.</dd>
         </dl>
-
-        <footer style="border-top:1px solid #222;padding-top:20px;margin-top:20px;">
-          <p style="margin-bottom:8px;">
-            Built by <a href="https://napbak.studio" style="color:#a78bfa;">Napbak Studio</a> —
-            independent creative studio specializing in music production tools and audio software.
-          </p>
-          <p>
-            Follow on
-            <a href="https://www.instagram.com/napbak.studio" rel="noopener noreferrer" style="color:#a78bfa;">Instagram @napbak.studio</a>
-            &nbsp;|&nbsp;
-            Contact: <a href="mailto:hello@napbak.studio" style="color:#a78bfa;">hello@napbak.studio</a>
-          </p>
+        <footer>
+          <p>Built by <a href="https://napbak.studio">Napbak Studio</a> — independent creative studio specializing in music production tools and audio software.</p>
+          <p>Follow on <a href="https://www.instagram.com/napbak.studio" rel="noopener noreferrer">Instagram @napbak.studio</a> | Contact: <a href="mailto:hello@napbak.studio">hello@napbak.studio</a></p>
         </footer>
-
       </main>
     </div>
-    <script type="module" src="/src/main.jsx"></script>
 
     <!-- Noscript fallback: SEO content for crawlers that don't execute JavaScript -->
     <noscript>
