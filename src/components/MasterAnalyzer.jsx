@@ -47,6 +47,12 @@ export default function MasterAnalyzer({ onPlaybackStart }) {
   const [manualKey, setManualKey] = useState('');
   const [showActivateInput, setShowActivateInput] = useState(false);
 
+  // Trial awareness states
+  // trialDaysLeft: null = no trial started, >0 = days remaining, 0 = just expired (first session after expiry)
+  const [trialDaysLeft, setTrialDaysLeft] = useState(null);
+  const [showTrialEndedToast, setShowTrialEndedToast] = useState(false);
+  const hasShownTrialToast = useRef(false);
+
   // --- Refs ---
   const fileInputRef = useRef(null);
   const audioRef = useRef(null);
@@ -132,25 +138,47 @@ export default function MasterAnalyzer({ onPlaybackStart }) {
       const firstUseStr = localStorage.getItem('ctrl_first_use');
       
       let isPhase1 = false;
+      let daysLeft = null;
+      let justTransitioned = false;
       let log = [];
       try { log = JSON.parse(localStorage.getItem('ctrl_analysis_log') || '[]'); } catch(e){}
 
       if (!firstUseStr) {
         // Not used yet, Phase 1 will start on first use
         isPhase1 = true;
+        daysLeft = 7;
       } else {
         const firstUse = new Date(firstUseStr);
         const diffDays = (now - firstUse) / (1000 * 60 * 60 * 24);
-        if (diffDays <= 7) isPhase1 = true;
+        if (diffDays <= 7) {
+          isPhase1 = true;
+          daysLeft = Math.ceil(7 - diffDays); // 7, 6, 5... 1
+        } else {
+          // Phase 2 — check if this is the FIRST session after trial ended
+          const trialEndedKey = 'ctrl_trial_end_shown';
+          if (!localStorage.getItem(trialEndedKey)) {
+            justTransitioned = true;
+            localStorage.setItem(trialEndedKey, '1');
+          }
+        }
       }
 
-      // Filter log for past 7 days
+      // Filter log for rolling 7-day window
       log = log.filter(d => (now - new Date(d)) <= 7 * 24 * 60 * 60 * 1000);
+
+      setTrialDaysLeft(daysLeft);
 
       if (isPhase1) {
         setRemainingFreeRuns(log.length >= 30 ? 0 : 999);
       } else {
         setRemainingFreeRuns(Math.max(0, 3 - log.length));
+      }
+
+      // Fire the soft transition toast once, non-blocking
+      if (justTransitioned && !hasShownTrialToast.current) {
+        hasShownTrialToast.current = true;
+        setShowTrialEndedToast(true);
+        setTimeout(() => setShowTrialEndedToast(false), 8000);
       }
     };
 
@@ -790,8 +818,15 @@ export default function MasterAnalyzer({ onPlaybackStart }) {
 
   const handleResetLimits = () => {
     lockPro();
+    // DEV: Full reset — clears trial timer, analysis log, and limit cache
     localStorage.removeItem('napbak_analyzer_limit');
-    setRemainingFreeRuns(3);
+    localStorage.removeItem('ctrl_first_use');
+    localStorage.removeItem('ctrl_analysis_log');
+    localStorage.removeItem('ctrl_trial_end_shown');
+    setRemainingFreeRuns(999);
+    setTrialDaysLeft(7);
+    setShowTrialEndedToast(false);
+    hasShownTrialToast.current = false;
     setAnalysisResult(null);
     setFile(null);
   };
@@ -863,6 +898,30 @@ export default function MasterAnalyzer({ onPlaybackStart }) {
 
   return (
     <div id="analyzer" className="relative w-full max-w-5xl mx-auto pt-6 pb-6 px-4 md:px-6 z-10 h-auto min-h-[500px] flex flex-col">
+
+      {/* Trial-Ended Soft Toast — non-blocking, bottom-right corner, auto-dismisses in 8s */}
+      {showTrialEndedToast && !isPro && (
+        <div className="fixed bottom-6 right-6 z-50 animate-[fadeInUp_0.4s_ease-out] max-w-xs">
+          <div className="relative bg-[#0e0e0e] border border-amber-500/30 rounded-2xl px-5 py-4 shadow-[0_0_40px_rgba(245,158,11,0.1)] backdrop-blur-xl">
+            <button
+              onClick={() => setShowTrialEndedToast(false)}
+              className="absolute top-3 right-3 text-white/30 hover:text-white/60 transition-colors text-xs font-mono"
+            >✕</button>
+            <div className="text-[9px] font-mono tracking-[0.2em] uppercase text-amber-400/70 mb-1.5">[ TRIAL ENDED ]</div>
+            <p className="text-white/80 text-sm font-light leading-snug mb-3">
+              Your 7-day unlimited trial has ended. You now have <strong className="text-white">3 analyses per week</strong> on the free plan.
+            </p>
+            <a
+              href="https://napoacademy.gumroad.com/l/pro-monthly"
+              data-gumroad-overlay-checkout="true"
+              className="block w-full text-center py-2 rounded-full bg-gradient-to-r from-[#9D4EDD]/50 to-[#ec4899]/30 hover:from-[#9D4EDD]/70 hover:to-[#ec4899]/50 text-white text-[9px] font-mono tracking-widest uppercase transition-all duration-300 border border-[#9D4EDD]/30"
+            >
+              Go unlimited — $9.99/mo
+            </a>
+          </div>
+        </div>
+      )}
+
       <audio
         ref={audioRef}
         src={audioUrl || undefined}
@@ -906,7 +965,19 @@ export default function MasterAnalyzer({ onPlaybackStart }) {
             <div className="flex items-center gap-4">
               {!isPro && (
                 <span className="flex items-center gap-2">
-                  LIMIT: <span className={`font-bold ${remainingFreeRuns === 0 ? 'text-red-400 animate-pulse' : 'text-[#E0AAFF]'}`}>{remainingFreeRuns > 100 ? 'UNLIMITED (7 DAYS)' : `${remainingFreeRuns} / 3 WEEKLY REMAINING`}</span>
+                  LIMIT: <span className={`font-bold ${
+                    remainingFreeRuns === 0 ? 'text-red-400 animate-pulse' :
+                    trialDaysLeft !== null && trialDaysLeft <= 2 ? 'text-amber-400' :
+                    'text-[#E0AAFF]'
+                  }`}>
+                    {remainingFreeRuns > 100
+                      ? trialDaysLeft !== null && trialDaysLeft <= 2
+                        ? trialDaysLeft === 1
+                          ? 'TRIAL: LAST DAY'
+                          : `TRIAL: ${trialDaysLeft} DAYS LEFT`
+                        : 'UNLIMITED (7 DAYS)'
+                      : `${remainingFreeRuns} / 3 WEEKLY REMAINING`}
+                  </span>
                 </span>
               )}
               {!isPro && (
@@ -1538,10 +1609,10 @@ export default function MasterAnalyzer({ onPlaybackStart }) {
                   <Lock className="w-7 h-7 text-[#E0AAFF]" />
                 </div>
                 <h3 className="font-modern text-2xl text-white font-light tracking-tight mb-2">
-                  Tuviste 7 días de análisis ilimitados 🎚️
+                  You had 7 days of unlimited analysis 🎚️
                 </h3>
                 <p className="text-[10px] text-white/60 font-mono tracking-wide max-w-sm mb-6 leading-relaxed uppercase">
-                  Ahora te quedan 3 análisis por semana en el plan gratis. Si estás en medio de un master, no te frenes.
+                  You now have 3 analyses per week on the free plan. Don’t stop mid-master.
                 </p>
                 <div className="flex flex-col gap-3 w-full max-w-xs">
                   <a 
@@ -1549,7 +1620,7 @@ export default function MasterAnalyzer({ onPlaybackStart }) {
                     data-gumroad-overlay-checkout="true"
                     className="w-full relative overflow-hidden rounded-full border border-[#9D4EDD]/50 hover:border-[#b56ef5]/80 bg-gradient-to-r from-[#9D4EDD]/40 to-[#ec4899]/30 hover:to-[#ec4899]/50 text-white font-mono text-[10px] tracking-widest font-bold uppercase py-3.5 transition-all duration-300 shadow-[0_0_30px_rgba(157,78,221,0.2)] hover:scale-[1.02] active:scale-[0.98] text-center block"
                   >
-                    Desbloquear ilimitado — $9.99/mes
+                    Unlock unlimited — $9.99/mo
                   </a>
                   <button
                     onClick={() => {
@@ -1559,7 +1630,7 @@ export default function MasterAnalyzer({ onPlaybackStart }) {
                     }}
                     className="w-full py-2 text-[9px] tracking-widest text-white/40 hover:text-white uppercase font-mono transition-colors"
                   >
-                    Ver todos los planes
+                    View all plans
                   </button>
                   {errorMsg && (
                     <div className="text-[10px] text-red-400 font-mono tracking-wider text-center mt-2 bg-red-500/10 border border-red-500/20 py-1.5 px-3 rounded-lg">
@@ -1618,31 +1689,112 @@ export default function MasterAnalyzer({ onPlaybackStart }) {
       </div>
 
       {import.meta.env.DEV && (
-        <div className="flex justify-center gap-3 mt-4">
-          <button
-            onClick={handleResetLimits}
-            className="text-[8px] tracking-[0.3em] font-mono uppercase text-white/30 hover:text-white/60 border border-white/5 hover:border-white/10 px-3 py-1.5 rounded-full transition-all bg-black/40"
-          >
-            [ DEV: Reset Limits (3 Left) ]
-          </button>
-          <button
-            onClick={() => {
-              if (isPro) {
-                lockPro();
-                localStorage.removeItem('napbak_pro');
-                localStorage.removeItem('napbak_pro_storage');
-              } else {
-                localStorage.setItem('napbak_pro', 'true');
-                unlockPro('dev-toggle');
-                setShowPaywall(false);
-              }
-            }}
-            className="text-[8px] tracking-[0.3em] font-mono uppercase text-white/30 hover:text-white/60 border border-white/5 hover:border-white/10 px-3 py-1.5 rounded-full transition-all bg-black/40"
-          >
-            [ DEV: Toggle Pro Mode ({isPro ? 'ON' : 'OFF'}) ]
-          </button>
+        <div className="mt-6 border border-dashed border-white/10 rounded-2xl p-4 bg-black/30">
+          <div className="text-[8px] font-mono tracking-[0.3em] uppercase text-white/20 mb-3 text-center">
+            ⚙ DEV PANEL — Trial & Freemium Testing
+          </div>
+          <div className="flex flex-wrap justify-center gap-2">
+
+            {/* Reset full */}
+            <button
+              onClick={handleResetLimits}
+              className="text-[8px] tracking-[0.2em] font-mono uppercase text-emerald-400/60 hover:text-emerald-300 border border-emerald-500/20 hover:border-emerald-500/50 px-3 py-1.5 rounded-full transition-all bg-black/40"
+            >
+              🔄 Reset Full (Day 1)
+            </button>
+
+            {/* Simular días 6 — 2 days left */}
+            <button
+              onClick={() => {
+                const fiveDaysAgo = new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString();
+                localStorage.setItem('ctrl_first_use', fiveDaysAgo);
+                localStorage.removeItem('ctrl_trial_end_shown');
+                location.reload();
+              }}
+              className="text-[8px] tracking-[0.2em] font-mono uppercase text-amber-400/60 hover:text-amber-300 border border-amber-500/20 hover:border-amber-500/50 px-3 py-1.5 rounded-full transition-all bg-black/40"
+            >
+              ⚠️ Simular Día 5 (2 days left)
+            </button>
+
+            {/* Simular día 7 — last day */}
+            <button
+              onClick={() => {
+                const sixDaysAgo = new Date(Date.now() - 6 * 24 * 60 * 60 * 1000).toISOString();
+                localStorage.setItem('ctrl_first_use', sixDaysAgo);
+                localStorage.removeItem('ctrl_trial_end_shown');
+                location.reload();
+              }}
+              className="text-[8px] tracking-[0.2em] font-mono uppercase text-orange-400/60 hover:text-orange-300 border border-orange-500/20 hover:border-orange-500/50 px-3 py-1.5 rounded-full transition-all bg-black/40"
+            >
+              🔥 Simular Día 7 (LAST DAY)
+            </button>
+
+            {/* Simular día 8 — trial vencido + toast */}
+            <button
+              onClick={() => {
+                const eightDaysAgo = new Date(Date.now() - 8 * 24 * 60 * 60 * 1000).toISOString();
+                localStorage.setItem('ctrl_first_use', eightDaysAgo);
+                localStorage.removeItem('ctrl_trial_end_shown');
+                location.reload();
+              }}
+              className="text-[8px] tracking-[0.2em] font-mono uppercase text-red-400/60 hover:text-red-300 border border-red-500/20 hover:border-red-500/50 px-3 py-1.5 rounded-full transition-all bg-black/40"
+            >
+              💀 Simular Día 8 (trial ended + toast)
+            </button>
+
+            {/* Mostrar toast ahora sin reload */}
+            <button
+              onClick={() => {
+                setShowTrialEndedToast(true);
+                setTimeout(() => setShowTrialEndedToast(false), 8000);
+              }}
+              className="text-[8px] tracking-[0.2em] font-mono uppercase text-purple-400/60 hover:text-purple-300 border border-purple-500/20 hover:border-purple-500/50 px-3 py-1.5 rounded-full transition-all bg-black/40"
+            >
+              👁 Preview Toast (sin reload)
+            </button>
+
+            {/* Mostrar paywall ahora */}
+            <button
+              onClick={() => setShowPaywall(true)}
+              className="text-[8px] tracking-[0.2em] font-mono uppercase text-pink-400/60 hover:text-pink-300 border border-pink-500/20 hover:border-pink-500/50 px-3 py-1.5 rounded-full transition-all bg-black/40"
+            >
+              🔒 Preview Paywall
+            </button>
+
+            {/* Toggle Pro */}
+            <button
+              onClick={() => {
+                if (isPro) {
+                  lockPro();
+                  localStorage.removeItem('napbak_pro');
+                  localStorage.removeItem('napbak_pro_storage');
+                } else {
+                  localStorage.setItem('napbak_pro', 'true');
+                  unlockPro('dev-toggle');
+                  setShowPaywall(false);
+                }
+              }}
+              className={`text-[8px] tracking-[0.2em] font-mono uppercase border px-3 py-1.5 rounded-full transition-all bg-black/40 ${
+                isPro
+                  ? 'text-[#E0AAFF]/60 hover:text-[#E0AAFF] border-[#9D4EDD]/20 hover:border-[#9D4EDD]/50'
+                  : 'text-white/30 hover:text-white/60 border-white/5 hover:border-white/10'
+              }`}
+            >
+              ⚡ Pro Mode: {isPro ? 'ON' : 'OFF'}
+            </button>
+
+          </div>
+
+          {/* Estado actual del trial */}
+          <div className="mt-3 text-center text-[7px] font-mono text-white/20 tracking-widest">
+            STATE: first_use={localStorage.getItem('ctrl_first_use') ? new Date(localStorage.getItem('ctrl_first_use')).toLocaleDateString() : 'none'} |
+            trial_days_left={trialDaysLeft ?? 'n/a'} |
+            runs_left={remainingFreeRuns > 100 ? '∞' : remainingFreeRuns} |
+            pro={isPro ? 'YES' : 'NO'}
+          </div>
         </div>
       )}
+
     </div>
   );
 }
