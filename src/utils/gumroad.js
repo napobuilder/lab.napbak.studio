@@ -10,6 +10,7 @@
 const CTRL_PRO_PRODUCT_IDS = [
   'cz2M8k0lmJU1l8FLSIL1yg==',   // CTRL PRO Monthly  ← ID verificado via API
   '3nkkWxZTDDOanW-4mxvgng==',   // CTRL PRO Lifetime
+  'PKracdidhmCVI-bvcWgd4w==',   // CTRL PRO Annual   ← Agregado 2026-08-24
 ];
 
 export async function verifyGumroadLicense(licenseKey, productId = null) {
