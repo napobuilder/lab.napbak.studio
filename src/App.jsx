@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import MasterAnalyzer from './components/MasterAnalyzer';
+import NapbakPiano from './components/NapbakPiano';
 import { useProStore } from './store/useProStore';
 
 const faqData = [
@@ -58,6 +59,34 @@ export default function App() {
 
   // Estados Pro usando Zustand
   const { isPro, unlockPro, lockPro } = useProStore();
+
+  // Routing view state (supports both '/' and '/piano')
+  const [currentView, setCurrentView] = useState(() => {
+    return window.location.pathname === '/piano' ? 'piano' : 'analyzer';
+  });
+
+  const navigateTo = (view) => {
+    setCurrentView(view);
+    const newPath = view === 'piano' ? '/piano' : '/';
+    window.history.pushState({}, '', newPath);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  useEffect(() => {
+    const handlePopState = () => {
+      setCurrentView(window.location.pathname === '/piano' ? 'piano' : 'analyzer');
+    };
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
+
+  useEffect(() => {
+    if (currentView === 'piano') {
+      document.title = "Napbak Concert Grand | Free Online Acoustic Grand Piano";
+    } else {
+      document.title = "CTRL by Napbak | Free Online LUFS Meter, Loudness Penalty Checker & Speaker Simulator";
+    }
+  }, [currentView]);
 
   const cursorRef = useRef(null);
   const cursorInnerRef = useRef(null);
@@ -237,9 +266,18 @@ export default function App() {
 
   const scrollTo = (e, id) => {
     e.preventDefault();
-    const element = document.getElementById(id);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
+    if (currentView !== 'analyzer') {
+      setCurrentView('analyzer');
+      window.history.pushState({}, '', '/');
+      setTimeout(() => {
+        const element = document.getElementById(id);
+        if (element) element.scrollIntoView({ behavior: 'smooth' });
+      }, 50);
+    } else {
+      const element = document.getElementById(id);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+      }
     }
   };
 
@@ -322,28 +360,27 @@ export default function App() {
         </div>
 
         <div className="absolute inset-0 hidden md:flex justify-center items-center pointer-events-none z-20">
-          <div className="flex gap-8 text-[10px] tracking-widest uppercase pointer-events-auto">
-            <a 
-              href="#analyzer" 
-              onClick={(e) => scrollTo(e, 'analyzer')} 
-              className="hover:text-white transition-colors cursor-pointer text-[#9D4EDD] font-bold"
+          <div className="flex items-center gap-1 bg-white/[0.04] border border-white/10 p-1 rounded-full pointer-events-auto backdrop-blur-md shadow-lg shadow-black/40">
+            <button
+              onClick={() => navigateTo('analyzer')}
+              className={`px-4 py-1.5 rounded-full font-mono text-[10px] tracking-widest uppercase transition-all duration-300 flex items-center gap-1.5 cursor-pointer ${
+                currentView === 'analyzer'
+                  ? 'bg-[#9D4EDD] text-white font-bold shadow-md shadow-[#9D4EDD]/30'
+                  : 'text-white/60 hover:text-white'
+              }`}
             >
-              Analyzer
-            </a>
-            <a 
-              href="#features" 
-              onClick={(e) => scrollTo(e, 'features')} 
-              className="hover:text-white transition-colors cursor-pointer text-white/70 font-bold"
+              <span>🎚️</span> ANALYZER
+            </button>
+            <button
+              onClick={() => navigateTo('piano')}
+              className={`px-4 py-1.5 rounded-full font-mono text-[10px] tracking-widest uppercase transition-all duration-300 flex items-center gap-1.5 cursor-pointer ${
+                currentView === 'piano'
+                  ? 'bg-[#9D4EDD] text-white font-bold shadow-md shadow-[#9D4EDD]/30'
+                  : 'text-white/60 hover:text-white'
+              }`}
             >
-              Features
-            </a>
-            <a 
-              href="#pricing" 
-              onClick={(e) => scrollTo(e, 'pricing')} 
-              className="hover:text-white transition-colors cursor-pointer text-white/70 font-bold"
-            >
-              Pricing
-            </a>
+              <span>🎹</span> CONCERT PIANO
+            </button>
           </div>
         </div>
 
@@ -367,10 +404,45 @@ export default function App() {
 
       <main role="main" className="transition-opacity duration-1000 delay-300 opacity-100">
         
-        {/* Mastering & Spectrum Analyzer directly in Hero position */}
-        <div className="pt-24">
-          <MasterAnalyzer />
-        </div>
+        {currentView === 'piano' ? (
+          /* Dedicated Piano Workstation View */
+          <div className="pt-24 min-h-[85vh]">
+            <NapbakPiano onBack={() => navigateTo('analyzer')} isDedicatedPage={true} />
+          </div>
+        ) : (
+          /* Master Analyzer Main Landing View */
+          <>
+            <div className="pt-24">
+              <MasterAnalyzer />
+            </div>
+
+            {/* Teaser Banner to Piano View */}
+            <div className="max-w-5xl mx-auto px-6 mt-4 mb-8">
+              <div className="relative rounded-2xl border border-[#9D4EDD]/30 bg-gradient-to-r from-[#9D4EDD]/10 via-[#0a0a0a] to-[#0a0a0a] p-6 flex flex-col sm:flex-row items-center justify-between gap-4 backdrop-blur-md shadow-[0_10px_40px_rgba(157,78,221,0.05)]">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-xl bg-[#9D4EDD]/20 border border-[#9D4EDD]/40 flex items-center justify-center text-2xl shadow-lg shadow-[#9D4EDD]/20">
+                    🎹
+                  </div>
+                  <div>
+                    <span className="text-[9px] font-mono tracking-widest text-[#E0AAFF] uppercase font-bold block">
+                      NEW VIRTUAL INSTRUMENT
+                    </span>
+                    <h3 className="font-modern text-lg md:text-xl text-white font-light tracking-tight">
+                      Napbak <span className="font-serif italic text-[#E0AAFF]">Concert Grand Piano</span>
+                    </h3>
+                    <p className="text-xs text-white/40 font-mono mt-0.5">
+                      Play acoustic Steinway in your browser with MIDI &amp; studio reverb.
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => navigateTo('piano')}
+                  className="px-5 py-2.5 rounded-full bg-[#9D4EDD] hover:bg-[#E0AAFF] text-white hover:text-black font-mono text-[10px] font-bold tracking-widest uppercase transition-all shadow-lg shadow-[#9D4EDD]/20 flex items-center gap-2 group whitespace-nowrap active:scale-95 cursor-pointer"
+                >
+                  OPEN PIANO WORKSTATION <span className="group-hover:translate-x-1 transition-transform">→</span>
+                </button>
+              </div>
+            </div>
 
         {/* Features / Marketing Section */}
         <section id="features" aria-label="Engine features and capabilities" className="py-24 border-t border-white/5 relative z-10 bg-[#050505]/20 backdrop-blur-sm">
@@ -753,6 +825,8 @@ export default function App() {
             </div>
           </div>
         </section>
+        </>
+        )}
 
         <footer className="w-full py-16 px-6 md:px-12 border-t border-white/5 relative z-10 bg-[#050505] text-[#9ca3af]">
           <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-10 md:gap-6">
@@ -780,7 +854,8 @@ export default function App() {
             {/* Column 2: Navigation Links */}
             <div className="flex flex-col items-start gap-3">
               <span className="text-[9px] tracking-widest font-mono uppercase text-white font-bold mb-2">QUICK LINKS</span>
-              <a href="#analyzer" onClick={(e) => scrollTo(e, 'analyzer')} className="text-[10px] tracking-wide font-mono hover:text-[#E0AAFF] transition-colors">Analyzer</a>
+              <button onClick={() => navigateTo('analyzer')} className="text-[10px] tracking-wide font-mono hover:text-[#E0AAFF] transition-colors cursor-pointer text-left">Analyzer</button>
+              <button onClick={() => navigateTo('piano')} className="text-[10px] tracking-wide font-mono hover:text-[#E0AAFF] transition-colors cursor-pointer text-left text-[#E0AAFF]">Concert Piano</button>
               <a href="#features" onClick={(e) => scrollTo(e, 'features')} className="text-[10px] tracking-wide font-mono hover:text-[#E0AAFF] transition-colors">Features</a>
               <a href="#pricing" onClick={(e) => scrollTo(e, 'pricing')} className="text-[10px] tracking-wide font-mono hover:text-[#E0AAFF] transition-colors">Pricing</a>
               <a href="#faq" onClick={(e) => scrollTo(e, 'faq')} className="text-[10px] tracking-wide font-mono hover:text-[#E0AAFF] transition-colors">FAQ</a>
