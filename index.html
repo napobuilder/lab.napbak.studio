@@ -192,51 +192,16 @@
     </script>
   </head>
     <div id="root">
-      <!-- Semantic Initial HTML for Search Crawlers (Cleanly replaced on React mount) -->
-      <main style="max-width: 900px; margin: 0 auto; padding: 40px 20px; color: #fff; font-family: system-ui, -apple-system, sans-serif;">
-        <h1 style="font-size: 2rem; font-weight: 700; margin-bottom: 1rem; color: #ffffff;">CTRL by Napbak — Free Online LUFS Meter &amp; Loudness Penalty Checker</h1>
-        <p style="font-size: 1.1rem; color: #9ca3af; line-height: 1.6; margin-bottom: 2rem;">
-          CTRL is a free, browser-based audio mastering analyzer built by <a href="https://napbak.studio" style="color: #9D4EDD;">Napbak Studio</a>.
-          Measure integrated loudness (LUFS) using the EBU R128 / ITU-R BS.1770 standard, detect true peak levels (dBTP)
-          with 4x oversampling, calculate dynamic range (LRA), and simulate how your music sounds across all major
-          streaming platforms and playback devices — 100% in your browser, no uploads, no data leaving your machine.
-        </p>
-        <h2 style="font-size: 1.4rem; color: #ffffff; margin-top: 1.5rem; margin-bottom: 0.75rem;">Free LUFS Meter Features</h2>
-        <ul style="color: #d1d5db; line-height: 1.8; margin-bottom: 1.5rem; padding-left: 1.5rem;">
-          <li>EBU R128 / ITU-R BS.1770 compliant integrated loudness measurement (LUFS / LKFS)</li>
-          <li>True Peak detection with 4x oversampling (dBTP) — streaming safe mastering</li>
-          <li>Dynamic Range analysis (LRA — Loudness Range in Loudness Units)</li>
-          <li>Loudness penalty checker for Spotify (-14 LUFS), Apple Music (-16 LUFS), YouTube (-14 LUFS), Tidal, Amazon Music, SoundCloud, Beatport, Deezer, Pandora</li>
-          <li>Device speaker simulation: iPhone speakers, Car stereo, Laptop, Headphones, AirPods, Bluetooth Speaker, Gaming Headset, Tablet</li>
-          <li>Mono compatibility check</li>
-          <li>Real-time spectrum analyzer</li>
-          <li>Works with WAV, MP3, FLAC, AAC, OGG — all major audio formats</li>
-          <li>100% client-side processing — your audio never leaves your browser</li>
-        </ul>
-        <h2 style="font-size: 1.4rem; color: #ffffff; margin-top: 1.5rem; margin-bottom: 0.75rem;">Who is CTRL for?</h2>
-        <p style="color: #9ca3af; line-height: 1.6; margin-bottom: 1.5rem;">
-          Music producers, mixing engineers, mastering engineers, audio engineers, beatmakers, podcasters, and content creators
-          who need to check loudness levels, ensure streaming compliance, and hear how their mix translates across devices
-          before releasing on Spotify, Apple Music, YouTube, or any streaming platform.
-        </p>
-        <h2 style="font-size: 1.4rem; color: #ffffff; margin-top: 1.5rem; margin-bottom: 0.75rem;">Pricing</h2>
-        <ul style="color: #d1d5db; line-height: 1.8; margin-bottom: 1.5rem; padding-left: 1.5rem;">
-          <li><strong style="color: #ffffff;">Free Plan:</strong> 3 analyses per week — LUFS meter, True Peak, Platform loudness penalty checker, Device speaker simulation</li>
-          <li><strong style="color: #ffffff;">Pro Monthly ($9.99/month):</strong> Unlimited analyses, Dynamic Range (LRA) analysis, all features</li>
-          <li><strong style="color: #ffffff;">Pro Annual ($79/year):</strong> Unlimited analyses, Dynamic Range (LRA) analysis, all features — best value</li>
-          <li><strong style="color: #ffffff;">Lifetime Access ($99 one-time):</strong> Unlimited analyses, Dynamic Range (LRA), all features forever</li>
-        </ul>
-        <h2 style="font-size: 1.4rem; color: #ffffff; margin-top: 1.5rem; margin-bottom: 0.75rem;">Common Loudness Questions</h2>
-        <div style="color: #d1d5db; line-height: 1.6; margin-bottom: 2rem;">
-          <h3 style="font-size: 1.1rem; color: #ffffff; margin-top: 1rem;">What LUFS should I master to for Spotify?</h3>
-          <p style="color: #9ca3af;">Spotify normalizes playback to -14 LUFS integrated. However, most commercial releases sit between -6 and -10 LUFS. Mastering to -14 LUFS is not required — focus on how your track sounds and let platforms handle normalization.</p>
-          <h3 style="font-size: 1.1rem; color: #ffffff; margin-top: 1rem;">What is the difference between LUFS and dBTP?</h3>
-          <p style="color: #9ca3af;">LUFS measures perceived loudness over time (how loud it sounds). dBTP (decibels True Peak) measures the absolute peak signal level. For streaming, keep True Peak at -1.0 dBTP or lower to avoid inter-sample clipping during lossy encoding (AAC, OGG).</p>
+      <div style="min-height: 100vh; background-color: #050505; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #ffffff; font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', Roboto, sans-serif; text-align: center; padding: 20px;">
+        <div style="display: inline-flex; align-items: center; gap: 8px; border: 1px solid rgba(157, 78, 221, 0.3); background: rgba(157, 78, 221, 0.08); padding: 4px 12px; border-radius: 9999px; margin-bottom: 16px;">
+          <span style="width: 6px; height: 6px; border-radius: 50%; background-color: #9D4EDD;"></span>
+          <span style="font-family: monospace; font-size: 10px; letter-spacing: 0.2em; color: #E0AAFF; text-transform: uppercase;">DSP ENGINE</span>
         </div>
-        <footer style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1.5rem; color: #6b7280; font-size: 0.875rem;">
-          <p>Built by <a href="https://napbak.studio" style="color: #9D4EDD;">Napbak Studio</a> — independent creative studio specializing in music production tools and audio software.</p>
-        </footer>
-      </main>
+        <h1 style="font-size: 1.5rem; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; margin: 0 0 8px 0; color: #ffffff;">CTRL <span style="color: #9D4EDD;">by Napbak</span></h1>
+        <p style="font-size: 0.75rem; letter-spacing: 0.1em; color: rgba(255, 255, 255, 0.45); text-transform: uppercase; font-family: monospace; margin: 0 0 24px 0;">Online LUFS Meter &amp; Loudness Analyzer</p>
+        <div style="width: 42px; height: 2px; background: linear-gradient(90deg, #9D4EDD, #5a189a); border-radius: 2px; opacity: 0.8;"></div>
+        <span style="margin-top: 12px; font-size: 9px; font-family: monospace; letter-spacing: 0.25em; color: rgba(255, 255, 255, 0.25); text-transform: uppercase;">INITIALIZING DSP CORE...</span>
+      </div>
     </div>
     <script type="module" src="/src/main.jsx"></script>
 
