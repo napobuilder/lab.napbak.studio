@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import MasterAnalyzer from './components/MasterAnalyzer';
 import NapbakPiano from './components/NapbakPiano';
+import { pianoEngine } from './utils/NapbakPianoEngine';
 import { useProStore } from './store/useProStore';
 
 const faqData = [
@@ -91,6 +92,11 @@ export default function App() {
   const cursorRef = useRef(null);
   const cursorInnerRef = useRef(null);
   const canvasRef = useRef(null);
+
+  // Precarga silenciosa en segundo plano de los samples del piano
+  useEffect(() => {
+    pianoEngine.preload();
+  }, []);
 
   // Sincronizar estado PRO reactivo por si hay cambios en localStorage de la versión anterior
   useEffect(() => {
