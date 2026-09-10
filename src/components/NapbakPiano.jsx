@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { pianoEngine } from '../utils/NapbakPianoEngine';
 import { parseMidiFile, exportMidiFile } from '../utils/midiHandler';
+import NapbakPianoVSTShowcase from './NapbakPianoVSTShowcase';
 import { 
   Volume2, 
   Sparkles, 
@@ -1291,6 +1292,10 @@ export default function NapbakPiano({ onBack, isDedicatedPage = false }) {
         </div>
 
       </div>
+
+      {/* Pro Virtual Instrument Showcase (Spitfire & Native Instruments Style) */}
+      <NapbakPianoVSTShowcase />
+
     </section>
   );
 }
