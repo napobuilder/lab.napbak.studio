@@ -1,57 +1,17 @@
 import React, { useState, useRef, useEffect } from 'react';
 import MasterAnalyzer from './components/MasterAnalyzer';
 import NapbakPiano from './components/NapbakPiano';
+import DualReferenceComparator from './components/DualReferenceComparator';
 import { pianoEngine } from './utils/NapbakPianoEngine';
 import { useProStore } from './store/useProStore';
-
-const faqData = [
-  {
-    question: "My track is -8 LUFS, what does this mean?",
-    answer: "Excellent! A master at -8 LUFS is powerful, dense, and competitive. You are in the ideal zone for modern commercial music. When you measure loudness, you'll see that while platforms normalize playback to around -14 LUFS, a master at -8 LUFS retains the energy, body, and punch needed for clubs, festivals, car audio, and download platforms.\n\nThink of major hits from Skrillex (-8 LUFS), the synthwave grooves of The Midnight (-8 to -9 LUFS), or even my own masters as Napbak, where I regularly master at -7, -8, or -9 LUFS to protect transient weight. We prioritize dynamic impact over arbitrary streaming targets to ensure your track sounds massive on any sound system."
-  },
-  {
-    question: "Is -14 LUFS a must for streaming platforms?",
-    answer: "Absolutely not! -14 LUFS is simply an alignment target for streaming services, not a creative rule for audio production. Music is meant to be enjoyed across many formats—vinyl, CDs, DJ pools, club sound systems, and direct digital downloads—each requiring its own energy level.\n\nMost modern commercial masters sit comfortably between -6 and -12 LUFS integrated. Artists master louder because the compression and saturation are essential to the sound's character. Focus on mix dynamics and overall translation rather than chasing a single loudness target."
-  },
-  {
-    question: "Why do streaming platforms normalize audio levels?",
-    answer: "Normalization is designed to provide a consistent listening experience across playlists, preventing listeners from constantly adjusting their volume. However, normalization is a simple gain reduction, not dynamic compression.\n\nIf your master is loud, it retains all its saturation, transient details, and punch even when turned down by the playback software. Furthermore, many listeners turn normalization off, and it does not apply to physical formats or download sites."
-  },
-  {
-    question: "What's the loudness war and should I care?",
-    answer: "The loudness war was the industry-wide race to make tracks as loud as possible to stand out on the radio, peaking in the 2000s. Some albums reached a crushed -4 or -3 LUFS, sacrificing all dynamics. Today, we focus on a much better balance.\n\nModern mastering values both loudness and dynamics. With CTRL by Napbak, you can preview exactly how your mix translates. While a heavy Rammstein track might sit at a dense -6 or -7 LUFS (e.g. 'Du Hast' or 'Deutschland'), a melodic acoustic song might sound best at -12 LUFS. It is entirely genre and vibe dependent."
-  },
-  {
-    question: "How loud are popular songs really?",
-    answer: "Usually much louder than the streaming targets! Modern electronic music regularly hits -6 to -8 LUFS, hip-hop averages -8 to -9 LUFS, and rock releases sit between -7 and -9 LUFS. Only highly acoustic, classical, or jazz genres sit closer to -16 or -20 LUFS.\n\nThe average commercial upload is around -10 LUFS. Artists choose loudness for artistic reasons, not platform guidelines. Use CTRL to analyze your favorite reference tracks and check their actual levels to match the energy that fits your vision."
-  },
-  {
-    question: "How can I make my track louder while staying LUFS-safe?",
-    answer: "To increase loudness while keeping your mix clear and transient-heavy:\n\n1. Use saturation to add harmonics and increase perceived loudness without raising peak levels.\n2. Apply compression in stages (small gain reduction across multiple plugins in your DAW).\n3. Control the sub-bass frequencies and low-end build-up that eat up headroom.\n4. Always leave a ceiling of -1.0 dBTP on your final limiter to prevent distortion when converting your WAV to lossy streaming formats (AAC/Ogg)."
-  },
-  {
-    question: "What's the difference between LUFS and dB?",
-    answer: "dB measures raw signal levels (peaks), while LUFS (Loudness Units Full Scale) measures perceived loudness—how loud a track actually sounds to human ears by accounting for frequency sensitivity.\n\nThink of dB like a speedometer and LUFS like how fast the car feels. A motorcycle at 60mph feels much faster than a luxury sedan at 60mph. Same speed, different sensation. Mastering to LUFS gives more consistent results across different playback systems."
-  },
-  {
-    question: "Should I master differently for each platform?",
-    answer: "It is always better to focus on creating one outstanding master that sounds incredible overall. A great master will translate beautifully on earbuds, car speakers, and club rigs alike.\n\nPlatforms use different targets (Spotify at -14, Apple Music at -16, SoundCloud and Beatport with no normalization). Focus on mastering your track to its optimal dynamic sweet spot, and let the platforms' engines handle the volume adjustments."
-  },
-  {
-    question: "Should I avoid the loudness penalty?",
-    answer: "Not at all. The loudness 'penalty' is simply a volume reduction on the player side. It does not alter your transient response or mix balance.\n\nIf you decide to work with me for a handcrafted master (available through our Custom Mastering service for $20), I will always prioritize weight, punch, and clarity over algorithm targets. A powerful -9 LUFS master will sound much more impactful than a weak -14 LUFS master, even after normalization."
-  },
-  {
-    question: "How do different playback systems affect loudness?",
-    answer: "Every system colors your sound differently! Car stereos heavily boost bass frequencies, phone speakers roll off everything below 200Hz, and laptop speakers boost the mid presence. \n\nOur built-in speaker simulations let you preview these translation issues in real-time. Testing your master across these EQs helps you make adjustments in your DAW so your mix translates perfectly everywhere."
-  },
-  {
-    question: "How accurate are these simulations?",
-    answer: "Our platform penalty calculations are fully compliant with standard EBU R128 and ITU-R BS.1770 algorithms, matching streaming normalization engines with 100% accuracy. \n\nThe device EQ profiles are modeled directly from actual speaker responses. For the best accuracy, we recommend listening through flat studio monitors or high-quality headphones, allowing you to hear exactly how the frequency balance and dynamics translate."
-  }
-];
+import { useLanguageStore } from './store/useLanguageStore';
+import { translations, faqDataByLang } from './utils/translations';
 
 export default function App() {
+  const { lang, setLang } = useLanguageStore();
+  const t = translations[lang] || translations.en;
+  const currentFaq = faqDataByLang[lang] || faqDataByLang.en;
+
   const [openFaq, setOpenFaq] = useState(null);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isDotStolen, setIsDotStolen] = useState(false);
@@ -83,11 +43,11 @@ export default function App() {
 
   useEffect(() => {
     if (currentView === 'piano') {
-      document.title = "Napbak Concert Grand | Free Online Acoustic Grand Piano";
+      document.title = lang === 'es' ? "Napbak Concert Grand | Piano Acústico de Concierto Online Gratis" : "Napbak Concert Grand | Free Online Acoustic Grand Piano";
     } else {
-      document.title = "CTRL by Napbak | Free Online LUFS Meter, Loudness Penalty Checker & Speaker Simulator";
+      document.title = t.seo.title;
     }
-  }, [currentView]);
+  }, [currentView, lang, t]);
 
   const cursorRef = useRef(null);
   const cursorInnerRef = useRef(null);
@@ -362,7 +322,7 @@ export default function App() {
               >.</span>
             </span>
           </h1>
-          <span className="text-[8px] tracking-[0.4em] text-[#9ca3af] uppercase mt-1">SPOTIFY LOUDNESS CHECKER</span>
+          <span className="text-[8px] tracking-[0.4em] text-[#9ca3af] uppercase mt-1">{t.nav.subtitle}</span>
         </div>
 
         <div className="absolute inset-0 hidden md:flex justify-center items-center pointer-events-none z-20">
@@ -375,7 +335,7 @@ export default function App() {
                   : 'text-white/60 hover:text-white'
               }`}
             >
-              <span>🎚️</span> ANALYZER
+              <span>🎚️</span> {t.nav.analyzer}
             </button>
             <button
               onClick={() => navigateTo('piano')}
@@ -385,16 +345,42 @@ export default function App() {
                   : 'text-white/60 hover:text-white'
               }`}
             >
-              <span>🎹</span> CONCERT PIANO
+              <span>🎹</span> {t.nav.piano}
             </button>
           </div>
         </div>
 
-        <div className="flex items-center justify-end gap-3 lg:gap-6 relative z-10 flex-1">
+        <div className="flex items-center justify-end gap-2.5 sm:gap-4 relative z-10 flex-1">
+          {/* Language Switcher ES | EN */}
+          <div className="flex items-center bg-white/[0.05] border border-white/10 rounded-full p-0.5 backdrop-blur-md">
+            <button
+              onClick={() => setLang('es')}
+              className={`px-2.5 py-1 rounded-full text-[9px] font-mono tracking-widest uppercase transition-all cursor-pointer ${
+                lang === 'es' 
+                  ? 'bg-[#9D4EDD] text-white font-bold shadow-sm shadow-[#9D4EDD]/40' 
+                  : 'text-white/40 hover:text-white'
+              }`}
+              title="Cambiar a Español"
+            >
+              ES
+            </button>
+            <button
+              onClick={() => setLang('en')}
+              className={`px-2.5 py-1 rounded-full text-[9px] font-mono tracking-widest uppercase transition-all cursor-pointer ${
+                lang === 'en' 
+                  ? 'bg-[#9D4EDD] text-white font-bold shadow-sm shadow-[#9D4EDD]/40' 
+                  : 'text-white/40 hover:text-white'
+              }`}
+              title="Switch to English"
+            >
+              EN
+            </button>
+          </div>
+
           {/* Botón PRO reactivo en Nav */}
           {isPro ? (
             <span className="text-[9px] md:text-[10px] tracking-widest text-[#E0AAFF] font-bold border border-[#9D4EDD]/30 bg-[#9D4EDD]/10 px-4 py-2 rounded-full hidden sm:block">
-              PRO ACTIVE
+              {t.nav.proActive}
             </span>
           ) : (
             <a 
@@ -402,7 +388,7 @@ export default function App() {
               data-gumroad-overlay-checkout="true"
               className="text-[9px] md:text-[10px] tracking-widest bg-[#9D4EDD] text-white border border-[#9D4EDD] px-4 py-2 rounded-full hover:bg-[#E0AAFF] hover:border-[#E0AAFF] hover:text-black transition-all font-bold hidden sm:block shadow-lg shadow-[#9D4EDD]/10 text-center"
             >
-              GET PRO
+              {t.nav.getPro}
             </a>
           )}
         </div>
@@ -422,45 +408,20 @@ export default function App() {
               <MasterAnalyzer />
             </div>
 
-            {/* Teaser Banner to Piano View */}
-            <div className="max-w-5xl mx-auto px-6 mt-4 mb-8">
-              <div className="relative rounded-2xl border border-[#9D4EDD]/30 bg-gradient-to-r from-[#9D4EDD]/10 via-[#0a0a0a] to-[#0a0a0a] p-6 flex flex-col sm:flex-row items-center justify-between gap-4 backdrop-blur-md shadow-[0_10px_40px_rgba(157,78,221,0.05)]">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-[#9D4EDD]/20 border border-[#9D4EDD]/40 flex items-center justify-center text-2xl shadow-lg shadow-[#9D4EDD]/20">
-                    🎹
-                  </div>
-                  <div>
-                    <span className="text-[9px] font-mono tracking-widest text-[#E0AAFF] uppercase font-bold block">
-                      NEW VIRTUAL INSTRUMENT
-                    </span>
-                    <h3 className="font-modern text-lg md:text-xl text-white font-light tracking-tight">
-                      Napbak <span className="font-serif italic text-[#E0AAFF]">Concert Grand Piano</span>
-                    </h3>
-                    <p className="text-xs text-white/40 font-mono mt-0.5">
-                      Play acoustic Steinway in your browser with MIDI &amp; studio reverb.
-                    </p>
-                  </div>
-                </div>
-                <button
-                  onClick={() => navigateTo('piano')}
-                  className="px-5 py-2.5 rounded-full bg-[#9D4EDD] hover:bg-[#E0AAFF] text-white hover:text-black font-mono text-[10px] font-bold tracking-widest uppercase transition-all shadow-lg shadow-[#9D4EDD]/20 flex items-center gap-2 group whitespace-nowrap active:scale-95 cursor-pointer"
-                >
-                  OPEN PIANO WORKSTATION <span className="group-hover:translate-x-1 transition-transform">→</span>
-                </button>
-              </div>
-            </div>
+            {/* Dual A/B Reference Comparator */}
+            <DualReferenceComparator />
 
         {/* Features / Marketing Section */}
         <section id="features" aria-label="Engine features and capabilities" className="py-24 border-t border-white/5 relative z-10 bg-[#050505]/20 backdrop-blur-sm">
           <div className="max-w-5xl mx-auto px-6">
             
             <div className="flex flex-col items-center text-center mb-16">
-              <h2 className="text-[10px] tracking-[0.5em] text-[#9D4EDD] mb-4">01. ENGINE FEATURES</h2>
+              <h2 className="text-[10px] tracking-[0.5em] text-[#9D4EDD] mb-4">{t.features.tag}</h2>
               <h3 className="font-modern text-3xl md:text-5xl font-light text-white tracking-tighter">
-                Precision technology for your <span className="font-serif italic text-white/70">masters</span>
+                {t.features.title} <span className="font-serif italic text-white/70">{t.features.titleAccent}</span>
               </h3>
               <p className="text-xs text-[#9ca3af]/60 uppercase tracking-[0.2em] font-mono mt-2">
-                Monitor the behavior of your mastering according to international standards
+                {t.features.subtitle}
               </p>
             </div>
 
@@ -472,9 +433,9 @@ export default function App() {
                     <path strokeLinecap="round" strokeLinejoin="round" d="M19.114 5.636a9 9 0 0 1 0 12.728M16.463 8.288a5.25 5.25 0 0 1 0 7.424M6.75 8.25l4.72-4.72a.75.75 0 0 1 1.28.53v15.88a.75.75 0 0 1-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.009 9.009 0 0 1 2.25 12c0-.83.112-1.633.322-2.396C2.806 8.756 3.63 8.25 4.51 8.25H6.75Z" />
                   </svg>
                 </div>
-                <h4 className="text-sm font-modern text-white font-bold tracking-wider uppercase mb-2">Integrated Loudness (EBU R128)</h4>
+                <h4 className="text-sm font-modern text-white font-bold tracking-wider uppercase mb-2">{t.features.f1_title}</h4>
                 <p className="text-xs leading-relaxed text-white/50 font-mono">
-                  Calculate the real cumulative integrated loudness of your track. Prevent platforms from dynamically compressing your audio in an undesirable way.
+                  {t.features.f1_desc}
                 </p>
               </div>
 
@@ -485,9 +446,9 @@ export default function App() {
                     <path strokeLinecap="round" strokeLinejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v5.25c0 .621-.504 1.125-1.125 1.125h-2.25A1.125 1.125 0 0 1 3 18.375v-5.25ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125v-9.75ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v14.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z" />
                   </svg>
                 </div>
-                <h4 className="text-sm font-modern text-white font-bold tracking-wider uppercase mb-2">True Peak Estimator (4x Oversampling)</h4>
+                <h4 className="text-sm font-modern text-white font-bold tracking-wider uppercase mb-2">{t.features.f2_title}</h4>
                 <p className="text-xs leading-relaxed text-white/50 font-mono">
-                  Detect inter-sample peaks that cause clipping distortion when encoding your digital audio into compressed streaming formats (Ogg, AAC, MP3).
+                  {t.features.f2_desc}
                 </p>
               </div>
 
@@ -498,9 +459,9 @@ export default function App() {
                     <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 21 3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5" />
                   </svg>
                 </div>
-                <h4 className="text-sm font-modern text-white font-bold tracking-wider uppercase mb-2">Dynamic Range (LRA)</h4>
+                <h4 className="text-sm font-modern text-white font-bold tracking-wider uppercase mb-2">{t.features.f3_title}</h4>
                 <p className="text-xs leading-relaxed text-white/50 font-mono">
-                  Evaluate the real volume difference in LU units between the most expressive and lowest intensity moments to balance your mix.
+                  {t.features.f3_desc}
                 </p>
               </div>
 
@@ -511,9 +472,9 @@ export default function App() {
                     <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 6h9.75M10.5 6a1.5 1.5 0 1 1-3 0m3 0a1.5 1.5 0 1 0-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-9.75 0h9.75" />
                   </svg>
                 </div>
-                <h4 className="text-sm font-modern text-white font-bold tracking-wider uppercase mb-2">Platform & Device Simulation</h4>
+                <h4 className="text-sm font-modern text-white font-bold tracking-wider uppercase mb-2">{t.features.f4_title}</h4>
                 <p className="text-xs leading-relaxed text-white/50 font-mono">
-                  Listen in real-time to how streaming normalization changes your volume, and audition your mix on simulated phone speakers, car EQs, and more.
+                  {t.features.f4_desc}
                 </p>
               </div>
             </div>
@@ -526,12 +487,12 @@ export default function App() {
           <div className="max-w-5xl mx-auto px-6">
             
             <div className="flex flex-col items-center text-center mb-16">
-              <h2 className="text-[10px] tracking-[0.5em] text-[#9D4EDD] mb-4">02. MEMBERSHIP</h2>
+              <h2 className="text-[10px] tracking-[0.5em] text-[#9D4EDD] mb-4">{t.pricing.tag}</h2>
               <h3 className="font-modern text-3xl md:text-5xl font-light text-white tracking-tighter">
-                Simple, transparent <span className="font-serif italic text-white/70">plans</span>
+                {t.pricing.title} <span className="font-serif italic text-white/70">{t.pricing.titleAccent}</span>
               </h3>
               <p className="text-xs text-[#9ca3af]/60 uppercase tracking-[0.2em] font-mono mt-2">
-                Unleash the true potential of your music without limits
+                {t.pricing.subtitle}
               </p>
             </div>
 
@@ -541,62 +502,60 @@ export default function App() {
                 <table className="w-full text-center border-collapse min-w-[700px]">
                   <thead>
                     <tr className="border-b border-white/10">
-                      <th className="p-6 md:p-8 font-modern text-white tracking-widest text-lg uppercase w-1/4">
-                        FREE
-                        <span className="text-[10px] text-white/40 font-mono tracking-widest block mt-1">(Status: Active)</span>
+                      <th className="p-6 md:p-8 font-modern text-white tracking-widest text-lg uppercase w-1/3">
+                        {t.pricing.freeTitle}
+                        <span className="text-[10px] text-white/40 font-mono tracking-widest block mt-1">{t.pricing.freeStatus}</span>
                       </th>
-                      <th className="p-6 md:p-8 font-modern text-[#E0AAFF] tracking-widest text-lg uppercase w-1/4 border-l border-white/5 bg-[#9D4EDD]/[0.02]">
-                        PRO
-                        <span className="text-[10px] text-[#E0AAFF]/50 font-mono tracking-widest block mt-1">(Monthly)</span>
+                      <th className="p-6 md:p-8 font-modern text-[#E0AAFF] tracking-widest text-lg uppercase w-1/3 border-l border-white/5 bg-[#9D4EDD]/[0.02]">
+                        {t.pricing.monthlyTitle}
+                        <span className="text-[10px] text-[#E0AAFF]/50 font-mono tracking-widest block mt-1">{t.pricing.monthlyPeriod}</span>
                       </th>
-                      <th className="p-6 md:p-8 font-modern text-[#E0AAFF] tracking-widest text-lg uppercase w-1/4 relative border-l border-white/5 border-t-2 border-t-[#9D4EDD] bg-[#9D4EDD]/[0.06]">
-                        PRO
-                        <span className="text-[10px] text-[#E0AAFF]/50 font-mono tracking-widest block mt-1">(Annual)</span>
+                      <th className="p-6 md:p-8 font-modern text-[#E0AAFF] tracking-widest text-lg uppercase w-1/3 relative border-l border-white/5 border-t-2 border-t-[#9D4EDD] bg-[#9D4EDD]/[0.06]">
+                        {t.pricing.lifetimeTitle}
+                        <span className="text-[10px] text-[#E0AAFF]/50 font-mono tracking-widest block mt-1">{t.pricing.lifetimePeriod}</span>
                         <div className="absolute top-4 right-4 bg-[#9D4EDD] text-white text-[8px] font-mono tracking-widest uppercase px-3 py-1 rounded-full hidden sm:block shadow-[0_0_15px_rgba(157,78,221,0.5)]">
-                          BEST VALUE
+                          {t.pricing.bestValue}
                         </div>
-                      </th>
-                      <th className="p-6 md:p-8 font-modern text-[#E0AAFF] tracking-widest text-lg uppercase w-1/4 border-l border-white/5 bg-[#9D4EDD]/[0.02]">
-                        LIFETIME
-                        <span className="text-[10px] text-[#E0AAFF]/50 font-mono tracking-widest block mt-1">(One-Time)</span>
                       </th>
                     </tr>
                   </thead>
                   <tbody className="text-xs font-mono text-white/70">
                     <tr className="border-b border-white/5 hover:bg-white/[0.02] transition-colors">
-                      <td className="p-6 md:px-8 py-5 text-white/80">3 Analyses / Week</td>
-                      <td className="p-6 md:px-8 py-5 text-[#E0AAFF] border-l border-white/5 bg-[#9D4EDD]/[0.02] font-bold">Unlimited Analyses</td>
-                      <td className="p-6 md:px-8 py-5 text-[#E0AAFF] border-l border-white/5 bg-[#9D4EDD]/[0.06] font-bold">Unlimited Analyses</td>
-                      <td className="p-6 md:px-8 py-5 text-[#E0AAFF] border-l border-white/5 bg-[#9D4EDD]/[0.02] font-bold">Unlimited Analyses</td>
+                      <td className="p-6 md:px-8 py-5 text-white/80">{t.pricing.analysesLimitFree}</td>
+                      <td className="p-6 md:px-8 py-5 text-[#E0AAFF] border-l border-white/5 bg-[#9D4EDD]/[0.02] font-bold">{t.pricing.analysesUnlimited}</td>
+                      <td className="p-6 md:px-8 py-5 text-[#E0AAFF] border-l border-white/5 bg-[#9D4EDD]/[0.06] font-bold">{t.pricing.analysesUnlimited}</td>
                     </tr>
                     <tr className="border-b border-white/5 hover:bg-white/[0.02] transition-colors">
                       <td className="p-6 md:px-8 py-5 text-white/80">LUFS & True Peak</td>
-                      <td className="p-6 md:px-8 py-5 text-[#E0AAFF] border-l border-white/5 bg-[#9D4EDD]/[0.02] font-bold">Dynamic Range (LRA)</td>
-                      <td className="p-6 md:px-8 py-5 text-[#E0AAFF] border-l border-white/5 bg-[#9D4EDD]/[0.06] font-bold">Dynamic Range (LRA)</td>
-                      <td className="p-6 md:px-8 py-5 text-[#E0AAFF] border-l border-white/5 bg-[#9D4EDD]/[0.02] font-bold">Dynamic Range (LRA)</td>
+                      <td className="p-6 md:px-8 py-5 text-[#E0AAFF] border-l border-white/5 bg-[#9D4EDD]/[0.02] font-bold">{t.pricing.dynamicsFeature}</td>
+                      <td className="p-6 md:px-8 py-5 text-[#E0AAFF] border-l border-white/5 bg-[#9D4EDD]/[0.06] font-bold">{t.pricing.dynamicsFeature}</td>
                     </tr>
                     <tr className="border-b border-white/5 hover:bg-white/[0.02] transition-colors">
-                      <td className="p-6 md:px-8 py-5 text-white/80">100% Client-Side Processing</td>
-                      <td className="p-6 md:px-8 py-5 text-[#E0AAFF] border-l border-white/5 bg-[#9D4EDD]/[0.02] font-bold">100% Client-Side Processing</td>
-                      <td className="p-6 md:px-8 py-5 text-[#E0AAFF] border-l border-white/5 bg-[#9D4EDD]/[0.06] font-bold">100% Client-Side Processing</td>
-                      <td className="p-6 md:px-8 py-5 text-[#E0AAFF] border-l border-white/5 bg-[#9D4EDD]/[0.02] font-bold">100% Client-Side Processing</td>
+                      <td className="p-6 md:px-8 py-5 text-white/80">{t.pricing.clientSideFeature}</td>
+                      <td className="p-6 md:px-8 py-5 text-[#E0AAFF] border-l border-white/5 bg-[#9D4EDD]/[0.02] font-bold">{t.pricing.clientSideFeature}</td>
+                      <td className="p-6 md:px-8 py-5 text-[#E0AAFF] border-l border-white/5 bg-[#9D4EDD]/[0.06] font-bold">{t.pricing.clientSideFeature}</td>
                     </tr>
                     <tr className="border-b border-white/5 hover:bg-white/[0.02] transition-colors">
-                      <td className="p-6 md:px-8 py-5 text-white/80">Platform & Device Simulation</td>
-                      <td className="p-6 md:px-8 py-5 text-[#E0AAFF] border-l border-white/5 bg-[#9D4EDD]/[0.02] font-bold">Platform & Device Simulation</td>
-                      <td className="p-6 md:px-8 py-5 text-[#E0AAFF] border-l border-white/5 bg-[#9D4EDD]/[0.06] font-bold">Platform & Device Simulation</td>
-                      <td className="p-6 md:px-8 py-5 text-[#E0AAFF] border-l border-white/5 bg-[#9D4EDD]/[0.02] font-bold">Platform & Device Simulation</td>
+                      <td className="p-6 md:px-8 py-5 text-white/80">{t.pricing.simulationFeature}</td>
+                      <td className="p-6 md:px-8 py-5 text-[#E0AAFF] border-l border-white/5 bg-[#9D4EDD]/[0.02] font-bold">{t.pricing.simulationFeature}</td>
+                      <td className="p-6 md:px-8 py-5 text-[#E0AAFF] border-l border-white/5 bg-[#9D4EDD]/[0.06] font-bold">{t.pricing.simulationFeature}</td>
+                    </tr>
+                    <tr className="border-b border-white/5 hover:bg-white/[0.02] transition-colors">
+                      <td className="p-6 md:px-8 py-5 text-white/30 font-mono">—</td>
+                      <td className="p-6 md:px-8 py-5 text-[#E0AAFF]/60 border-l border-white/5 bg-[#9D4EDD]/[0.02] font-mono">{t.pricing.webPianoOnly}</td>
+                      <td className="p-6 md:px-8 py-5 text-[#E0AAFF] border-l border-white/5 bg-[#9D4EDD]/[0.06] font-bold">
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#9D4EDD]/20 border border-[#9D4EDD]/50 text-[#E0AAFF] text-[10px] uppercase tracking-wider shadow-[0_0_15px_rgba(157,78,221,0.2)]">
+                          {t.pricing.vstBonusIncluded}
+                        </span>
+                      </td>
                     </tr>
                     <tr className="border-b border-white/10 hover:bg-white/[0.02] transition-colors">
-                      <td className="p-6 md:px-8 py-6 font-serif italic text-3xl text-white/80">$0</td>
+                      <td className="p-6 md:px-8 py-6 font-serif italic text-3xl text-white/80">{t.pricing.freePrice}</td>
                       <td className="p-6 md:px-8 py-6 border-l border-white/5 bg-[#9D4EDD]/[0.02]">
-                        <span className="font-serif italic text-3xl text-[#E0AAFF] font-bold">$9.99<span className="text-xs font-mono lowercase text-[#E0AAFF]/50 not-italic font-normal"> / mo</span></span>
+                        <span className="font-serif italic text-3xl text-[#E0AAFF] font-bold">{t.pricing.monthlyPrice}<span className="text-xs font-mono lowercase text-[#E0AAFF]/50 not-italic font-normal">{t.pricing.monthlySuffix}</span></span>
                       </td>
                       <td className="p-6 md:px-8 py-6 border-l border-white/5 bg-[#9D4EDD]/[0.06]">
-                        <span className="font-serif italic text-3xl text-[#E0AAFF] font-bold">$79<span className="text-xs font-mono lowercase text-[#E0AAFF]/50 not-italic font-normal"> / yr</span></span>
-                      </td>
-                      <td className="p-6 md:px-8 py-6 border-l border-white/5 bg-[#9D4EDD]/[0.02]">
-                        <span className="font-serif italic text-3xl text-[#E0AAFF] font-bold">$99<span className="text-[10px] tracking-widest font-mono uppercase text-[#E0AAFF]/50 not-italic font-normal ml-2">(One-Time)</span></span>
+                        <span className="font-serif italic text-3xl text-[#E0AAFF] font-bold">{t.pricing.lifetimePrice}<span className="text-[10px] tracking-widest font-mono uppercase text-[#E0AAFF]/50 not-italic font-normal ml-2">{t.pricing.lifetimeSuffix}</span></span>
                       </td>
                     </tr>
                     <tr>
@@ -609,7 +568,7 @@ export default function App() {
                           }}
                           className="w-full max-w-[200px] py-3.5 rounded-full border border-white/10 text-[9px] tracking-widest uppercase hover:bg-white/5 transition-colors font-mono mx-auto block"
                         >
-                          Active Free Plan
+                          {t.pricing.activeFreeBtn}
                         </button>
                       </td>
                       <td className="p-6 md:p-8 border-l border-white/5 bg-[#9D4EDD]/[0.02] align-bottom">
@@ -618,25 +577,16 @@ export default function App() {
                           data-gumroad-overlay-checkout="true"
                           className="w-full max-w-[200px] py-3.5 rounded-full border border-[#9D4EDD]/50 text-[#E0AAFF] hover:bg-[#9D4EDD]/20 hover:border-[#9D4EDD] transition-colors text-[9px] tracking-widest uppercase font-bold mx-auto flex items-center justify-center"
                         >
-                          Subscribe Monthly
+                          {t.pricing.subscribeMonthlyBtn}
                         </a>
                       </td>
                       <td className="p-6 md:p-8 border-l border-white/5 bg-[#9D4EDD]/[0.06] align-bottom border-b-2 border-b-[#9D4EDD]">
                         <a 
-                          href="https://napoacademy.gumroad.com/l/pro-annual"
+                          href="https://napoacademy.gumroad.com/l/ctrl-pro-lifetime"
                           data-gumroad-overlay-checkout="true"
                           className="w-full max-w-[200px] py-3.5 rounded-full bg-gradient-to-r from-[#9D4EDD] to-[#ec4899] text-white hover:from-[#E0AAFF] hover:to-[#fbcfe8] hover:text-black transition-colors text-[9px] tracking-widest uppercase font-bold shadow-[0_0_30px_rgba(157,78,221,0.3)] hover:shadow-[0_0_40px_rgba(236,72,153,0.5)] mx-auto flex items-center justify-center"
                         >
-                          Subscribe Annually
-                        </a>
-                      </td>
-                      <td className="p-6 md:p-8 border-l border-white/5 bg-[#9D4EDD]/[0.02] align-bottom">
-                        <a 
-                          href="https://napoacademy.gumroad.com/l/ctrl-pro-lifetime"
-                          data-gumroad-overlay-checkout="true"
-                          className="w-full max-w-[200px] py-3.5 rounded-full border border-[#9D4EDD]/50 text-[#E0AAFF] hover:bg-[#9D4EDD]/20 hover:border-[#9D4EDD] transition-colors text-[9px] tracking-widest uppercase font-bold mx-auto flex items-center justify-center"
-                        >
-                          Get Lifetime Access
+                          {t.pricing.getLifetimeBtn}
                         </a>
                       </td>
                     </tr>
@@ -652,15 +602,15 @@ export default function App() {
               <div className="border border-white/10 bg-[#0a0a0a]/40 backdrop-blur-sm rounded-3xl p-6 relative shadow-lg flex flex-col justify-between">
                 <div>
                   <div className="flex justify-between items-center mb-4">
-                    <span className="font-modern text-white tracking-widest text-lg font-bold uppercase">FREE</span>
-                    <span className="text-[9px] text-white/40 font-mono tracking-widest uppercase border border-white/10 px-2 py-0.5 rounded">ACTIVE</span>
+                    <span className="font-modern text-white tracking-widest text-lg font-bold uppercase">{t.pricing.freeTitle}</span>
+                    <span className="text-[9px] text-white/40 font-mono tracking-widest uppercase border border-white/10 px-2 py-0.5 rounded">{t.pricing.freeStatus}</span>
                   </div>
-                  <div className="font-serif italic text-4xl text-white mb-6">$0</div>
+                  <div className="font-serif italic text-4xl text-white mb-6">{t.pricing.freePrice}</div>
                   <ul className="text-xs font-mono text-white/70 space-y-3 mb-8">
-                    <li className="flex items-center gap-2">✓ 3 Analyses / Week</li>
+                    <li className="flex items-center gap-2">✓ {t.pricing.analysesLimitFree}</li>
                     <li className="flex items-center gap-2">✓ LUFS & True Peak</li>
-                    <li className="flex items-center gap-2">✓ 100% Client-Side Processing</li>
-                    <li className="flex items-center gap-2">✓ Platform & Device Simulation</li>
+                    <li className="flex items-center gap-2">✓ {t.pricing.clientSideFeature}</li>
+                    <li className="flex items-center gap-2">✓ {t.pricing.simulationFeature}</li>
                   </ul>
                 </div>
                 <button 
@@ -671,7 +621,7 @@ export default function App() {
                   }}
                   className="w-full py-3.5 rounded-full border border-white/10 text-[9px] tracking-widest uppercase hover:bg-white/5 transition-colors font-mono font-bold"
                 >
-                  Active Free Plan
+                  {t.pricing.activeFreeBtn}
                 </button>
               </div>
 
@@ -679,15 +629,16 @@ export default function App() {
               <div className="border border-[#9D4EDD]/30 bg-[#9D4EDD]/[0.02] backdrop-blur-sm rounded-3xl p-6 relative shadow-lg flex flex-col justify-between">
                 <div>
                   <div className="flex justify-between items-center mb-4">
-                    <span className="font-modern text-[#E0AAFF] tracking-widest text-lg font-bold uppercase">PRO</span>
-                    <span className="text-[9px] text-[#E0AAFF]/70 font-mono tracking-widest uppercase border border-[#9D4EDD]/20 px-2 py-0.5 rounded">MONTHLY</span>
+                    <span className="font-modern text-[#E0AAFF] tracking-widest text-lg font-bold uppercase">{t.pricing.monthlyTitle}</span>
+                    <span className="text-[9px] text-[#E0AAFF]/70 font-mono tracking-widest uppercase border border-[#9D4EDD]/20 px-2 py-0.5 rounded">{t.pricing.monthlyPeriod}</span>
                   </div>
-                  <div className="font-serif italic text-4xl text-[#E0AAFF] font-bold mb-6">$9.99<span className="text-xs font-mono lowercase text-[#E0AAFF]/50 not-italic font-normal">/mo</span></div>
+                  <div className="font-serif italic text-4xl text-[#E0AAFF] font-bold mb-6">{t.pricing.monthlyPrice}<span className="text-xs font-mono lowercase text-[#E0AAFF]/50 not-italic font-normal">{t.pricing.monthlySuffix}</span></div>
                   <ul className="text-xs font-mono text-[#E0AAFF]/80 space-y-3 mb-8">
-                    <li className="flex items-center gap-2">✓ Unlimited Analyses</li>
-                    <li className="flex items-center gap-2">✓ Dynamic Range (LRA)</li>
-                    <li className="flex items-center gap-2">✓ 100% Client-Side Processing</li>
-                    <li className="flex items-center gap-2">✓ Platform & Device Simulation</li>
+                    <li className="flex items-center gap-2">✓ {t.pricing.analysesUnlimited}</li>
+                    <li className="flex items-center gap-2">✓ {t.pricing.dynamicsFeature}</li>
+                    <li className="flex items-center gap-2">✓ {t.pricing.clientSideFeature}</li>
+                    <li className="flex items-center gap-2">✓ {t.pricing.simulationFeature}</li>
+                    <li className="flex items-center gap-2 text-white/50">✓ {t.pricing.webPianoOnly}</li>
                   </ul>
                 </div>
                 <a 
@@ -695,57 +646,36 @@ export default function App() {
                   data-gumroad-overlay-checkout="true"
                   className="w-full py-3.5 rounded-full border border-[#9D4EDD]/50 text-[#E0AAFF] hover:bg-[#9D4EDD]/20 hover:border-[#9D4EDD] transition-colors text-[9px] tracking-widest uppercase font-bold flex items-center justify-center"
                 >
-                  Subscribe Monthly
-                </a>
-              </div>
-
-              {/* Pro Annual */}
-              <div className="border border-[#9D4EDD] bg-[#9D4EDD]/[0.06] backdrop-blur-sm rounded-3xl p-6 relative shadow-[0_0_30px_rgba(157,78,221,0.2)] flex flex-col justify-between">
-                <div className="absolute top-4 right-4 bg-[#9D4EDD] text-white text-[8px] font-mono tracking-widest uppercase px-3 py-1 rounded-full">
-                  BEST VALUE
-                </div>
-                <div>
-                  <div className="flex justify-between items-center mb-4 mt-2">
-                    <span className="font-modern text-[#E0AAFF] tracking-widest text-lg font-bold uppercase">PRO</span>
-                    <span className="text-[9px] text-[#E0AAFF]/70 font-mono tracking-widest uppercase border border-[#9D4EDD]/20 px-2 py-0.5 rounded">ANNUAL</span>
-                  </div>
-                  <div className="font-serif italic text-4xl text-[#E0AAFF] font-bold mb-6">$79<span className="text-xs font-mono lowercase text-[#E0AAFF]/50 not-italic font-normal">/yr</span></div>
-                  <ul className="text-xs font-mono text-[#E0AAFF]/80 space-y-3 mb-8">
-                    <li className="flex items-center gap-2">✓ Unlimited Analyses</li>
-                    <li className="flex items-center gap-2">✓ Dynamic Range (LRA)</li>
-                    <li className="flex items-center gap-2">✓ 100% Client-Side Processing</li>
-                    <li className="flex items-center gap-2">✓ Platform & Device Simulation</li>
-                  </ul>
-                </div>
-                <a 
-                  href="https://napoacademy.gumroad.com/l/pro-annual"
-                  data-gumroad-overlay-checkout="true"
-                  className="w-full py-3.5 rounded-full bg-gradient-to-r from-[#9D4EDD] to-[#ec4899] text-white hover:from-[#E0AAFF] hover:to-[#fbcfe8] hover:text-black transition-colors text-[9px] tracking-widest uppercase font-bold shadow-[0_0_30px_rgba(157,78,221,0.3)] flex items-center justify-center"
-                >
-                  Subscribe Annually
+                  {t.pricing.subscribeMonthlyBtn}
                 </a>
               </div>
 
               {/* Lifetime Access */}
-              <div className="border border-[#9D4EDD]/40 bg-[#9D4EDD]/[0.02] backdrop-blur-sm rounded-3xl p-6 relative shadow-[0_0_30px_rgba(157,78,221,0.05)] flex flex-col justify-between">
+              <div className="border border-[#9D4EDD] bg-[#9D4EDD]/[0.06] backdrop-blur-sm rounded-3xl p-6 relative shadow-[0_0_30px_rgba(157,78,221,0.2)] flex flex-col justify-between">
+                <div className="absolute top-4 right-4 bg-[#9D4EDD] text-white text-[8px] font-mono tracking-widest uppercase px-3 py-1 rounded-full">
+                  {t.pricing.bestValue}
+                </div>
                 <div>
                   <div className="flex justify-between items-center mb-4 mt-2">
-                    <span className="font-modern text-[#E0AAFF] tracking-widest text-lg font-bold uppercase">LIFETIME</span>
+                    <span className="font-modern text-[#E0AAFF] tracking-widest text-lg font-bold uppercase">{t.pricing.lifetimeTitle}</span>
                   </div>
-                  <div className="font-serif italic text-4xl text-[#E0AAFF] font-bold mb-6">$99<span className="text-[10px] tracking-widest font-mono uppercase text-[#E0AAFF]/50 not-italic font-normal ml-2">(One-Time)</span></div>
+                  <div className="font-serif italic text-4xl text-[#E0AAFF] font-bold mb-6">{t.pricing.lifetimePrice}<span className="text-[10px] tracking-widest font-mono uppercase text-[#E0AAFF]/50 not-italic font-normal ml-2">{t.pricing.lifetimeSuffix}</span></div>
                   <ul className="text-xs font-mono text-[#E0AAFF]/80 space-y-3 mb-8">
-                    <li className="flex items-center gap-2">✓ Unlimited Analyses</li>
-                    <li className="flex items-center gap-2">✓ Dynamic Range (LRA)</li>
-                    <li className="flex items-center gap-2">✓ 100% Client-Side Processing</li>
-                    <li className="flex items-center gap-2">✓ Platform & Device Simulation</li>
+                    <li className="flex items-center gap-2">✓ {t.pricing.analysesUnlimited}</li>
+                    <li className="flex items-center gap-2">✓ {t.pricing.dynamicsFeature}</li>
+                    <li className="flex items-center gap-2">✓ {t.pricing.clientSideFeature}</li>
+                    <li className="flex items-center gap-2">✓ {t.pricing.simulationFeature}</li>
+                    <li className="flex items-center gap-2 text-[#E0AAFF] font-bold bg-[#9D4EDD]/20 px-3 py-1.5 rounded-xl border border-[#9D4EDD]/40 mt-2">
+                      {t.pricing.vstBonusIncluded}
+                    </li>
                   </ul>
                 </div>
                 <a 
                   href="https://napoacademy.gumroad.com/l/ctrl-pro-lifetime"
                   data-gumroad-overlay-checkout="true"
-                  className="w-full py-3.5 rounded-full border border-[#9D4EDD]/50 text-[#E0AAFF] hover:bg-[#9D4EDD]/20 hover:border-[#9D4EDD] transition-colors text-[9px] tracking-widest uppercase font-bold flex items-center justify-center"
+                  className="w-full py-3.5 rounded-full bg-gradient-to-r from-[#9D4EDD] to-[#ec4899] text-white hover:from-[#E0AAFF] hover:to-[#fbcfe8] hover:text-black transition-colors text-[9px] tracking-widest uppercase font-bold shadow-[0_0_30px_rgba(157,78,221,0.3)] flex items-center justify-center"
                 >
-                  Get Lifetime Access
+                  {t.pricing.getLifetimeBtn}
                 </a>
               </div>
 
@@ -760,14 +690,13 @@ export default function App() {
                 <div className="flex-1 text-center md:text-left">
                   <h4 className="text-[10px] tracking-[0.4em] text-[#E0AAFF] font-mono uppercase mb-4 font-bold flex items-center justify-center md:justify-start gap-3">
                     <span className="w-2 h-2 rounded-full bg-[#E0AAFF] animate-pulse"></span>
-                    DONE-FOR-YOU: HANDCRAFTED MASTERING
+                    {t.pricing.upsellBadge}
                   </h4>
                   <h3 className="font-modern text-2xl md:text-3xl text-white font-light tracking-tight mb-4">
-                    Tired of automated limiters? <br className="hidden md:block" />
-                    Send your -6dB mix and let a real producer take <span className="font-bold">CTRL</span>.
+                    {t.pricing.upsellTitle}
                   </h3>
                   <p className="text-xs text-white/50 font-mono leading-relaxed max-w-xl mx-auto md:mx-0">
-                    Custom EQ, dynamic balance, and human ears. Delivered in 48 hours.
+                    {t.pricing.upsellDesc}
                   </p>
                 </div>
                 
@@ -778,7 +707,7 @@ export default function App() {
                     onClick={(e) => { e.preventDefault(); setIsContactOpen(true); }}
                     className="relative inline-flex items-center justify-center w-full md:w-auto px-8 py-5 rounded-full border border-[#E0AAFF]/30 bg-black text-[#E0AAFF] hover:bg-white/5 hover:border-[#E0AAFF]/70 transition-all duration-300 text-[10px] tracking-[0.2em] font-mono uppercase font-bold"
                   >
-                    [ GET PRO MASTER FOR $20 ] <span className="ml-3 group-hover/btn:translate-x-1 transition-transform">→</span>
+                    {t.pricing.upsellBtn} <span className="ml-3 group-hover/btn:translate-x-1 transition-transform">→</span>
                   </a>
                 </div>
               </div>
@@ -787,18 +716,61 @@ export default function App() {
           </div>
         </section>
 
+        {/* Ecosystem / More from Napbak Lab Section */}
+        <section id="ecosystem" aria-label="More tools from Napbak Studio" className="py-20 border-t border-white/5 relative z-10 bg-[#070707]/60 backdrop-blur-md">
+          <div className="max-w-5xl mx-auto px-6">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-8 rounded-3xl border border-[#9D4EDD]/30 bg-gradient-to-br from-[#9D4EDD]/10 via-[#0a0a0a] to-[#070707] p-8 md:p-12 shadow-[0_10px_50px_rgba(157,78,221,0.08)] relative overflow-hidden group">
+              <div className="absolute top-0 right-0 w-80 h-80 bg-[#9D4EDD]/15 rounded-full blur-[100px] pointer-events-none group-hover:bg-[#9D4EDD]/25 transition-all duration-700"></div>
+
+              <div className="flex-1 relative z-10">
+                <div className="flex flex-wrap items-center gap-2 mb-3">
+                  <span className="text-xl">🎹</span>
+                  <span className="text-[9px] font-mono tracking-[0.4em] text-[#E0AAFF] uppercase font-bold">
+                    {t.ecosystem.tag}
+                  </span>
+                  <span className="text-[8px] font-mono tracking-widest bg-[#9D4EDD]/30 text-[#E0AAFF] border border-[#9D4EDD]/50 px-2 py-0.5 rounded-full uppercase font-bold">
+                    {t.ecosystem.badge}
+                  </span>
+                </div>
+                <h3 className="font-modern text-2xl md:text-4xl text-white font-light tracking-tight mb-3">
+                  {t.ecosystem.title} <span className="font-serif italic text-[#E0AAFF]">{t.ecosystem.titleAccent}</span>
+                </h3>
+                <p className="text-xs text-white/60 font-mono leading-relaxed max-w-xl mb-4">
+                  {t.ecosystem.desc}
+                </p>
+                <div className="flex flex-wrap items-center gap-4 text-[10px] font-mono text-white/40">
+                  <span>{t.ecosystem.b1}</span>
+                  <span>•</span>
+                  <span>{t.ecosystem.b2}</span>
+                  <span>•</span>
+                  <span>{t.ecosystem.b3}</span>
+                </div>
+              </div>
+
+              <div className="flex flex-col sm:flex-row items-center gap-3 relative z-10 w-full md:w-auto">
+                <button
+                  onClick={() => navigateTo('piano')}
+                  className="w-full sm:w-auto px-6 py-4 rounded-full bg-gradient-to-r from-[#9D4EDD] to-[#ec4899] hover:from-[#E0AAFF] hover:to-[#fbcfe8] text-white hover:text-black font-mono text-[10px] font-bold tracking-widest uppercase transition-all shadow-lg shadow-[#9D4EDD]/30 flex items-center justify-center gap-2 cursor-pointer active:scale-95 whitespace-nowrap"
+                >
+                  {t.ecosystem.openBtn} <span>→</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* FAQ Section */}
         <section id="faq" aria-label="Frequently asked questions about loudness and mastering" className="py-24 border-t border-white/5 relative z-10 bg-[#050505]/20 backdrop-blur-sm">
           <div className="max-w-4xl mx-auto px-6">
             <div className="flex flex-col items-center text-center mb-16">
-              <h2 className="text-[10px] tracking-[0.5em] text-[#9D4EDD] mb-4">03. FAQ</h2>
+              <h2 className="text-[10px] tracking-[0.5em] text-[#9D4EDD] mb-4">{t.faq.tag}</h2>
               <h3 className="font-modern text-3xl md:text-5xl font-light text-white tracking-tighter">
-                Everything you need to know about <span className="font-serif italic text-white/70">loudness</span>
+                {t.faq.title} <span className="font-serif italic text-white/70">{t.faq.titleAccent}</span>
               </h3>
             </div>
 
             <div className="space-y-4">
-              {faqData.map((faq, index) => {
+              {currentFaq.map((faq, index) => {
                 const isOpen = openFaq === index;
                 return (
                   <div 
@@ -853,25 +825,25 @@ export default function App() {
                 </span>
               </div>
               <p className="text-[10px] leading-relaxed text-white/40 font-mono max-w-[220px]">
-                Free offline EBU R128 loudness compliance meter, true peak estimator, and streaming platform simulation.
+                {t.footer.desc}
               </p>
             </div>
 
             {/* Column 2: Navigation Links */}
             <div className="flex flex-col items-start gap-3">
-              <span className="text-[9px] tracking-widest font-mono uppercase text-white font-bold mb-2">QUICK LINKS</span>
-              <button onClick={() => navigateTo('analyzer')} className="text-[10px] tracking-wide font-mono hover:text-[#E0AAFF] transition-colors cursor-pointer text-left">Analyzer</button>
-              <button onClick={() => navigateTo('piano')} className="text-[10px] tracking-wide font-mono hover:text-[#E0AAFF] transition-colors cursor-pointer text-left text-[#E0AAFF]">Concert Piano</button>
-              <a href="#features" onClick={(e) => scrollTo(e, 'features')} className="text-[10px] tracking-wide font-mono hover:text-[#E0AAFF] transition-colors">Features</a>
-              <a href="#pricing" onClick={(e) => scrollTo(e, 'pricing')} className="text-[10px] tracking-wide font-mono hover:text-[#E0AAFF] transition-colors">Pricing</a>
+              <span className="text-[9px] tracking-widest font-mono uppercase text-white font-bold mb-2">{t.footer.quickLinks}</span>
+              <button onClick={() => navigateTo('analyzer')} className="text-[10px] tracking-wide font-mono hover:text-[#E0AAFF] transition-colors cursor-pointer text-left">{t.nav.analyzer}</button>
+              <button onClick={() => navigateTo('piano')} className="text-[10px] tracking-wide font-mono hover:text-[#E0AAFF] transition-colors cursor-pointer text-left text-[#E0AAFF]">{t.nav.piano}</button>
+              <a href="#features" onClick={(e) => scrollTo(e, 'features')} className="text-[10px] tracking-wide font-mono hover:text-[#E0AAFF] transition-colors">{t.features.titleAccent}</a>
+              <a href="#pricing" onClick={(e) => scrollTo(e, 'pricing')} className="text-[10px] tracking-wide font-mono hover:text-[#E0AAFF] transition-colors">{t.pricing.titleAccent}</a>
               <a href="#faq" onClick={(e) => scrollTo(e, 'faq')} className="text-[10px] tracking-wide font-mono hover:text-[#E0AAFF] transition-colors">FAQ</a>
             </div>
 
             {/* Column 3: Contact & Studio */}
             <div className="flex flex-col items-start gap-3">
-              <span className="text-[9px] tracking-widest font-mono uppercase text-white font-bold mb-2">GET IN TOUCH</span>
+              <span className="text-[9px] tracking-widest font-mono uppercase text-white font-bold mb-2">{t.footer.contact}</span>
               <button onClick={() => setIsContactOpen(true)} className="text-[10px] tracking-wide font-mono hover:text-[#E0AAFF] text-left transition-colors">
-                [ Contact & Support ]
+                {t.footer.contactBtn}
               </button>
               <a href="https://www.instagram.com/napbak.studio" target="_blank" rel="noreferrer" className="text-[10px] tracking-wide font-mono hover:text-[#E0AAFF] transition-colors">Instagram</a>
               <a href="https://napbak.studio/" target="_blank" rel="noreferrer" className="text-[10px] tracking-wide font-mono text-[#9D4EDD] hover:text-[#E0AAFF] transition-colors flex items-center gap-1 group">

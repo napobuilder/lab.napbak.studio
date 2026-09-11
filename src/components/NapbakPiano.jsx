@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { pianoEngine } from '../utils/NapbakPianoEngine';
 import { parseMidiFile, exportMidiFile } from '../utils/midiHandler';
 import NapbakPianoVSTShowcase from './NapbakPianoVSTShowcase';
+import { useLanguageStore } from '../store/useLanguageStore';
+import { translations } from '../utils/translations';
 import { 
   Volume2, 
   Sparkles, 
@@ -93,6 +95,9 @@ function formatTime(seconds) {
 }
 
 export default function NapbakPiano({ onBack, isDedicatedPage = false }) {
+  const { lang } = useLanguageStore();
+  const t = (translations[lang] || translations.en).piano;
+
   // Piano DSP & Voice States
   const [octave, setOctave] = useState(4); // Base Octave C4 (MIDI 60)
   const [activeNotes, setActiveNotes] = useState(new Set());
@@ -603,7 +608,7 @@ export default function NapbakPiano({ onBack, isDedicatedPage = false }) {
       const parsed = parseMidiFile(arrayBuffer);
 
       if (parsed.notes.length === 0) {
-        setMidiError('The uploaded MIDI file contains no piano note events.');
+        setMidiError(t.errNoNotes);
         setTimeout(() => setMidiError(''), 4000);
         return;
       }
@@ -622,7 +627,7 @@ export default function NapbakPiano({ onBack, isDedicatedPage = false }) {
       setActiveTab('play'); // Switch to main piano stage
     } catch (err) {
       console.error(err);
-      setMidiError('Could not parse MIDI file. Ensure it is a valid SMF 0 or 1 file.');
+      setMidiError(t.errParse);
       setTimeout(() => setMidiError(''), 4000);
     }
   };
@@ -671,7 +676,7 @@ export default function NapbakPiano({ onBack, isDedicatedPage = false }) {
               onClick={onBack}
               className="group inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 hover:bg-[#9D4EDD]/20 border border-white/10 hover:border-[#9D4EDD]/40 text-white/70 hover:text-white font-mono text-[10px] tracking-widest uppercase transition-all shadow-md active:scale-95"
             >
-              <span className="group-hover:-translate-x-1 transition-transform text-[#9D4EDD]">←</span> BACK TO MASTER ANALYZER
+              <span className="group-hover:-translate-x-1 transition-transform text-[#9D4EDD]">←</span> {t.backBtn.replace('← ', '')}
             </button>
           </div>
         )}
@@ -682,14 +687,14 @@ export default function NapbakPiano({ onBack, isDedicatedPage = false }) {
             <div className="flex items-center gap-2 mb-2">
               <span className="w-2 h-2 rounded-full bg-[#9D4EDD] animate-pulse"></span>
               <span className="text-[10px] tracking-[0.4em] text-[#9D4EDD] uppercase font-mono font-bold">
-                01.5 INSTRUMENT LAB // REALTIME DSP & RECORDER
+                {t.tag}
               </span>
             </div>
             <h2 className="font-modern text-3xl md:text-5xl font-light text-white tracking-tighter">
-              Napbak <span className="font-serif italic text-[#E0AAFF]">Concert Grand</span>
+              {t.title} <span className="font-serif italic text-[#E0AAFF]">{t.titleAccent}</span>
             </h2>
             <p className="text-xs text-white/40 font-mono tracking-wider mt-1 uppercase">
-              Free Acoustic Grand • Zero Latency • FL Studio Transport & MIDI Dropzone
+              {t.subtitle}
             </p>
           </div>
 
@@ -704,14 +709,14 @@ export default function NapbakPiano({ onBack, isDedicatedPage = false }) {
             ) : (
               <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-white/40 font-mono text-[9px] tracking-widest uppercase">
                 <Radio className="w-3 h-3 opacity-40" />
-                MIDI READY (USB AUTO)
+                {t.midiReady}
               </div>
             )}
 
             {/* Chord Detection Badge */}
             {detectedChord && (
               <div className="px-4 py-1 rounded-full bg-[#9D4EDD]/20 border border-[#9D4EDD] text-[#E0AAFF] font-mono text-[11px] font-bold tracking-widest animate-bounce">
-                CHORD: {detectedChord}
+                {t.chord} {detectedChord}
               </div>
             )}
 
@@ -725,7 +730,7 @@ export default function NapbakPiano({ onBack, isDedicatedPage = false }) {
                     : 'text-white/60 hover:text-white'
                 }`}
               >
-                PIANO WORKSTATION
+                {t.tabPlay}
               </button>
               <button
                 onClick={() => setActiveTab('midiDrop')}
@@ -736,7 +741,7 @@ export default function NapbakPiano({ onBack, isDedicatedPage = false }) {
                 }`}
               >
                 <Upload className="w-3 h-3" />
-                {loadedMidi ? 'MIDI LOADED' : 'DROP MIDI'}
+                {loadedMidi ? t.tabLoaded : t.tabDrop}
               </button>
             </div>
           </div>
@@ -764,7 +769,7 @@ export default function NapbakPiano({ onBack, isDedicatedPage = false }) {
                 title="Toggle Record Take (Audio & MIDI)"
               >
                 <Circle className={`w-3.5 h-3.5 ${isRecording ? 'fill-white' : 'fill-red-400'}`} />
-                {isRecording ? 'RECORDING' : 'REC'}
+                {isRecording ? t.recording : t.rec}
               </button>
 
               {/* Play / Pause Button */}
@@ -787,12 +792,12 @@ export default function NapbakPiano({ onBack, isDedicatedPage = false }) {
                 {isPlaying ? (
                   <>
                     <Pause className="w-3.5 h-3.5 fill-current" />
-                    PAUSE
+                    {t.pause}
                   </>
                 ) : (
                   <>
                     <Play className="w-3.5 h-3.5 fill-current" />
-                    PLAY
+                    {t.play}
                   </>
                 )}
               </button>
@@ -805,7 +810,7 @@ export default function NapbakPiano({ onBack, isDedicatedPage = false }) {
                   setPlaybackTime(0);
                 }}
                 className="w-10 h-10 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white/70 hover:text-white flex items-center justify-center transition-all active:scale-95"
-                title="Stop & Reset"
+                title={t.stopReset}
               >
                 <Square className="w-3.5 h-3.5 fill-current" />
               </button>
@@ -815,7 +820,7 @@ export default function NapbakPiano({ onBack, isDedicatedPage = false }) {
             <div className="flex items-center gap-3 px-4 py-2 rounded-xl bg-black/60 border border-white/10">
               <div className="flex flex-col">
                 <span className="text-[8px] font-mono tracking-widest uppercase text-white/40">
-                  {isRecording ? 'REC TIMECODE' : isPlaying ? 'PLAYHEAD' : 'TRANSPORT'}
+                  {isRecording ? t.recTimecode : isPlaying ? t.playhead : t.transportTimecode}
                 </span>
                 <span className={`font-mono text-base md:text-lg font-bold tracking-widest ${
                   isRecording ? 'text-red-400 animate-pulse' : isPlaying ? 'text-[#E0AAFF]' : 'text-white/80'
@@ -844,7 +849,7 @@ export default function NapbakPiano({ onBack, isDedicatedPage = false }) {
                 title="Metronome Click (Independent Master Output)"
               >
                 <Clock className="w-3 h-3" />
-                CLICK
+                {t.click}
               </button>
 
               {/* BPM Stepper */}
@@ -852,7 +857,7 @@ export default function NapbakPiano({ onBack, isDedicatedPage = false }) {
                 <button
                   onClick={() => handleBpmChange(-1)}
                   className="w-6 h-6 text-white/50 hover:text-white font-mono text-xs flex items-center justify-center active:scale-95"
-                  title="Decrease BPM"
+                  title={t.bpmDec}
                 >
                   -
                 </button>
@@ -862,7 +867,7 @@ export default function NapbakPiano({ onBack, isDedicatedPage = false }) {
                 <button
                   onClick={() => handleBpmChange(1)}
                   className="w-6 h-6 text-white/50 hover:text-white font-mono text-xs flex items-center justify-center active:scale-95"
-                  title="Increase BPM"
+                  title={t.bpmInc}
                 >
                   +
                 </button>
@@ -876,10 +881,10 @@ export default function NapbakPiano({ onBack, isDedicatedPage = false }) {
                 onClick={handleDownloadWav}
                 disabled={!recordedAudioBlob}
                 className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#9D4EDD]/10 hover:bg-[#9D4EDD]/30 border border-[#9D4EDD]/30 hover:border-[#9D4EDD] text-white font-mono text-[10px] tracking-widest uppercase transition-all disabled:opacity-20 disabled:pointer-events-none active:scale-95"
-                title="Download 16-bit 44.1kHz Studio WAV"
+                title={t.downloadWavTitle}
               >
                 <Download className="w-3 h-3 text-[#E0AAFF]" />
-                WAV
+                {t.wav}
               </button>
 
               {/* Download Standard MIDI */}
@@ -887,10 +892,10 @@ export default function NapbakPiano({ onBack, isDedicatedPage = false }) {
                 onClick={handleDownloadMidi}
                 disabled={recordedNotes.length === 0 && !loadedMidi}
                 className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white/5 hover:bg-[#9D4EDD]/20 border border-white/10 hover:border-[#9D4EDD]/40 text-white font-mono text-[10px] tracking-widest uppercase transition-all disabled:opacity-20 disabled:pointer-events-none active:scale-95"
-                title="Export standard MIDI (.mid) for FL Studio / Ableton"
+                title={t.downloadMidiTitle}
               >
                 <Download className="w-3 h-3 text-[#9D4EDD]" />
-                MIDI
+                {t.midi}
               </button>
             </div>
 
@@ -939,7 +944,7 @@ export default function NapbakPiano({ onBack, isDedicatedPage = false }) {
                       <div>
                         <div className="flex items-center gap-2">
                           <span className="text-[9px] font-mono text-[#E0AAFF] tracking-widest uppercase font-bold">
-                            MIDI TRACK LOADED
+                            {t.midiTrackLoaded}
                           </span>
                           <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
                         </div>
@@ -947,7 +952,7 @@ export default function NapbakPiano({ onBack, isDedicatedPage = false }) {
                           {loadedMidi.fileName || loadedMidi.name}
                         </h4>
                         <p className="text-[10px] font-mono text-white/40 tracking-wider">
-                          {loadedMidi.totalNotes} NOTES • {formatTime(loadedMidi.duration)} • {loadedMidi.bpm} BPM
+                          {loadedMidi.totalNotes} {t.notes} • {formatTime(loadedMidi.duration)} • {loadedMidi.bpm} BPM
                         </p>
                       </div>
                     </div>
@@ -962,7 +967,7 @@ export default function NapbakPiano({ onBack, isDedicatedPage = false }) {
                         className="px-5 py-2 rounded-xl bg-[#9D4EDD] hover:bg-[#b05eed] text-white font-mono text-xs font-bold tracking-widest uppercase transition-all active:scale-95 flex items-center gap-2 shadow-lg shadow-[#9D4EDD]/30"
                       >
                         {isPlaying ? <Pause className="w-3.5 h-3.5 fill-current" /> : <Play className="w-3.5 h-3.5 fill-current" />}
-                        {isPlaying ? 'PAUSE' : 'PLAY MIDI'}
+                        {isPlaying ? t.pause : t.playMidi}
                       </button>
 
                       <button
@@ -978,7 +983,7 @@ export default function NapbakPiano({ onBack, isDedicatedPage = false }) {
                   {/* Playhead Timeline Scrubber */}
                   <div className="flex flex-col gap-1.5 pt-1">
                     <div className="flex justify-between items-center text-[9px] font-mono tracking-widest text-white/50">
-                      <span>TIMELINE POSITION</span>
+                      <span>{t.timelinePosition}</span>
                       <span className="text-[#E0AAFF]">{formatTime(playbackTime)} / {formatTime(loadedMidi.duration)}</span>
                     </div>
                     <input
@@ -1024,13 +1029,13 @@ export default function NapbakPiano({ onBack, isDedicatedPage = false }) {
                   </div>
 
                   <h3 className="font-modern text-xl md:text-2xl text-white font-light tracking-tight mb-1">
-                    Drop your Piano MIDI File here
+                    {t.dropTitle}
                   </h3>
                   <p className="text-xs text-white/50 font-mono tracking-wider uppercase mb-3">
-                    Drag & Drop .mid / .midi to test with Napbak Concert Acoustic DSP
+                    {t.dropDesc}
                   </p>
                   <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-white/70 font-mono text-[9px] tracking-widest uppercase group-hover:border-[#9D4EDD] group-hover:text-white transition-all">
-                    OR BROWSE FROM COMPUTER
+                    {t.browseComputer}
                   </span>
                 </div>
               )}
@@ -1043,12 +1048,12 @@ export default function NapbakPiano({ onBack, isDedicatedPage = false }) {
             
             {/* Control 1: Octave Shift */}
             <div className="flex flex-col gap-1">
-              <span className="text-[9px] font-mono tracking-widest uppercase text-white/40">OCTAVE (Z / X)</span>
+              <span className="text-[9px] font-mono tracking-widest uppercase text-white/40">{t.octave}</span>
               <div className="flex items-center gap-2 mt-1">
                 <button
                   onClick={() => setOctave(o => Math.max(2, o - 1))}
                   className="w-8 h-8 rounded-lg bg-white/5 hover:bg-[#9D4EDD]/20 border border-white/10 text-white font-mono text-xs flex items-center justify-center transition-all active:scale-95"
-                  title="Octave Down (Z)"
+                  title={t.octaveDown}
                 >
                   -
                 </button>
@@ -1058,7 +1063,7 @@ export default function NapbakPiano({ onBack, isDedicatedPage = false }) {
                 <button
                   onClick={() => setOctave(o => Math.min(6, o + 1))}
                   className="w-8 h-8 rounded-lg bg-white/5 hover:bg-[#9D4EDD]/20 border border-white/10 text-white font-mono text-xs flex items-center justify-center transition-all active:scale-95"
-                  title="Octave Up (X)"
+                  title={t.octaveUp}
                 >
                   +
                 </button>
@@ -1068,7 +1073,7 @@ export default function NapbakPiano({ onBack, isDedicatedPage = false }) {
             {/* Control 2: Space / Reverb */}
             <div className="flex flex-col gap-1">
               <div className="flex justify-between items-center text-[9px] font-mono tracking-widest uppercase text-white/40">
-                <span>CONCERT REVERB</span>
+                <span>{t.reverb}</span>
                 <span className="text-[#E0AAFF] font-bold">{reverb}%</span>
               </div>
               <input
@@ -1084,7 +1089,7 @@ export default function NapbakPiano({ onBack, isDedicatedPage = false }) {
             {/* Control 3: Warmth (Tone Filter) */}
             <div className="flex flex-col gap-1">
               <div className="flex justify-between items-center text-[9px] font-mono tracking-widest uppercase text-white/40">
-                <span>TONE / FELT</span>
+                <span>{t.toneFelt}</span>
                 <span className="text-[#E0AAFF] font-bold">{warmth}%</span>
               </div>
               <input
@@ -1100,7 +1105,7 @@ export default function NapbakPiano({ onBack, isDedicatedPage = false }) {
             {/* Control 4: Master Volume */}
             <div className="flex flex-col gap-1">
               <div className="flex justify-between items-center text-[9px] font-mono tracking-widest uppercase text-white/40">
-                <span>MASTER VOL</span>
+                <span>{t.masterVol}</span>
                 <span className="text-[#E0AAFF] font-bold">{volume}%</span>
               </div>
               <input
@@ -1124,7 +1129,7 @@ export default function NapbakPiano({ onBack, isDedicatedPage = false }) {
                 }`}
               >
                 <Sparkles className="w-3.5 h-3.5" />
-                SUSTAIN [SPACE]
+                {t.sustain}
               </button>
             </div>
 
@@ -1258,12 +1263,12 @@ export default function NapbakPiano({ onBack, isDedicatedPage = false }) {
             <div className="flex flex-wrap items-center gap-4 text-[10px] tracking-widest uppercase">
               <span className="flex items-center gap-1.5 text-white/70">
                 <span className="w-1.5 h-1.5 rounded-full bg-[#9D4EDD]"></span>
-                QWERTY: Keys [A - ;]
+                {t.keyGuideQwerty}
               </span>
               <span className="hidden sm:inline text-white/30">•</span>
-              <span className="hidden sm:inline text-white/50">Black Keys: [W E T Y U O P]</span>
+              <span className="hidden sm:inline text-white/50">{t.keyGuideBlack}</span>
               <span className="hidden sm:inline text-white/30">•</span>
-              <span className="text-white/50">Sustain: [SPACE]</span>
+              <span className="text-white/50">{t.keyGuideSustain}</span>
             </div>
 
             {/* Native VST3 Download Pill */}
@@ -1271,10 +1276,10 @@ export default function NapbakPiano({ onBack, isDedicatedPage = false }) {
               <div className="flex flex-col text-left">
                 <span className="text-[10px] text-white font-bold tracking-wider uppercase flex items-center gap-1.5">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                  NATIVE VST3 PLUGIN FOR FL STUDIO & DAWS
+                  {t.vstPillTitle}
                 </span>
                 <span className="text-[8px] text-white/40 tracking-wider">
-                  Windows 64-bit VST3 • 88-Key Acoustic Grand • Reverb & Felt DSP
+                  {t.vstPillSubtitle}
                 </span>
               </div>
               <a
@@ -1283,7 +1288,7 @@ export default function NapbakPiano({ onBack, isDedicatedPage = false }) {
                 className="px-3.5 py-1.5 rounded-xl bg-[#9D4EDD] text-white text-[9px] font-bold tracking-widest uppercase hover:bg-[#E0AAFF] hover:text-black transition-all flex items-center gap-1.5 active:scale-95 shadow-md shadow-[#9D4EDD]/30"
               >
                 <Download className="w-3 h-3" />
-                GET VST3
+                {t.getVst3}
               </a>
             </div>
 
