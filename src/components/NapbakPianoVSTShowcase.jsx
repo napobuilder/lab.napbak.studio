@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
 import { useLanguageStore } from '../store/useLanguageStore';
+import { useProStore } from '../store/useProStore';
+import { verifyGumroadLicense } from '../utils/gumroad';
+import { supabase } from '../lib/supabase';
 import { 
   translations, 
   dawGuidesByLang, 
@@ -18,11 +21,15 @@ import {
   Cpu,
   ChevronDown,
   Zap,
-  CheckCircle2
+  CheckCircle2,
+  Lock,
+  X
 } from 'lucide-react';
 
 export default function NapbakPianoVSTShowcase() {
   const { lang } = useLanguageStore();
+  const { isPro, unlockPro } = useProStore();
+
   const t = (translations[lang] || translations.en).pianoVst;
   const currentDawGuides = dawGuidesByLang[lang] || dawGuidesByLang.en;
   const currentSpecsData = specsDataByLang[lang] || specsDataByLang.en;
@@ -32,12 +39,105 @@ export default function NapbakPianoVSTShowcase() {
   const [copiedPath, setCopiedPath] = useState(null);
   const [expandedFaq, setExpandedFaq] = useState(0);
 
+  // Gating & Modals
+  const [showUnlockModal, setShowUnlockModal] = useState(false);
+  const [showEmailModal, setShowEmailModal] = useState(false);
+
+  // Email capture state for Universal Pack
+  const [hasUnlockedUniversal, setHasUnlockedUniversal] = useState(() => {
+    return localStorage.getItem('napbak_unlocked_universal') === 'true';
+  });
+  const [emailInput, setEmailInput] = useState('');
+  const [emailStatus, setEmailStatus] = useState('idle'); // 'idle' | 'loading' | 'success'
+
+  // License verification state for Native VST3
+  const [licenseKeyInput, setLicenseKeyInput] = useState('');
+  const [licenseStatus, setLicenseStatus] = useState('idle'); // 'idle' | 'loading' | 'success' | 'error'
+  const [licenseMsg, setLicenseMsg] = useState('');
+
   const activeDawData = currentDawGuides.find(d => d.id === selectedDaw) || currentDawGuides[0];
 
   const handleCopy = (text, type) => {
     navigator.clipboard.writeText(text);
     setCopiedPath(type);
     setTimeout(() => setCopiedPath(null), 2500);
+  };
+
+  const handleUniversalEmailSubmit = async (e) => {
+    e.preventDefault();
+    if (!emailInput || !emailInput.includes('@')) return;
+
+    setEmailStatus('loading');
+    try {
+      if (supabase) {
+        await supabase
+          .from('leads')
+          .insert([{ email: emailInput, source: 'piano-universal-pack', created_at: new Date().toISOString() }]);
+      }
+    } catch (err) {
+      console.warn('Supabase insert notice:', err);
+    }
+
+    try {
+      const leads = JSON.parse(localStorage.getItem('napbak_piano_leads') || '[]');
+      leads.push({ email: emailInput, time: Date.now() });
+      localStorage.setItem('napbak_piano_leads', JSON.stringify(leads));
+      localStorage.setItem('napbak_unlocked_universal', 'true');
+    } catch (err) {
+      // silent
+    }
+
+    setHasUnlockedUniversal(true);
+    setEmailStatus('success');
+
+    // Trigger instant download
+    const link = document.createElement('a');
+    link.href = '/downloads/Napbak_Concert_Grand_Universal_VST_Pack.zip';
+    link.download = 'Napbak_Concert_Grand_Universal_VST_Pack.zip';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    setTimeout(() => {
+      setShowEmailModal(false);
+      setEmailStatus('idle');
+    }, 1200);
+  };
+
+  const handleVerifyLicense = async (e) => {
+    e.preventDefault();
+    if (!licenseKeyInput.trim()) return;
+
+    setLicenseStatus('loading');
+    setLicenseMsg('');
+
+    try {
+      const res = await verifyGumroadLicense(licenseKeyInput.trim());
+      if (res.success) {
+        unlockPro(licenseKeyInput.trim());
+        setLicenseStatus('success');
+        setLicenseMsg(lang === 'es' ? '¡Licencia verificada con éxito! Descargando VST3...' : 'License verified! Downloading VST3...');
+
+        // Trigger instant VST3 download
+        const link = document.createElement('a');
+        link.href = '/downloads/Napbak_Concert_Grand_VST3_Win64.zip';
+        link.download = 'Napbak_Concert_Grand_VST3_Win64.zip';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        setTimeout(() => {
+          setShowUnlockModal(false);
+          setLicenseStatus('idle');
+        }, 1500);
+      } else {
+        setLicenseStatus('error');
+        setLicenseMsg(res.message || (lang === 'es' ? 'Clave de licencia no válida.' : 'Invalid license key.'));
+      }
+    } catch (err) {
+      setLicenseStatus('error');
+      setLicenseMsg(lang === 'es' ? 'Error de conexión al verificar.' : 'Connection error during verification.');
+    }
   };
 
   return (
@@ -224,14 +324,25 @@ export default function NapbakPianoVSTShowcase() {
                 </div>
               </div>
 
-              <a
-                href="/downloads/Napbak_Concert_Grand_VST3_Win64.zip"
-                download="Napbak_Concert_Grand_VST3_Win64.zip"
-                className="w-full py-3.5 px-5 rounded-xl bg-gradient-to-r from-[#9D4EDD] to-[#ec4899] hover:from-[#E0AAFF] hover:to-[#fbcfe8] text-white hover:text-black font-mono text-xs font-bold tracking-widest uppercase transition-all flex items-center justify-center gap-2 shadow-[0_0_25px_rgba(157,78,221,0.3)] hover:shadow-[0_0_35px_rgba(236,72,153,0.5)] active:scale-98"
-              >
-                <Download className="w-4 h-4" />
-                {t.winBtn}
-              </a>
+              {isPro ? (
+                <a
+                  href="/downloads/Napbak_Concert_Grand_VST3_Win64.zip"
+                  download="Napbak_Concert_Grand_VST3_Win64.zip"
+                  className="w-full py-3.5 px-5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-black font-mono text-xs font-bold tracking-widest uppercase transition-all flex items-center justify-center gap-2 shadow-[0_0_25px_rgba(16,185,129,0.3)] active:scale-98"
+                >
+                  <Download className="w-4 h-4" />
+                  {lang === 'es' ? 'DESCARGAR VST3 (LICENCIA PRO ACTIVA)' : 'DOWNLOAD VST3 (PRO LICENSE ACTIVE)'}
+                </a>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setShowUnlockModal(true)}
+                  className="w-full py-3.5 px-5 rounded-xl bg-gradient-to-r from-[#9D4EDD] to-[#ec4899] hover:from-[#E0AAFF] hover:to-[#fbcfe8] text-white hover:text-black font-mono text-xs font-bold tracking-widest uppercase transition-all flex items-center justify-center gap-2 shadow-[0_0_25px_rgba(157,78,221,0.3)] hover:shadow-[0_0_35px_rgba(236,72,153,0.5)] active:scale-98 cursor-pointer"
+                >
+                  <Lock className="w-4 h-4" />
+                  {lang === 'es' ? 'DESBLOQUEAR CON PASE LIFETIME' : 'UNLOCK WITH LIFETIME PASS'}
+                </button>
+              )}
             </div>
 
             {/* Download Option 2: Universal DAW Multi-Pack */}
@@ -261,14 +372,25 @@ export default function NapbakPianoVSTShowcase() {
                 </div>
               </div>
 
-              <a
-                href="/downloads/Napbak_Concert_Grand_Universal_VST_Pack.zip"
-                download="Napbak_Concert_Grand_Universal_VST_Pack.zip"
-                className="w-full py-3.5 px-5 rounded-xl bg-white/[0.08] hover:bg-white/20 border border-white/20 hover:border-white text-white font-mono text-xs font-bold tracking-widest uppercase transition-all flex items-center justify-center gap-2 active:scale-98"
-              >
-                <Download className="w-4 h-4" />
-                {t.uniBtn}
-              </a>
+              {hasUnlockedUniversal ? (
+                <a
+                  href="/downloads/Napbak_Concert_Grand_Universal_VST_Pack.zip"
+                  download="Napbak_Concert_Grand_Universal_VST_Pack.zip"
+                  className="w-full py-3.5 px-5 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/40 text-emerald-300 font-mono text-xs font-bold tracking-widest uppercase transition-all flex items-center justify-center gap-2 active:scale-98"
+                >
+                  <Download className="w-4 h-4" />
+                  {lang === 'es' ? 'DESCARGAR PACK UNIVERSAL (DESBLOQUEADO)' : 'DOWNLOAD UNIVERSAL PACK (UNLOCKED)'}
+                </a>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setShowEmailModal(true)}
+                  className="w-full py-3.5 px-5 rounded-xl bg-white/[0.08] hover:bg-white/20 border border-white/20 hover:border-white text-white font-mono text-xs font-bold tracking-widest uppercase transition-all flex items-center justify-center gap-2 active:scale-98 cursor-pointer"
+                >
+                  <Download className="w-4 h-4 text-emerald-400" />
+                  {lang === 'es' ? 'DESCARGAR GRATIS CON TU EMAIL' : 'FREE DOWNLOAD WITH EMAIL'}
+                </button>
+              )}
             </div>
 
           </div>
@@ -462,6 +584,151 @@ export default function NapbakPianoVSTShowcase() {
         </div>
 
       </div>
+
+      {/* ── MODAL 1: LIFETIME UNLOCK / GUMROAD LICENSE KEY ── */}
+      {showUnlockModal && (
+        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="bg-[#0e0918] border border-[#9D4EDD]/40 rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-[0_0_60px_rgba(157,78,221,0.3)] relative text-left">
+            <button
+              onClick={() => setShowUnlockModal(false)}
+              className="absolute top-5 right-5 text-white/40 hover:text-white transition-colors cursor-pointer"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <div className="w-12 h-12 rounded-2xl bg-[#9D4EDD]/20 border border-[#9D4EDD]/40 flex items-center justify-center text-[#E0AAFF] mb-4">
+              <Lock className="w-6 h-6" />
+            </div>
+
+            <span className="text-[10px] font-mono tracking-widest text-[#E0AAFF] font-bold uppercase block mb-1">
+              {lang === 'es' ? 'BENEFICIO EXCLUSIVO LIFETIME' : 'EXCLUSIVE LIFETIME BENEFIT'}
+            </span>
+            <h3 className="font-modern text-2xl font-bold text-white mb-2">
+              {lang === 'es' ? 'Desbloquea el Plugin Nativo VST3' : 'Unlock Native VST3 Plugin'}
+            </h3>
+            <p className="text-xs font-mono text-white/60 leading-relaxed mb-6">
+              {lang === 'es'
+                ? 'El instalador nativo a 44.1 kHz / 32-bit float con latencia de 0 muestras está incluido exclusivamente para dueños del Pase Lifetime de CTRL.'
+                : 'The native 44.1 kHz / 32-bit float installer with 0 samples latency is included exclusively for CTRL Lifetime Pass owners.'}
+            </p>
+
+            {/* Gumroad Buy CTA */}
+            <a
+              href="https://napoacademy.gumroad.com/l/ctrl-pro-lifetime?wanted=true&discount_code=VIP39"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full py-3.5 px-5 rounded-xl bg-gradient-to-r from-[#9D4EDD] to-[#ec4899] hover:from-[#E0AAFF] hover:to-[#fbcfe8] text-white hover:text-black font-mono text-xs font-bold tracking-widest uppercase transition-all flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(157,78,221,0.4)] mb-6 text-center cursor-pointer"
+            >
+              {lang === 'es' ? 'Obtener Pase Lifetime ($39 Oferta Secreta)' : 'Get Lifetime Pass ($39 Secret Deal)'} ➔
+            </a>
+
+            {/* License Activation Section */}
+            <div className="pt-5 border-t border-white/10">
+              <div className="text-[11px] font-mono text-white/70 mb-2 font-bold uppercase tracking-wider">
+                {lang === 'es' ? '¿Ya tienes tu clave de Gumroad?' : 'Already have a Gumroad license?'}
+              </div>
+
+              {licenseStatus === 'success' ? (
+                <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 font-mono text-xs flex items-center gap-2">
+                  <Check className="w-4 h-4 text-emerald-400 shrink-0" />
+                  <span>{licenseMsg}</span>
+                </div>
+              ) : (
+                <form onSubmit={handleVerifyLicense} className="space-y-2.5">
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      required
+                      placeholder="XXXXXXXX-XXXXXXXX-XXXXXXXX-XXXXXXXX"
+                      value={licenseKeyInput}
+                      onChange={(e) => setLicenseKeyInput(e.target.value)}
+                      className="flex-1 px-3.5 py-2.5 rounded-xl bg-black/60 border border-white/15 text-xs text-white placeholder-white/30 font-mono focus:outline-none focus:border-[#9D4EDD]"
+                    />
+                    <button
+                      type="submit"
+                      disabled={licenseStatus === 'loading'}
+                      className="px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-white font-mono text-xs font-bold tracking-wider uppercase transition-colors whitespace-nowrap cursor-pointer"
+                    >
+                      {licenseStatus === 'loading' ? (lang === 'es' ? 'Validando...' : 'Checking...') : (lang === 'es' ? 'Activar' : 'Activate')}
+                    </button>
+                  </div>
+
+                  {licenseStatus === 'error' && (
+                    <p className="text-[11px] font-mono text-red-400">
+                      {licenseMsg}
+                    </p>
+                  )}
+                </form>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── MODAL 2: EMAIL CAPTURE FOR UNIVERSAL PACK ── */}
+      {showEmailModal && (
+        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="bg-[#0a0f12] border border-emerald-500/30 rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-[0_0_60px_rgba(16,185,129,0.2)] relative text-left">
+            <button
+              onClick={() => setShowEmailModal(false)}
+              className="absolute top-5 right-5 text-white/40 hover:text-white transition-colors cursor-pointer"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <div className="w-12 h-12 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400 mb-4">
+              <Download className="w-6 h-6" />
+            </div>
+
+            <span className="text-[10px] font-mono tracking-widest text-emerald-400 font-bold uppercase block mb-1">
+              {lang === 'es' ? 'DESCARGA DIRECTA GRATUITA' : 'FREE DIRECT DOWNLOAD'}
+            </span>
+            <h3 className="font-modern text-2xl font-bold text-white mb-2">
+              {lang === 'es' ? 'Pack Multi-DAW Universal (Mac & Win)' : 'Universal Multi-DAW Pack (Mac & Win)'}
+            </h3>
+            <p className="text-xs font-mono text-white/60 leading-relaxed mb-6">
+              {lang === 'es'
+                ? 'Ingresa tu correo de productor para descargar de inmediato el preset de Decent Sampler + archivo SFZ nativo para FL Studio DirectWave y Logic Pro.'
+                : 'Enter your producer email to immediately download the Decent Sampler preset + native SFZ file for FL Studio DirectWave and Logic Pro.'}
+            </p>
+
+            {emailStatus === 'success' ? (
+              <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 font-mono text-xs flex items-center gap-2">
+                <Check className="w-4 h-4 text-emerald-400 shrink-0" />
+                <span>{lang === 'es' ? '¡Descarga iniciada! Revisa tu carpeta de descargas.' : 'Download started! Check your downloads folder.'}</span>
+              </div>
+            ) : (
+              <form onSubmit={handleUniversalEmailSubmit} className="space-y-3">
+                <input
+                  type="email"
+                  required
+                  placeholder={lang === 'es' ? 'tu.email.productor@gmail.com' : 'producer@gmail.com'}
+                  value={emailInput}
+                  onChange={(e) => setEmailInput(e.target.value)}
+                  className="w-full px-4 py-3 rounded-xl bg-black/60 border border-white/15 text-sm text-white placeholder-white/30 font-mono focus:outline-none focus:border-emerald-500"
+                />
+
+                <button
+                  type="submit"
+                  disabled={emailStatus === 'loading'}
+                  className="w-full py-3.5 px-5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-mono text-xs font-bold tracking-widest uppercase transition-all flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(16,185,129,0.3)] cursor-pointer"
+                >
+                  <Download className="w-4 h-4" />
+                  {emailStatus === 'loading'
+                    ? (lang === 'es' ? 'Generando descarga...' : 'Generating download...')
+                    : (lang === 'es' ? 'Descargar Pack Ahora ➔' : 'Download Pack Now ➔')}
+                </button>
+
+                <p className="text-[10px] font-mono text-white/40 text-center mt-2">
+                  {lang === 'es'
+                    ? '0 spam. Solo te avisaremos cuando liberemos nuevos samples o actualizaciones.'
+                    : 'Zero spam. We will only notify you when releasing new samples or updates.'}
+                </p>
+              </form>
+            )}
+          </div>
+        </div>
+      )}
 
     </div>
   );
