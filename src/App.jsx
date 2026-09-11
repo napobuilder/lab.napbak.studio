@@ -22,17 +22,17 @@ export default function App() {
   // Estados Pro usando Zustand
   const { isPro, unlockPro, lockPro } = useProStore();
 
-  // Routing view state (supports '/', '/piano', and '/vip' / '/deal')
+  // Routing view state (supports '/', '/piano', and '/vip' / '/deal' / '/reels')
   const [currentView, setCurrentView] = useState(() => {
     const path = window.location.pathname;
     if (path === '/piano') return 'piano';
-    if (path === '/vip' || path === '/deal') return 'vip';
+    if (['/vip', '/deal', '/reels'].includes(path)) return 'vip';
     return 'analyzer';
   });
 
   const navigateTo = (view) => {
     setCurrentView(view);
-    const newPath = view === 'piano' ? '/piano' : view === 'vip' ? '/vip' : '/';
+    const newPath = view === 'piano' ? '/piano' : view === 'vip' ? '/reels' : '/';
     window.history.pushState({}, '', newPath);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -41,7 +41,7 @@ export default function App() {
     const handlePopState = () => {
       const path = window.location.pathname;
       if (path === '/piano') setCurrentView('piano');
-      else if (path === '/vip' || path === '/deal') setCurrentView('vip');
+      else if (['/vip', '/deal', '/reels'].includes(path)) setCurrentView('vip');
       else setCurrentView('analyzer');
     };
     window.addEventListener('popstate', handlePopState);
