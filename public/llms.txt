@@ -16,7 +16,8 @@ All audio processing happens 100% client-side in the browser using the Web Audio
 - Real-time streaming platform loudness penalty preview for Spotify, Apple Music, YouTube, Tidal, Amazon Music, SoundCloud, Beatport, Deezer, and Pandora
 - Device speaker simulation: iPhone, Car, Laptop, Headphones, AirPods, Bluetooth Speaker, Gaming Headset, Tablet
 - Mono compatibility check
-- Real-time spectrum analyzer visualization
+- Dual Reference A/B Audio Comparator: Real-time side-by-side audio crossfader with synchronized playheads, instantaneous A/B toggling, and live differential metrics (LUFS, True Peak, RMS)
+- Napbak Concert Grand Piano: Free acoustic piano web workstation with QWERTY/MIDI input, DSP felt filter, algorithmic reverb, and native VST3 / AU / DirectWave downloads for FL Studio, Ableton Live, Logic Pro, and Reaper
 - 100% client-side processing — zero data leaves your browser
 - Works with WAV, MP3, FLAC, AAC, OGG, and other browser-supported audio formats
 - Custom handcrafted mastering service available for $20

@@ -42,10 +42,33 @@ export default function App() {
   }, []);
 
   useEffect(() => {
+    const metaDesc = document.querySelector('meta[name="description"]');
+    const canonical = document.querySelector('link[rel="canonical"]');
+    const ogTitle = document.querySelector('meta[property="og:title"]');
+    const ogDesc = document.querySelector('meta[property="og:description"]');
+    const ogUrl = document.querySelector('meta[property="og:url"]');
+
     if (currentView === 'piano') {
-      document.title = lang === 'es' ? "Napbak Concert Grand | Piano Acústico de Concierto Online Gratis" : "Napbak Concert Grand | Free Online Acoustic Grand Piano";
+      const pianoTitle = lang === 'es'
+        ? "Napbak Concert Grand | Piano Acústico de Concierto Online Gratis & VST3"
+        : "Napbak Concert Grand | Free Online Acoustic Grand Piano & VST3 Plugin";
+      const pianoDesc = lang === 'es'
+        ? "Toca el piano acústico de concierto con motor DSP, grabación QWERTY/MIDI y descarga el plugin VST3, AU y DirectWave 100% gratis para FL Studio, Ableton y Logic."
+        : "Play the acoustic grand piano online with DSP engine, QWERTY/MIDI recording, and download the free VST3, AU & DirectWave plugin for FL Studio, Ableton, and Logic.";
+
+      document.title = pianoTitle;
+      if (metaDesc) metaDesc.setAttribute('content', pianoDesc);
+      if (ogTitle) ogTitle.setAttribute('content', pianoTitle);
+      if (ogDesc) ogDesc.setAttribute('content', pianoDesc);
+      if (canonical) canonical.setAttribute('href', 'https://ctrl.napbak.studio/piano');
+      if (ogUrl) ogUrl.setAttribute('href', 'https://ctrl.napbak.studio/piano');
     } else {
       document.title = t.seo.title;
+      if (metaDesc) metaDesc.setAttribute('content', t.seo.description);
+      if (ogTitle) ogTitle.setAttribute('content', t.seo.title);
+      if (ogDesc) ogDesc.setAttribute('content', t.seo.description);
+      if (canonical) canonical.setAttribute('href', 'https://ctrl.napbak.studio/');
+      if (ogUrl) ogUrl.setAttribute('href', 'https://ctrl.napbak.studio/');
     }
   }, [currentView, lang, t]);
 
