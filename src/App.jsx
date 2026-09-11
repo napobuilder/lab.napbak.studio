@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import MasterAnalyzer from './components/MasterAnalyzer';
 import NapbakPiano from './components/NapbakPiano';
 import DualReferenceComparator from './components/DualReferenceComparator';
+import SecretDealLanding from './components/SecretDealLanding';
 import { pianoEngine } from './utils/NapbakPianoEngine';
 import { useProStore } from './store/useProStore';
 import { useLanguageStore } from './store/useLanguageStore';
@@ -21,21 +22,27 @@ export default function App() {
   // Estados Pro usando Zustand
   const { isPro, unlockPro, lockPro } = useProStore();
 
-  // Routing view state (supports both '/' and '/piano')
+  // Routing view state (supports '/', '/piano', and '/vip' / '/deal')
   const [currentView, setCurrentView] = useState(() => {
-    return window.location.pathname === '/piano' ? 'piano' : 'analyzer';
+    const path = window.location.pathname;
+    if (path === '/piano') return 'piano';
+    if (path === '/vip' || path === '/deal') return 'vip';
+    return 'analyzer';
   });
 
   const navigateTo = (view) => {
     setCurrentView(view);
-    const newPath = view === 'piano' ? '/piano' : '/';
+    const newPath = view === 'piano' ? '/piano' : view === 'vip' ? '/vip' : '/';
     window.history.pushState({}, '', newPath);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   useEffect(() => {
     const handlePopState = () => {
-      setCurrentView(window.location.pathname === '/piano' ? 'piano' : 'analyzer');
+      const path = window.location.pathname;
+      if (path === '/piano') setCurrentView('piano');
+      else if (path === '/vip' || path === '/deal') setCurrentView('vip');
+      else setCurrentView('analyzer');
     };
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);
@@ -48,7 +55,21 @@ export default function App() {
     const ogDesc = document.querySelector('meta[property="og:description"]');
     const ogUrl = document.querySelector('meta[property="og:url"]');
 
-    if (currentView === 'piano') {
+    if (currentView === 'vip') {
+      const vipTitle = lang === 'es'
+        ? "CTRL VIP Creator Pass | Oferta Secreta de Acceso Lifetime ($39)"
+        : "CTRL VIP Creator Pass | Secret Lifetime Deal ($39)";
+      const vipDesc = lang === 'es'
+        ? "Acceso secreto para creadores: Medidor LUFS, Comparador A/B con crossfader y Piano Acústico VST3 por solo $39 de por vida."
+        : "Secret creator access: LUFS meter, A/B comparator with live crossfader, and Acoustic Piano VST3 for only $39 lifetime.";
+
+      document.title = vipTitle;
+      if (metaDesc) metaDesc.setAttribute('content', vipDesc);
+      if (ogTitle) ogTitle.setAttribute('content', vipTitle);
+      if (ogDesc) ogDesc.setAttribute('content', vipDesc);
+      if (canonical) canonical.setAttribute('href', 'https://ctrl.napbak.studio/vip');
+      if (ogUrl) ogUrl.setAttribute('href', 'https://ctrl.napbak.studio/vip');
+    } else if (currentView === 'piano') {
       const pianoTitle = lang === 'es'
         ? "Napbak Concert Grand | Piano Acústico de Concierto Online Gratis & VST3"
         : "Napbak Concert Grand | Free Online Acoustic Grand Piano & VST3 Plugin";
@@ -329,7 +350,11 @@ export default function App() {
 
       <div className="noise-overlay"></div>
 
-      <nav aria-label="Main navigation" className={`fixed top-0 w-full px-6 md:px-10 flex justify-between items-center z-40 transition-all duration-500 opacity-100 ${isScrolled ? 'py-4 md:py-6 bg-[#050505]/90 backdrop-blur-md border-b border-white/5 shadow-[0_4px_30px_rgba(0,0,0,0.5)]' : 'py-6 md:py-10 bg-transparent'}`}>
+      {currentView === 'vip' ? (
+        <SecretDealLanding onNavigateToStudio={() => navigateTo('analyzer')} />
+      ) : (
+        <>
+          <nav aria-label="Main navigation" className={`fixed top-0 w-full px-6 md:px-10 flex justify-between items-center z-40 transition-all duration-500 opacity-100 ${isScrolled ? 'py-4 md:py-6 bg-[#050505]/90 backdrop-blur-md border-b border-white/5 shadow-[0_4px_30px_rgba(0,0,0,0.5)]' : 'py-6 md:py-10 bg-transparent'}`}>
         
         <div className="flex flex-col relative z-10 flex-1 items-start group">
           <h1 className="font-modern text-2xl md:text-3xl text-white font-light tracking-tighter relative z-10 flex items-center">
@@ -900,6 +925,8 @@ export default function App() {
         </footer>
 
       </main>
+        </>
+      )}
 
       <div className={`fixed inset-0 z-[200] bg-[#050505]/95 backdrop-blur-xl flex flex-col justify-center items-center transition-all duration-700 ${isContactOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
         <button 
