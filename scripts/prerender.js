@@ -46,6 +46,21 @@ async function prerender() {
       title: 'CTRL VIP Creator Pass | Secret Lifetime Deal ($39)',
       description: 'Secret creator access: LUFS meter, A/B comparator with live crossfader, and Acoustic Piano VST3 for only $39 lifetime.',
       canonical: 'https://ctrl.napbak.studio/vip'
+    },
+    {
+      path: '/curso',
+      outFile: path.resolve(distDir, 'curso', 'index.html'),
+      title: 'Toma el Control: Método Spotify Ready | Curso de Mezcla & Mastering',
+      description: 'Aprende el sistema paso a paso para mezclar y masterizar tus temas de 0 a 100 para Spotify en clips cortos directos al grano. Incluye licencia LIFETIME de CTRL y VST3 de Piano Acústico.',
+      canonical: 'https://ctrl.napbak.studio/curso'
+    },
+    {
+      path: '/gracias-curso',
+      outFile: path.resolve(distDir, 'gracias-curso', 'index.html'),
+      title: '¡Compra Confirmada! | Toma el Control: Método Spotify Ready',
+      description: 'Confirmación de compra y acceso al curso Toma el Control: Método Spotify Ready y suite CTRL.',
+      canonical: 'https://ctrl.napbak.studio/gracias-curso',
+      noindex: true
     }
   ];
 
@@ -87,6 +102,13 @@ async function prerender() {
         /<link\s+rel="canonical"\s+href="[^"]*"/i,
         `<link rel="canonical" href="${route.canonical}"`
       );
+      // Robots (noindex if requested)
+      if (route.noindex) {
+        html = html.replace(
+          /<meta\s+name="robots"\s+content="[^"]*"/i,
+          '<meta name="robots" content="noindex, nofollow"'
+        );
+      }
       // OG URL
       html = html.replace(
         /<meta\s+property="og:url"\s+content="[^"]*"/i,

@@ -24,6 +24,18 @@ export function render(url = '/') {
         <App initialRoute="vip" />
       </StrictMode>
     );
+  } else if (url === '/curso') {
+    appHtml = renderToString(
+      <StrictMode>
+        <App initialRoute="curso" />
+      </StrictMode>
+    );
+  } else if (url === '/gracias-curso') {
+    appHtml = renderToString(
+      <StrictMode>
+        <App initialRoute="gracias-curso" />
+      </StrictMode>
+    );
   } else {
     appHtml = renderToString(
       <StrictMode>

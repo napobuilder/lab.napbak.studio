@@ -3,6 +3,8 @@ import MasterAnalyzer from './components/MasterAnalyzer';
 import NapbakPiano from './components/NapbakPiano';
 import DualReferenceComparator from './components/DualReferenceComparator';
 import SecretDealLanding from './components/SecretDealLanding';
+import CourseSalesLanding from './pages/CourseSalesLanding';
+import CourseThankYou from './pages/CourseThankYou';
 import { pianoEngine } from './utils/NapbakPianoEngine';
 import { useProStore } from './store/useProStore';
 import { useLanguageStore } from './store/useLanguageStore';
@@ -29,12 +31,14 @@ export default function App({ initialRoute = 'analyzer' }) {
   }, []);
 
 
-  // Routing view state (supports '/', '/piano', and '/vip' / '/deal' / '/reels')
+  // Routing view state (supports '/', '/piano', '/vip', '/curso', and '/gracias-curso')
   const [currentView, setCurrentView] = useState(() => {
     if (typeof window !== 'undefined') {
       const path = window.location.pathname;
       if (path === '/piano') return 'piano';
       if (['/vip', '/deal', '/reels'].includes(path)) return 'vip';
+      if (path === '/curso') return 'curso';
+      if (path === '/gracias-curso') return 'gracias-curso';
       return 'analyzer';
     }
     return initialRoute;
@@ -42,7 +46,11 @@ export default function App({ initialRoute = 'analyzer' }) {
 
   const navigateTo = (view) => {
     setCurrentView(view);
-    const newPath = view === 'piano' ? '/piano' : view === 'vip' ? '/vip' : '/';
+    const newPath = view === 'piano' ? '/piano' 
+      : view === 'vip' ? '/vip' 
+      : view === 'curso' ? '/curso' 
+      : view === 'gracias-curso' ? '/gracias-curso' 
+      : '/';
     if (typeof window !== 'undefined') {
       window.history.pushState({}, '', newPath);
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -54,6 +62,8 @@ export default function App({ initialRoute = 'analyzer' }) {
       const path = window.location.pathname;
       if (path === '/piano') setCurrentView('piano');
       else if (['/vip', '/deal', '/reels'].includes(path)) setCurrentView('vip');
+      else if (path === '/curso') setCurrentView('curso');
+      else if (path === '/gracias-curso') setCurrentView('gracias-curso');
       else setCurrentView('analyzer');
     };
     window.addEventListener('popstate', handlePopState);
@@ -81,6 +91,26 @@ export default function App({ initialRoute = 'analyzer' }) {
       if (ogDesc) ogDesc.setAttribute('content', vipDesc);
       if (canonical) canonical.setAttribute('href', 'https://ctrl.napbak.studio/vip');
       if (ogUrl) ogUrl.setAttribute('href', 'https://ctrl.napbak.studio/vip');
+    } else if (currentView === 'curso') {
+      const cursoTitle = "Toma el Control: Método Spotify Ready | Curso de Mezcla & Mastering";
+      const cursoDesc = "Aprende a mezclar y masterizar tus canciones de 0 a 100 para Spotify en clips cortos directos al grano. Incluye licencia LIFETIME de CTRL y VST3 de Piano Acústico.";
+
+      document.title = cursoTitle;
+      if (metaDesc) metaDesc.setAttribute('content', cursoDesc);
+      if (ogTitle) ogTitle.setAttribute('content', cursoTitle);
+      if (ogDesc) ogDesc.setAttribute('content', cursoDesc);
+      if (canonical) canonical.setAttribute('href', 'https://ctrl.napbak.studio/curso');
+      if (ogUrl) ogUrl.setAttribute('href', 'https://ctrl.napbak.studio/curso');
+    } else if (currentView === 'gracias-curso') {
+      const thanksTitle = "¡Compra Confirmada! | Toma el Control: Método Spotify Ready";
+      const thanksDesc = "Confirmación de compra y acceso al curso Toma el Control: Método Spotify Ready y suite CTRL.";
+
+      document.title = thanksTitle;
+      if (metaDesc) metaDesc.setAttribute('content', thanksDesc);
+      if (ogTitle) ogTitle.setAttribute('content', thanksTitle);
+      if (ogDesc) ogDesc.setAttribute('content', thanksDesc);
+      if (canonical) canonical.setAttribute('href', 'https://ctrl.napbak.studio/gracias-curso');
+      if (ogUrl) ogUrl.setAttribute('href', 'https://ctrl.napbak.studio/gracias-curso');
     } else if (currentView === 'piano') {
       const pianoTitle = lang === 'es'
         ? "Napbak Concert Grand | Piano Acústico de Concierto Online Gratis & VST3"
@@ -364,6 +394,10 @@ export default function App({ initialRoute = 'analyzer' }) {
 
       {currentView === 'vip' ? (
         <SecretDealLanding onNavigateToStudio={() => navigateTo('analyzer')} />
+      ) : currentView === 'curso' ? (
+        <CourseSalesLanding onNavigateToStudio={() => navigateTo('analyzer')} />
+      ) : currentView === 'gracias-curso' ? (
+        <CourseThankYou onNavigateToStudio={() => navigateTo('analyzer')} />
       ) : (
         <>
           <nav aria-label="Main navigation" className={`fixed top-0 w-full px-6 md:px-10 flex justify-between items-center z-40 transition-all duration-500 opacity-100 ${isScrolled ? 'py-4 md:py-6 bg-[#050505]/90 backdrop-blur-md border-b border-white/5 shadow-[0_4px_30px_rgba(0,0,0,0.5)]' : 'py-6 md:py-10 bg-transparent'}`}>
@@ -897,6 +931,7 @@ export default function App({ initialRoute = 'analyzer' }) {
               <a href="/" onClick={(e) => { e.preventDefault(); navigateTo('analyzer'); }} className="text-[10px] tracking-wide font-mono hover:text-[#E0AAFF] transition-colors cursor-pointer text-left">{t.nav.analyzer}</a>
               <a href="/piano" onClick={(e) => { e.preventDefault(); navigateTo('piano'); }} className="text-[10px] tracking-wide font-mono hover:text-[#E0AAFF] transition-colors cursor-pointer text-left text-[#E0AAFF]">{t.nav.piano}</a>
               <a href="/vip" onClick={(e) => { e.preventDefault(); navigateTo('vip'); }} className="text-[10px] tracking-wide font-mono text-white/40 hover:text-[#E0AAFF] transition-colors cursor-pointer text-left">VIP CREATOR PASS</a>
+              <a href="/curso" onClick={(e) => { e.preventDefault(); navigateTo('curso'); }} className="text-[10px] tracking-wide font-mono text-[#E0AAFF] hover:text-white transition-colors cursor-pointer text-left">CURSO SPOTIFY READY</a>
               <a href="#features" onClick={(e) => scrollTo(e, 'features')} className="text-[10px] tracking-wide font-mono hover:text-[#E0AAFF] transition-colors">{t.features.titleAccent}</a>
               <a href="#pricing" onClick={(e) => scrollTo(e, 'pricing')} className="text-[10px] tracking-wide font-mono hover:text-[#E0AAFF] transition-colors">{t.pricing.titleAccent}</a>
               <a href="#faq" onClick={(e) => scrollTo(e, 'faq')} className="text-[10px] tracking-wide font-mono hover:text-[#E0AAFF] transition-colors">FAQ</a>
