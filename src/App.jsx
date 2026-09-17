@@ -8,7 +8,7 @@ import { useProStore } from './store/useProStore';
 import { useLanguageStore } from './store/useLanguageStore';
 import { translations, faqDataByLang } from './utils/translations';
 
-export default function App() {
+export default function App({ initialRoute = 'analyzer' }) {
   const { lang, setLang } = useLanguageStore();
   const t = translations[lang] || translations.en;
   const currentFaq = faqDataByLang[lang] || faqDataByLang.en;
@@ -22,19 +22,31 @@ export default function App() {
   // Estados Pro usando Zustand
   const { isPro, unlockPro, lockPro } = useProStore();
 
+  // Rehidratar ProStore e idioma de manera asíncrona tras el primer render para evitar Hydration Mismatch
+  useEffect(() => {
+    useLanguageStore.getState().initClientLanguage();
+    useProStore.persist.rehydrate();
+  }, []);
+
+
   // Routing view state (supports '/', '/piano', and '/vip' / '/deal' / '/reels')
   const [currentView, setCurrentView] = useState(() => {
-    const path = window.location.pathname;
-    if (path === '/piano') return 'piano';
-    if (['/vip', '/deal', '/reels'].includes(path)) return 'vip';
-    return 'analyzer';
+    if (typeof window !== 'undefined') {
+      const path = window.location.pathname;
+      if (path === '/piano') return 'piano';
+      if (['/vip', '/deal', '/reels'].includes(path)) return 'vip';
+      return 'analyzer';
+    }
+    return initialRoute;
   });
 
   const navigateTo = (view) => {
     setCurrentView(view);
-    const newPath = view === 'piano' ? '/piano' : view === 'vip' ? '/reels' : '/';
-    window.history.pushState({}, '', newPath);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    const newPath = view === 'piano' ? '/piano' : view === 'vip' ? '/vip' : '/';
+    if (typeof window !== 'undefined') {
+      window.history.pushState({}, '', newPath);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   };
 
   useEffect(() => {
@@ -375,8 +387,9 @@ export default function App() {
 
         <div className="absolute inset-0 hidden md:flex justify-center items-center pointer-events-none z-20">
           <div className="flex items-center gap-1 bg-white/[0.04] border border-white/10 p-1 rounded-full pointer-events-auto backdrop-blur-md shadow-lg shadow-black/40">
-            <button
-              onClick={() => navigateTo('analyzer')}
+            <a
+              href="/"
+              onClick={(e) => { e.preventDefault(); navigateTo('analyzer'); }}
               className={`px-4 py-1.5 rounded-full font-mono text-[10px] tracking-widest uppercase transition-all duration-300 flex items-center gap-1.5 cursor-pointer ${
                 currentView === 'analyzer'
                   ? 'bg-[#9D4EDD] text-white font-bold shadow-md shadow-[#9D4EDD]/30'
@@ -384,9 +397,10 @@ export default function App() {
               }`}
             >
               <span>🎚️</span> {t.nav.analyzer}
-            </button>
-            <button
-              onClick={() => navigateTo('piano')}
+            </a>
+            <a
+              href="/piano"
+              onClick={(e) => { e.preventDefault(); navigateTo('piano'); }}
               className={`px-4 py-1.5 rounded-full font-mono text-[10px] tracking-widest uppercase transition-all duration-300 flex items-center gap-1.5 cursor-pointer ${
                 currentView === 'piano'
                   ? 'bg-[#9D4EDD] text-white font-bold shadow-md shadow-[#9D4EDD]/30'
@@ -394,7 +408,7 @@ export default function App() {
               }`}
             >
               <span>🎹</span> {t.nav.piano}
-            </button>
+            </a>
           </div>
         </div>
 
@@ -880,8 +894,9 @@ export default function App() {
             {/* Column 2: Navigation Links */}
             <div className="flex flex-col items-start gap-3">
               <span className="text-[9px] tracking-widest font-mono uppercase text-white font-bold mb-2">{t.footer.quickLinks}</span>
-              <button onClick={() => navigateTo('analyzer')} className="text-[10px] tracking-wide font-mono hover:text-[#E0AAFF] transition-colors cursor-pointer text-left">{t.nav.analyzer}</button>
-              <button onClick={() => navigateTo('piano')} className="text-[10px] tracking-wide font-mono hover:text-[#E0AAFF] transition-colors cursor-pointer text-left text-[#E0AAFF]">{t.nav.piano}</button>
+              <a href="/" onClick={(e) => { e.preventDefault(); navigateTo('analyzer'); }} className="text-[10px] tracking-wide font-mono hover:text-[#E0AAFF] transition-colors cursor-pointer text-left">{t.nav.analyzer}</a>
+              <a href="/piano" onClick={(e) => { e.preventDefault(); navigateTo('piano'); }} className="text-[10px] tracking-wide font-mono hover:text-[#E0AAFF] transition-colors cursor-pointer text-left text-[#E0AAFF]">{t.nav.piano}</a>
+              <a href="/vip" onClick={(e) => { e.preventDefault(); navigateTo('vip'); }} className="text-[10px] tracking-wide font-mono text-white/40 hover:text-[#E0AAFF] transition-colors cursor-pointer text-left">VIP CREATOR PASS</a>
               <a href="#features" onClick={(e) => scrollTo(e, 'features')} className="text-[10px] tracking-wide font-mono hover:text-[#E0AAFF] transition-colors">{t.features.titleAccent}</a>
               <a href="#pricing" onClick={(e) => scrollTo(e, 'pricing')} className="text-[10px] tracking-wide font-mono hover:text-[#E0AAFF] transition-colors">{t.pricing.titleAccent}</a>
               <a href="#faq" onClick={(e) => scrollTo(e, 'faq')} className="text-[10px] tracking-wide font-mono hover:text-[#E0AAFF] transition-colors">FAQ</a>

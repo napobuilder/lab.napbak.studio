@@ -51,6 +51,7 @@ export default function MasterAnalyzer({ onPlaybackStart }) {
   // trialDaysLeft: null = no trial started, >0 = days remaining, 0 = just expired (first session after expiry)
   const [trialDaysLeft, setTrialDaysLeft] = useState(null);
   const [showTrialEndedToast, setShowTrialEndedToast] = useState(false);
+  const [debugFirstUse, setDebugFirstUse] = useState('none');
   const hasShownTrialToast = useRef(false);
 
   // --- Refs ---
@@ -136,6 +137,17 @@ export default function MasterAnalyzer({ onPlaybackStart }) {
       // 3. Free usage limits
       const now = new Date();
       const firstUseStr = localStorage.getItem('ctrl_first_use');
+      if (firstUseStr) {
+        try {
+          const dateFormatted = new Date(firstUseStr).toLocaleDateString();
+          queueMicrotask(() => setDebugFirstUse(dateFormatted));
+        } catch {
+          // ignore
+        }
+      } else {
+        queueMicrotask(() => setDebugFirstUse('none'));
+      }
+
       
       let isPhase1 = false;
       let daysLeft = null;
@@ -1787,7 +1799,7 @@ export default function MasterAnalyzer({ onPlaybackStart }) {
 
           {/* Estado actual del trial */}
           <div className="mt-3 text-center text-[7px] font-mono text-white/20 tracking-widest">
-            STATE: first_use={localStorage.getItem('ctrl_first_use') ? new Date(localStorage.getItem('ctrl_first_use')).toLocaleDateString() : 'none'} |
+            STATE: first_use={debugFirstUse} |
             trial_days_left={trialDaysLeft ?? 'n/a'} |
             runs_left={remainingFreeRuns > 100 ? '∞' : remainingFreeRuns} |
             pro={isPro ? 'YES' : 'NO'}

@@ -1,5 +1,11 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { persist, createJSONStorage } from 'zustand/middleware';
+
+const dummyStorage = {
+  getItem: () => null,
+  setItem: () => {},
+  removeItem: () => {},
+};
 
 export const useProStore = create(
   persist(
@@ -11,7 +17,10 @@ export const useProStore = create(
       lockPro: () => set({ isPro: false, licenseKey: null, activatedAt: null }),
     }),
     { 
-      name: 'napbak-pro-storage' 
+      name: 'napbak-pro-storage',
+      storage: createJSONStorage(() => typeof window !== 'undefined' ? localStorage : dummyStorage),
+      skipHydration: true,
     }
   )
 );
+

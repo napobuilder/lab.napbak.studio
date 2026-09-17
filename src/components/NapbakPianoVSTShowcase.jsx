@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLanguageStore } from '../store/useLanguageStore';
 import { useProStore } from '../store/useProStore';
 import { verifyGumroadLicense } from '../utils/gumroad';
@@ -44,9 +44,19 @@ export default function NapbakPianoVSTShowcase() {
   const [showEmailModal, setShowEmailModal] = useState(false);
 
   // Email capture state for Universal Pack
-  const [hasUnlockedUniversal, setHasUnlockedUniversal] = useState(() => {
-    return localStorage.getItem('napbak_unlocked_universal') === 'true';
-  });
+  const [hasUnlockedUniversal, setHasUnlockedUniversal] = useState(false);
+
+  useEffect(() => {
+    try {
+      const unlocked = localStorage.getItem('napbak_unlocked_universal') === 'true';
+      if (unlocked) {
+        queueMicrotask(() => setHasUnlockedUniversal(true));
+      }
+    } catch {
+      // ignore
+    }
+  }, []);
+
   const [emailInput, setEmailInput] = useState('');
   const [emailStatus, setEmailStatus] = useState('idle'); // 'idle' | 'loading' | 'success'
 

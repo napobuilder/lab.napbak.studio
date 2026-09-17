@@ -1,13 +1,21 @@
 import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
+import { createRoot, hydrateRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.jsx'
 import TusasongDashboard from './pages/TusasongDashboard.jsx'
 
-const path = window.location.pathname;
+const path = typeof window !== 'undefined' ? window.location.pathname : '/';
+const rootElement = document.getElementById('root');
 
-createRoot(document.getElementById('root')).render(
+const element = (
   <StrictMode>
     {path === '/vip/tusasong' ? <TusasongDashboard /> : <App />}
-  </StrictMode>,
-)
+  </StrictMode>
+);
+
+if (rootElement.hasChildNodes() && !rootElement.querySelector('#dsp-loader-placeholder')) {
+  hydrateRoot(rootElement, element);
+} else {
+  createRoot(rootElement).render(element);
+}
+

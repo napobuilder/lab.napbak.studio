@@ -1,30 +1,6 @@
 import { create } from 'zustand';
 import { translations } from '../utils/translations';
 
-const getInitialLanguage = () => {
-  // 1. Check URL query param: ?lang=es or ?lang=en
-  if (typeof window !== 'undefined') {
-    const params = new URLSearchParams(window.location.search);
-    const langParam = params.get('lang');
-    if (langParam === 'es' || langParam === 'en') {
-      return langParam;
-    }
-
-    // 2. Check localStorage
-    const saved = localStorage.getItem('ctrl_lang');
-    if (saved === 'es' || saved === 'en') {
-      return saved;
-    }
-
-    // 3. Fallback to browser language
-    const browserLang = navigator.language || navigator.userLanguage || '';
-    if (browserLang.toLowerCase().startsWith('es')) {
-      return 'es';
-    }
-  }
-
-  return 'en';
-};
 
 const updateSeoMetadata = (lang) => {
   if (typeof document === 'undefined') return;
@@ -39,22 +15,49 @@ const updateSeoMetadata = (lang) => {
     metaDesc.setAttribute('content', t.seo.description);
   }
 
-  // Update URL param smoothly without reloading
+  // Update URL param smoothly without reloading if on client
   try {
     const url = new URL(window.location);
     url.searchParams.set('lang', lang);
     window.history.replaceState({}, '', url);
-  } catch (e) {}
+  } catch {}
 };
 
 export const useLanguageStore = create((set, get) => {
-  const initial = getInitialLanguage();
-  if (typeof window !== 'undefined') {
-    updateSeoMetadata(initial);
-  }
-
   return {
-    lang: initial,
+    lang: 'en',
+    initClientLanguage: () => {
+      if (typeof window === 'undefined') return;
+      
+      // 1. Check explicit URL query param: ?lang=es or ?lang=en
+      const params = new URLSearchParams(window.location.search);
+      const langParam = params.get('lang');
+      if (langParam === 'es' || langParam === 'en') {
+        if (langParam !== 'en') {
+          set({ lang: langParam });
+        }
+        updateSeoMetadata(langParam);
+        return;
+      }
+
+      // 2. Check localStorage
+      const saved = localStorage.getItem('ctrl_lang');
+      if (saved === 'es' || saved === 'en') {
+        if (saved !== 'en') {
+          set({ lang: saved });
+        }
+        updateSeoMetadata(saved);
+        return;
+      }
+
+      // 3. Fallback to browser language
+      const browserLang = navigator.language || navigator.userLanguage || '';
+      if (browserLang.toLowerCase().startsWith('es')) {
+        set({ lang: 'es' });
+        updateSeoMetadata('es');
+      }
+    },
+
     setLang: (newLang) => {
       if (newLang !== 'es' && newLang !== 'en') return;
       localStorage.setItem('ctrl_lang', newLang);
@@ -68,3 +71,4 @@ export const useLanguageStore = create((set, get) => {
     }
   };
 });
+
