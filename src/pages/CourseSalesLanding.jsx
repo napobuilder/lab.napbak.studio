@@ -7,7 +7,9 @@ import {
   ChevronDown, 
   Check, 
   Mail, 
-  Award
+  Award,
+  Sliders,
+  Layers
 } from 'lucide-react';
 
 // ============================================================================
@@ -136,17 +138,16 @@ export default function CourseSalesLanding({ onNavigateToStudio }) {
   const isOptimal = faderPos >= 65;
 
   return (
-    <div className="min-h-screen bg-[#050505] text-[#FAFAFA] font-sans antialiased selection:bg-[#9D4EDD] selection:text-white pb-24 relative overflow-hidden">
+    <div className="min-h-screen bg-[#050505] text-[#FAFAFA] font-sans antialiased selection:bg-[#9D4EDD] selection:text-white pb-28 relative overflow-hidden">
       
-      {/* Luces de fondo ambientales / Ambient Neon Glows */}
+      {/* Luces de fondo ambientales sutiles */}
       <div className="fixed inset-0 pointer-events-none z-0">
-        <div className="absolute top-[-10%] left-1/2 -translate-x-1/2 w-[750px] h-[550px] bg-gradient-to-b from-[#9D4EDD]/25 via-[#5A189A]/15 to-transparent blur-[150px] rounded-full" />
-        <div className="absolute top-[45%] right-[-15%] w-[450px] h-[450px] bg-[#9D4EDD]/15 blur-[140px] rounded-full" />
-        <div className="absolute bottom-[15%] left-[-10%] w-[400px] h-[400px] bg-[#5A189A]/15 blur-[130px] rounded-full" />
+        <div className="absolute top-[-10%] left-1/2 -translate-x-1/2 w-[650px] h-[450px] bg-gradient-to-b from-[#9D4EDD]/15 via-[#5A189A]/10 to-transparent blur-[140px] rounded-full" />
+        <div className="absolute top-[50%] right-[-10%] w-[350px] h-[350px] bg-[#9D4EDD]/10 blur-[130px] rounded-full" />
       </div>
 
       {/* ── HEADER SUPERIOR / TOP BAR ── */}
-      <header className="relative z-20 border-b border-white/[0.06] bg-[#070709]/85 backdrop-blur-xl sticky top-0 px-4 py-3.5">
+      <header className="relative z-20 border-b border-white/10 bg-[#070709]/90 backdrop-blur-xl sticky top-0 px-4 py-3.5">
         <div className="max-w-4xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <button 
@@ -154,15 +155,15 @@ export default function CourseSalesLanding({ onNavigateToStudio }) {
               className="flex items-center gap-2.5 group text-left cursor-pointer"
               title="Volver a la suite CTRL"
             >
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#9D4EDD] to-[#5A189A] flex items-center justify-center shadow-[0_0_15px_rgba(157,78,221,0.4)]">
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#9D4EDD] to-[#5A189A] flex items-center justify-center border border-white/10">
                 <span className="font-mono font-black text-white text-xs tracking-tighter">NB</span>
               </div>
               <div>
                 <span className="text-sm font-bold tracking-wider uppercase font-modern text-white block leading-none">
                   CTRL <span className="text-[#E0AAFF] font-normal text-xs">by Napbak</span>
                 </span>
-                <span className="text-[9px] font-mono tracking-widest text-[#E0AAFF]/70 uppercase block mt-0.5">
-                  ACADEMIA DE PRODUCTORES
+                <span className="text-[9px] font-mono tracking-widest text-white/50 uppercase block mt-0.5">
+                  [ ACADEMIA DE PRODUCTORES ]
                 </span>
               </div>
             </button>
@@ -171,7 +172,7 @@ export default function CourseSalesLanding({ onNavigateToStudio }) {
           <div className="flex items-center gap-3">
             <button
               onClick={() => handleInitiateCheckout('header-top')}
-              className="px-3.5 py-1.5 rounded-full bg-[#9D4EDD] hover:bg-[#E0AAFF] hover:text-black text-white text-xs font-mono font-bold tracking-wider transition-all duration-300 shadow-[0_0_20px_rgba(157,78,221,0.3)] cursor-pointer"
+              className="px-3.5 py-1.5 rounded-full bg-[#9D4EDD] hover:bg-[#E0AAFF] hover:text-black text-white text-xs font-mono font-bold tracking-wider transition-colors cursor-pointer border border-[#9D4EDD]/50"
             >
               ACCEDER AHORA $59
             </button>
@@ -180,21 +181,21 @@ export default function CourseSalesLanding({ onNavigateToStudio }) {
       </header>
 
       {/* ── CONTENIDO PRINCIPAL ── */}
-      <main className="relative z-10 max-w-3xl mx-auto px-4 pt-6 sm:pt-10">
+      <main className="relative z-10 max-w-3xl mx-auto px-4 pt-8 sm:pt-14">
 
         {/* ── 1. HERO SECTION ── */}
-        <section aria-label="Introducción al curso" className="text-center mb-8">
+        <section aria-label="Introducción al curso" className="text-center mb-24 sm:mb-32">
           
-          {/* Badge de Oferta Limitada */}
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-[#9D4EDD]/40 bg-[#9D4EDD]/10 shadow-[0_0_25px_rgba(157,78,221,0.3)] mb-5 animate-pulse">
-            <span className="w-2 h-2 rounded-full bg-[#E0AAFF] shadow-[0_0_10px_#E0AAFF]" />
-            <span className="text-[11px] sm:text-xs font-mono font-bold tracking-widest text-[#E0AAFF] uppercase">
-              ⚡ OFERTA DE LANZAMIENTO • PRIMEROS 100 CUPOS CON CTRL LIFETIME
+          {/* Badge de Oferta Limitada (Sin emojis, con micro-etiqueta y dot sobrio) */}
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full border border-[#9D4EDD]/40 bg-[#9D4EDD]/10 mb-6">
+            <span className="w-2 h-2 rounded-full bg-[#E0AAFF] animate-pulse" />
+            <span className="text-[10px] sm:text-xs font-mono font-bold tracking-widest text-[#E0AAFF] uppercase">
+              [ OFERTA DE LANZAMIENTO • 100 CUPOS CON CTRL LIFETIME ]
             </span>
           </div>
 
           {/* Titular Principal */}
-          <h1 className="text-3xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-white leading-[1.1] mb-4">
+          <h1 className="text-3xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-white leading-[1.1] mb-5 font-modern">
             Toma el Control: <br className="hidden sm:inline" />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#E0AAFF] via-[#C77DFF] to-[#9D4EDD]">
               Método Spotify Ready
@@ -206,47 +207,53 @@ export default function CourseSalesLanding({ onNavigateToStudio }) {
             Aprende el sistema paso a paso para mezclar y masterizar tus temas de 0 a 100 desde tu casa en clips cortos directos al grano, y consigue el volumen, pegada y claridad de Spotify usando <strong className="text-[#E0AAFF] font-semibold">CTRL</strong> como copiloto.
           </p>
 
-          {/* ── CONTENEDOR DE VIDEO VSL (PLACEHOLDER) ── */}
-          {/* Proporción adaptada a formato Reels/celular (4:5 / 9:16 adaptable en desktop) */}
+          {/* Micro-tags técnicas de contexto */}
+          <div className="flex flex-wrap items-center justify-center gap-2 mb-8 font-mono text-[10px] text-white/50">
+            <span className="border border-white/10 px-2.5 py-1 rounded-md bg-white/[0.02]">[ MÓDULOS: 06 ]</span>
+            <span className="border border-white/10 px-2.5 py-1 rounded-md bg-white/[0.02]">[ FORMATO: CLIPS 3-7 MIN ]</span>
+            <span className="border border-white/10 px-2.5 py-1 rounded-md bg-white/[0.02]">[ SOFTWARE: CTRL INCLUIDO ]</span>
+          </div>
+
+          {/* ── CONTENEDOR DE VIDEO VSL (PLACEHOLDER CON BORDE PUNTEADO SUTIL) ── */}
           <div 
             data-placeholder="vsl-video"
-            className="relative max-w-sm sm:max-w-md mx-auto aspect-[4/5] rounded-2xl sm:rounded-3xl border-2 border-[#9D4EDD]/40 bg-gradient-to-b from-[#160b24] via-[#090710] to-[#040404] p-3 sm:p-4 shadow-[0_0_50px_rgba(157,78,221,0.25)] overflow-hidden mb-6 group cursor-pointer"
+            className="relative max-w-sm sm:max-w-md mx-auto aspect-[4/5] rounded-2xl border-2 border-dashed border-[#9D4EDD]/40 bg-[#0a0710]/90 p-3 sm:p-4 mb-8 group cursor-pointer"
             onClick={() => handleInitiateCheckout('vsl-play-click')}
           >
             {/* Grid sutil de fondo */}
-            <div className="absolute inset-0 bg-[radial-gradient(#9D4EDD_1px,transparent_1px)] [background-size:16px_16px] opacity-20 pointer-events-none" />
+            <div className="absolute inset-0 bg-[radial-gradient(#9D4EDD_1px,transparent_1px)] [background-size:16px_16px] opacity-15 pointer-events-none" />
 
             {/* Poster / Thumbnail estilizado */}
-            <div className="relative w-full h-full rounded-xl sm:rounded-2xl bg-black/60 border border-white/10 flex flex-col items-center justify-between p-6 overflow-hidden">
+            <div className="relative w-full h-full rounded-xl bg-black/70 border border-white/10 flex flex-col items-center justify-between p-6 overflow-hidden">
               
-              {/* Badge superior del VSL */}
+              {/* Barra superior del VSL */}
               <div className="flex items-center justify-between w-full">
-                <div className="flex items-center gap-2 px-2.5 py-1 rounded-full bg-red-500/20 border border-red-500/30">
-                  <span className="w-2 h-2 rounded-full bg-red-500 animate-ping" />
-                  <span className="text-[10px] font-mono font-bold tracking-widest text-red-400 uppercase">
-                    VIDEO VSL • 3 MIN
+                <div className="flex items-center gap-2 px-2.5 py-1 rounded-full bg-white/[0.04] border border-white/10">
+                  <span className="w-1.5 h-1.5 rounded-full bg-red-400" />
+                  <span className="text-[10px] font-mono font-bold tracking-wider text-white/70 uppercase">
+                    [ VIDEO VSL • 3 MIN ]
                   </span>
                 </div>
-                <span className="text-[10px] font-mono text-white/40">CALIDAD HD 1080P</span>
+                <span className="text-[10px] font-mono text-white/40">1080P HD</span>
               </div>
 
-              {/* Botón central de Play con aura glow */}
+              {/* Botón central de Play */}
               <div className="relative my-auto flex flex-col items-center">
-                <div className="w-18 h-18 sm:w-20 sm:h-20 rounded-full bg-gradient-to-tr from-[#9D4EDD] to-[#E0AAFF] flex items-center justify-center shadow-[0_0_35px_rgba(157,78,221,0.7)] group-hover:scale-110 transition-transform duration-300">
-                  <Play className="w-8 h-8 text-black fill-black translate-x-0.5" />
+                <div className="w-16 h-16 sm:w-18 sm:h-18 rounded-full bg-[#9D4EDD] group-hover:bg-[#E0AAFF] transition-colors flex items-center justify-center border border-white/20">
+                  <Play className="w-7 h-7 text-white group-hover:text-black fill-current translate-x-0.5 transition-colors" />
                 </div>
-                <span className="text-xs font-mono font-bold text-white tracking-widest uppercase mt-4 group-hover:text-[#E0AAFF] transition-colors">
-                  TOCA PARA VER EL MÉTODO
+                <span className="text-xs font-mono font-bold text-white tracking-wider uppercase mt-4 group-hover:text-[#E0AAFF] transition-colors">
+                  VER VIDEO EXPLICATIVO
                 </span>
                 <span className="text-[10px] font-mono text-white/50 mt-1">
-                  Explicado a cámara sin rodeos técnicos
+                  Explicado a cámara paso a paso
                 </span>
               </div>
 
-              {/* Pie del Video Placeholder con forma de onda decorativa */}
+              {/* Pie del Video Placeholder */}
               <div className="w-full">
-                <div className="flex items-center justify-center gap-1 h-6 mb-2">
-                  {[40, 65, 30, 90, 45, 80, 100, 60, 35, 75, 95, 50, 85, 40, 70, 90, 55, 30].map((h, i) => (
+                <div className="flex items-center justify-center gap-1 h-5 mb-2">
+                  {[35, 60, 25, 80, 40, 70, 95, 55, 30, 65, 85, 45, 75, 35, 60, 80, 50, 25].map((h, i) => (
                     <span 
                       key={i} 
                       className="w-1 bg-[#9D4EDD]/60 rounded-full"
@@ -262,46 +269,47 @@ export default function CourseSalesLanding({ onNavigateToStudio }) {
           </div>
 
           {/* ── 2. CTA REPETIDO #1 (INMEDIATO TRAS EL HERO/VIDEO) ── */}
-          <div className="mb-14">
+          <div className="mb-8">
             <button
               onClick={() => handleInitiateCheckout('hero-cta-1')}
-              className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-gradient-to-r from-[#9D4EDD] via-[#7B2CBF] to-[#5A189A] hover:from-[#E0AAFF] hover:via-[#C77DFF] hover:to-[#9D4EDD] hover:text-black text-white font-mono font-bold text-sm sm:text-base tracking-wider uppercase shadow-[0_0_35px_rgba(157,78,221,0.5)] hover:shadow-[0_0_45px_rgba(224,170,255,0.7)] transition-all duration-300 transform hover:-translate-y-0.5 inline-flex items-center justify-center gap-3 cursor-pointer"
+              className="w-full sm:w-auto px-8 py-4 rounded-xl bg-[#9D4EDD] hover:bg-[#E0AAFF] hover:text-black text-white font-mono font-bold text-sm sm:text-base tracking-wider uppercase transition-colors inline-flex items-center justify-center gap-3 cursor-pointer border border-[#9D4EDD]"
             >
               <span>QUIERO EL MÉTODO SPOTIFY READY ➔ $59 USD</span>
             </button>
-            <p className="text-xs font-mono text-white/50 mt-2.5 flex items-center justify-center gap-2">
+            <p className="text-xs font-mono text-white/50 mt-3 flex items-center justify-center gap-2">
               <ShieldCheck className="w-4 h-4 text-emerald-400 inline" />
               Pago único • Acceso de por vida • Garantía incondicional de 14 días
             </p>
           </div>
         </section>
 
-        {/* ── 3. DEMO INTERACTIVO: ANTES Y DESPUÉS DE UN MASTER ── */}
-        <section aria-label="Comparativa interactiva antes y después" className="mb-16">
-          <div className="p-5 sm:p-7 rounded-3xl border border-white/[0.08] bg-gradient-to-b from-white/[0.04] to-[#0a0710]/90 backdrop-blur-xl shadow-2xl relative overflow-hidden">
+        {/* ── 3. DEMO INTERACTIVO: ANTES Y DESPUÉS DE UN MASTER + CAPTURA REAL DE CTRL ── */}
+        <section aria-label="Comparativa interactiva antes y después" className="mb-24 sm:mb-32">
+          
+          <div className="p-6 sm:p-8 rounded-2xl border border-white/10 bg-[#070709] relative">
             
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-6">
               <div>
-                <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-[10px] font-mono font-bold text-emerald-400 uppercase tracking-wider mb-1.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                  DEMO EN VIVO: EL EFECTO SPOTIFY READY
+                <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-md bg-white/[0.03] border border-white/10 text-[10px] font-mono text-emerald-400 uppercase tracking-wider mb-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                  [ DEMO EN VIVO // CONTROL SPOTIFY READY ]
                 </div>
                 <h2 className="text-lg sm:text-xl font-bold text-white font-modern">
                   Mira lo que le pasa a tu canción cuando aplicas el método
                 </h2>
               </div>
-              <span className="text-[11px] font-mono text-[#E0AAFF]/70 whitespace-nowrap self-start sm:self-auto">
+              <span className="text-[11px] font-mono text-[#E0AAFF] whitespace-nowrap self-start sm:self-auto">
                 {faderPos < 35 ? '◄ 100% MEZCLA CRUDA' : faderPos > 65 ? '100% SPOTIFY READY ►' : 'A/B EN TRANSICIÓN'}
               </span>
             </div>
 
             {/* Slider / Crossfader A/B */}
-            <div className="bg-black/60 rounded-2xl p-4 sm:p-5 border border-white/[0.06] mb-5">
+            <div className="bg-black/60 rounded-xl p-4 sm:p-5 border border-white/10 mb-5">
               <div className="flex justify-between items-center text-xs font-mono mb-3">
-                <span className={`px-2.5 py-1 rounded-lg transition-all ${faderPos <= 50 ? 'bg-red-500/20 text-red-300 font-bold border border-red-500/30' : 'text-white/40'}`}>
+                <span className={`px-2.5 py-1 rounded border transition-all ${faderPos <= 50 ? 'border-red-500/40 bg-red-500/10 text-red-300 font-bold' : 'border-transparent text-white/40'}`}>
                   TRACK A: MEZCLA SIN MASTER (-18.2 LUFS)
                 </span>
-                <span className={`px-2.5 py-1 rounded-lg transition-all ${faderPos > 50 ? 'bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-500/30' : 'text-white/40'}`}>
+                <span className={`px-2.5 py-1 rounded border transition-all ${faderPos > 50 ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-300 font-bold' : 'border-transparent text-white/40'}`}>
                   TRACK B: MASTER CON CTRL (-8.5 LUFS)
                 </span>
               </div>
@@ -312,7 +320,7 @@ export default function CourseSalesLanding({ onNavigateToStudio }) {
                 max="100"
                 value={faderPos}
                 onChange={(e) => setFaderPos(Number(e.target.value))}
-                className="w-full h-3 bg-black/80 border border-white/20 rounded-lg appearance-none cursor-pointer accent-[#9D4EDD]"
+                className="w-full h-2.5 bg-black border border-white/20 rounded-lg appearance-none cursor-pointer accent-[#9D4EDD]"
               />
 
               <div className="flex justify-between text-[10px] font-mono text-white/40 mt-2">
@@ -322,9 +330,9 @@ export default function CourseSalesLanding({ onNavigateToStudio }) {
               </div>
             </div>
 
-            {/* Métricas en Tiempo Real simuladas */}
+            {/* Métricas en Tiempo Real */}
             <div className="grid grid-cols-3 gap-2 sm:gap-3 text-center font-mono">
-              <div className="p-3 rounded-xl bg-black/50 border border-white/[0.05]">
+              <div className="p-3 rounded-xl bg-black/60 border border-white/10">
                 <div className="text-[10px] text-white/50 uppercase tracking-wider">LOUDNESS INTEGRADO</div>
                 <div className={`text-base sm:text-lg font-bold mt-1 ${isOptimal ? 'text-[#E0AAFF]' : 'text-amber-400'}`}>
                   {currentLufs} LUFS
@@ -334,7 +342,7 @@ export default function CourseSalesLanding({ onNavigateToStudio }) {
                 </div>
               </div>
 
-              <div className="p-3 rounded-xl bg-black/50 border border-white/[0.05]">
+              <div className="p-3 rounded-xl bg-black/60 border border-white/10">
                 <div className="text-[10px] text-white/50 uppercase tracking-wider">TRUE PEAK (dBTP)</div>
                 <div className={`text-base sm:text-lg font-bold mt-1 ${Number(currentPeak) <= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
                   {Number(currentPeak) > 0 ? `+${currentPeak}` : currentPeak} dBTP
@@ -344,7 +352,7 @@ export default function CourseSalesLanding({ onNavigateToStudio }) {
                 </div>
               </div>
 
-              <div className="p-3 rounded-xl bg-black/50 border border-white/[0.05]">
+              <div className="p-3 rounded-xl bg-black/60 border border-white/10">
                 <div className="text-[10px] text-white/50 uppercase tracking-wider">PENALIZACIÓN SPOTIFY</div>
                 <div className={`text-base sm:text-lg font-bold mt-1 ${currentPenalty === '0.0' ? 'text-emerald-400' : 'text-amber-400'}`}>
                   {currentPenalty === '0.0' ? '0.0 dB' : `-${currentPenalty} dB`}
@@ -355,32 +363,80 @@ export default function CourseSalesLanding({ onNavigateToStudio }) {
               </div>
             </div>
 
-            {/* Resumen explicativo del resultado */}
-            <div className="mt-4 p-3 rounded-xl bg-white/[0.02] border border-white/[0.05] text-xs text-white/70 font-sans flex items-center gap-3">
-              <Zap className="w-5 h-5 text-[#E0AAFF] shrink-0" />
+            {/* Resumen explicativo */}
+            <div className="mt-4 p-3 rounded-xl bg-white/[0.02] border border-white/10 text-xs text-white/70 font-sans flex items-center gap-3">
+              <Zap className="w-4 h-4 text-[#E0AAFF] shrink-0" />
               <span>
                 {isOptimal 
                   ? "Con el Método Spotify Ready y CTRL, tu tema adquiere pegada, el bajo y el bombo conviven sin saturar, y la voz se escucha con presencia en cualquier altavoz de teléfono."
                   : "Moviendo el fader hacia la derecha verás cómo la canción alcanza el estándar comercial sin romper el limitador ni sufrir distorsión en streaming."}
               </span>
             </div>
+
+            {/* ── PRUEBA VISUAL TANGIBLE: CAPTURA REAL DE LA INTERFAZ DE CTRL ── */}
+            <div 
+              data-placeholder="ctrl-screenshot"
+              className="mt-8 rounded-xl border-2 border-dashed border-[#9D4EDD]/40 bg-[#050505] overflow-hidden"
+            >
+              {/* Barra superior de ventana de software */}
+              <div className="px-4 py-2 bg-white/[0.03] border-b border-white/10 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div className="flex gap-1.5">
+                    <span className="w-2.5 h-2.5 rounded-full bg-white/20"></span>
+                    <span className="w-2.5 h-2.5 rounded-full bg-white/20"></span>
+                    <span className="w-2.5 h-2.5 rounded-full bg-white/20"></span>
+                  </div>
+                  <span className="text-[10px] font-mono text-white/50 tracking-wider">
+                    CTRL Engine // Realtime Master Analyzer & Loudness Compliance
+                  </span>
+                </div>
+                <span className="text-[9px] font-mono text-[#E0AAFF] bg-[#9D4EDD]/15 border border-[#9D4EDD]/30 px-2 py-0.5 rounded">
+                  [ INCLUIDO DE POR VIDA EN EL BUNDLE ]
+                </span>
+              </div>
+
+              {/* Contenedor de la captura (Proporción 16:9) */}
+              <div className="aspect-video w-full flex flex-col items-center justify-center p-6 sm:p-10 text-center bg-[radial-gradient(#9D4EDD_1px,transparent_1px)] [background-size:20px_20px]">
+                <div className="w-12 h-12 rounded-xl bg-[#9D4EDD]/20 border border-[#9D4EDD]/40 flex items-center justify-center text-[#E0AAFF] mb-3">
+                  <Sliders className="w-6 h-6" />
+                </div>
+                <div className="text-xs sm:text-sm font-mono font-bold text-white tracking-wider uppercase mb-1">
+                  [ INSERTAR AQUÍ CAPTURA REAL DE LA INTERFAZ DE CTRL EN ACCIÓN ]
+                </div>
+                <p className="text-[11px] font-mono text-white/50 max-w-md leading-relaxed">
+                  Resolución recomendada: 1920x1080 (16:9). Muestra la pantalla real con el medidor LUFS, True Peak 4x y el comparador A/B funcionando.
+                </p>
+                <div className="flex flex-wrap items-center justify-center gap-2 mt-4">
+                  <span className="text-[9px] font-mono text-white/40 border border-white/10 px-2.5 py-0.5 rounded">
+                    [ 100% CLIENT-SIDE ]
+                  </span>
+                  <span className="text-[9px] font-mono text-[#E0AAFF] border border-[#9D4EDD]/30 px-2.5 py-0.5 rounded">
+                    [ LICENCIA LIFETIME INCLUIDA ]
+                  </span>
+                  <span className="text-[9px] font-mono text-emerald-400 border border-emerald-500/30 px-2.5 py-0.5 rounded">
+                    [ SIN LÍMITES DE ANÁLISIS ]
+                  </span>
+                </div>
+              </div>
+            </div>
+
           </div>
         </section>
 
         {/* ── 4. EL PROBLEMA VS LA SOLUCIÓN ── */}
-        <section aria-label="El problema versus la solución" className="mb-16">
+        <section aria-label="El problema versus la solución" className="mb-24 sm:mb-32">
           <div className="text-center mb-8">
             <span className="text-[10px] font-mono tracking-[0.3em] text-[#E0AAFF] uppercase block mb-1">
-              EL ERROR QUE TODOS COMETEN
+              [ EL ERROR QUE TODOS COMETEN ]
             </span>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-white">
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-white font-modern">
               ¿Por qué el 90% de los cursos de mezcla te hacen perder meses?
             </h2>
           </div>
 
           <div className="grid md:grid-cols-2 gap-5">
             {/* Columna El Problema */}
-            <div className="p-6 rounded-2xl border border-red-500/20 bg-gradient-to-b from-red-950/10 to-transparent">
+            <div className="p-6 rounded-2xl border border-red-500/20 bg-black/40">
               <div className="flex items-center gap-2 mb-4 text-red-400 font-mono text-xs font-bold uppercase tracking-wider">
                 <span className="w-2 h-2 rounded-full bg-red-400" />
                 Los Cursos Tradicionales
@@ -406,9 +462,9 @@ export default function CourseSalesLanding({ onNavigateToStudio }) {
             </div>
 
             {/* Columna La Solución */}
-            <div className="p-6 rounded-2xl border border-[#9D4EDD]/40 bg-gradient-to-b from-[#9D4EDD]/10 to-transparent shadow-[0_0_30px_rgba(157,78,221,0.15)]">
+            <div className="p-6 rounded-2xl border border-[#9D4EDD]/40 bg-black/40">
               <div className="flex items-center gap-2 mb-4 text-[#E0AAFF] font-mono text-xs font-bold uppercase tracking-wider">
-                <span className="w-2 h-2 rounded-full bg-[#E0AAFF] animate-ping" />
+                <span className="w-2 h-2 rounded-full bg-[#E0AAFF]" />
                 El Método Spotify Ready (CTRL)
               </div>
               <ul className="space-y-3.5 text-xs sm:text-sm text-white/90">
@@ -434,12 +490,12 @@ export default function CourseSalesLanding({ onNavigateToStudio }) {
         </section>
 
         {/* ── 5. TEMARIO EN MÓDULOS / CLIPS CORTOS ── */}
-        <section aria-label="Temario del curso" className="mb-16" data-placeholder="course-modules">
+        <section aria-label="Temario del curso" className="mb-24 sm:mb-32" data-placeholder="course-modules">
           <div className="text-center mb-8">
             <span className="text-[10px] font-mono tracking-[0.3em] text-[#E0AAFF] uppercase block mb-1">
-              CONTENIDO DEL ENTRENAMIENTO
+              [ CONTENIDO DEL ENTRENAMIENTO ]
             </span>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-white">
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-white font-modern">
               De 0 a Master Comercial en 6 Módulos Prácticos
             </h2>
             <p className="text-xs sm:text-sm text-white/60 max-w-xl mx-auto mt-2">
@@ -448,13 +504,13 @@ export default function CourseSalesLanding({ onNavigateToStudio }) {
           </div>
 
           {/* Grid de Módulos */}
-          <div className="space-y-3.5">
+          <div className="space-y-3">
             
             {/* Módulo 1 */}
-            <div className="p-4 sm:p-5 rounded-2xl bg-white/[0.02] border border-white/[0.06] hover:border-[#9D4EDD]/40 transition-colors" data-placeholder="module-mockup-1">
+            <div className="p-4 sm:p-5 rounded-xl bg-[#070709] border border-white/10 hover:border-[#9D4EDD]/40 transition-colors" data-placeholder="module-mockup-1">
               <div className="flex items-start justify-between gap-4">
                 <div className="flex items-start gap-3.5">
-                  <div className="w-9 h-9 rounded-xl bg-[#9D4EDD]/20 border border-[#9D4EDD]/30 flex items-center justify-center font-mono font-bold text-[#E0AAFF] text-xs shrink-0 mt-0.5">
+                  <div className="w-8 h-8 rounded-lg bg-white/[0.04] border border-white/10 flex items-center justify-center font-mono font-bold text-[#E0AAFF] text-xs shrink-0 mt-0.5">
                     01
                   </div>
                   <div>
@@ -466,17 +522,17 @@ export default function CourseSalesLanding({ onNavigateToStudio }) {
                     </p>
                   </div>
                 </div>
-                <span className="text-[10px] font-mono text-[#E0AAFF]/70 bg-white/[0.04] px-2.5 py-1 rounded-full whitespace-nowrap shrink-0">
-                  3 CLIPS
+                <span className="text-[10px] font-mono text-[#E0AAFF]/70 bg-white/[0.04] px-2.5 py-1 rounded whitespace-nowrap shrink-0 border border-white/5">
+                  [ 3 CLIPS ]
                 </span>
               </div>
             </div>
 
             {/* Módulo 2 */}
-            <div className="p-4 sm:p-5 rounded-2xl bg-white/[0.02] border border-white/[0.06] hover:border-[#9D4EDD]/40 transition-colors" data-placeholder="module-mockup-2">
+            <div className="p-4 sm:p-5 rounded-xl bg-[#070709] border border-white/10 hover:border-[#9D4EDD]/40 transition-colors" data-placeholder="module-mockup-2">
               <div className="flex items-start justify-between gap-4">
                 <div className="flex items-start gap-3.5">
-                  <div className="w-9 h-9 rounded-xl bg-[#9D4EDD]/20 border border-[#9D4EDD]/30 flex items-center justify-center font-mono font-bold text-[#E0AAFF] text-xs shrink-0 mt-0.5">
+                  <div className="w-8 h-8 rounded-lg bg-white/[0.04] border border-white/10 flex items-center justify-center font-mono font-bold text-[#E0AAFF] text-xs shrink-0 mt-0.5">
                     02
                   </div>
                   <div>
@@ -488,17 +544,17 @@ export default function CourseSalesLanding({ onNavigateToStudio }) {
                     </p>
                   </div>
                 </div>
-                <span className="text-[10px] font-mono text-[#E0AAFF]/70 bg-white/[0.04] px-2.5 py-1 rounded-full whitespace-nowrap shrink-0">
-                  4 CLIPS
+                <span className="text-[10px] font-mono text-[#E0AAFF]/70 bg-white/[0.04] px-2.5 py-1 rounded whitespace-nowrap shrink-0 border border-white/5">
+                  [ 4 CLIPS ]
                 </span>
               </div>
             </div>
 
             {/* Módulo 3 */}
-            <div className="p-4 sm:p-5 rounded-2xl bg-white/[0.02] border border-white/[0.06] hover:border-[#9D4EDD]/40 transition-colors" data-placeholder="module-mockup-3">
+            <div className="p-4 sm:p-5 rounded-xl bg-[#070709] border border-white/10 hover:border-[#9D4EDD]/40 transition-colors" data-placeholder="module-mockup-3">
               <div className="flex items-start justify-between gap-4">
                 <div className="flex items-start gap-3.5">
-                  <div className="w-9 h-9 rounded-xl bg-[#9D4EDD]/20 border border-[#9D4EDD]/30 flex items-center justify-center font-mono font-bold text-[#E0AAFF] text-xs shrink-0 mt-0.5">
+                  <div className="w-8 h-8 rounded-lg bg-white/[0.04] border border-white/10 flex items-center justify-center font-mono font-bold text-[#E0AAFF] text-xs shrink-0 mt-0.5">
                     03
                   </div>
                   <div>
@@ -510,17 +566,17 @@ export default function CourseSalesLanding({ onNavigateToStudio }) {
                     </p>
                   </div>
                 </div>
-                <span className="text-[10px] font-mono text-[#E0AAFF]/70 bg-white/[0.04] px-2.5 py-1 rounded-full whitespace-nowrap shrink-0">
-                  4 CLIPS
+                <span className="text-[10px] font-mono text-[#E0AAFF]/70 bg-white/[0.04] px-2.5 py-1 rounded whitespace-nowrap shrink-0 border border-white/5">
+                  [ 4 CLIPS ]
                 </span>
               </div>
             </div>
 
             {/* Módulo 4 */}
-            <div className="p-4 sm:p-5 rounded-2xl bg-white/[0.02] border border-white/[0.06] hover:border-[#9D4EDD]/40 transition-colors" data-placeholder="module-mockup-4">
+            <div className="p-4 sm:p-5 rounded-xl bg-[#070709] border border-white/10 hover:border-[#9D4EDD]/40 transition-colors" data-placeholder="module-mockup-4">
               <div className="flex items-start justify-between gap-4">
                 <div className="flex items-start gap-3.5">
-                  <div className="w-9 h-9 rounded-xl bg-[#9D4EDD]/20 border border-[#9D4EDD]/30 flex items-center justify-center font-mono font-bold text-[#E0AAFF] text-xs shrink-0 mt-0.5">
+                  <div className="w-8 h-8 rounded-lg bg-white/[0.04] border border-white/10 flex items-center justify-center font-mono font-bold text-[#E0AAFF] text-xs shrink-0 mt-0.5">
                     04
                   </div>
                   <div>
@@ -532,17 +588,17 @@ export default function CourseSalesLanding({ onNavigateToStudio }) {
                     </p>
                   </div>
                 </div>
-                <span className="text-[10px] font-mono text-[#E0AAFF]/70 bg-white/[0.04] px-2.5 py-1 rounded-full whitespace-nowrap shrink-0">
-                  3 CLIPS
+                <span className="text-[10px] font-mono text-[#E0AAFF]/70 bg-white/[0.04] px-2.5 py-1 rounded whitespace-nowrap shrink-0 border border-white/5">
+                  [ 3 CLIPS ]
                 </span>
               </div>
             </div>
 
             {/* Módulo 5 */}
-            <div className="p-4 sm:p-5 rounded-2xl bg-white/[0.02] border border-white/[0.06] hover:border-[#9D4EDD]/40 transition-colors" data-placeholder="module-mockup-5">
+            <div className="p-4 sm:p-5 rounded-xl bg-[#070709] border border-white/10 hover:border-[#9D4EDD]/40 transition-colors" data-placeholder="module-mockup-5">
               <div className="flex items-start justify-between gap-4">
                 <div className="flex items-start gap-3.5">
-                  <div className="w-9 h-9 rounded-xl bg-[#9D4EDD]/20 border border-[#9D4EDD]/30 flex items-center justify-center font-mono font-bold text-[#E0AAFF] text-xs shrink-0 mt-0.5">
+                  <div className="w-8 h-8 rounded-lg bg-white/[0.04] border border-white/10 flex items-center justify-center font-mono font-bold text-[#E0AAFF] text-xs shrink-0 mt-0.5">
                     05
                   </div>
                   <div>
@@ -554,23 +610,23 @@ export default function CourseSalesLanding({ onNavigateToStudio }) {
                     </p>
                   </div>
                 </div>
-                <span className="text-[10px] font-mono text-[#E0AAFF]/70 bg-white/[0.04] px-2.5 py-1 rounded-full whitespace-nowrap shrink-0">
-                  5 CLIPS
+                <span className="text-[10px] font-mono text-[#E0AAFF]/70 bg-white/[0.04] px-2.5 py-1 rounded whitespace-nowrap shrink-0 border border-white/5">
+                  [ 5 CLIPS ]
                 </span>
               </div>
             </div>
 
             {/* Módulo 6 */}
-            <div className="p-4 sm:p-5 rounded-2xl bg-[#9D4EDD]/10 border border-[#9D4EDD]/30 shadow-[0_0_20px_rgba(157,78,221,0.15)]" data-placeholder="module-mockup-6">
+            <div className="p-4 sm:p-5 rounded-xl bg-[#070709] border border-[#9D4EDD]/40" data-placeholder="module-mockup-6">
               <div className="flex items-start justify-between gap-4">
                 <div className="flex items-start gap-3.5">
-                  <div className="w-9 h-9 rounded-xl bg-[#9D4EDD] flex items-center justify-center font-mono font-bold text-white text-xs shrink-0 mt-0.5">
+                  <div className="w-8 h-8 rounded-lg bg-[#9D4EDD] flex items-center justify-center font-mono font-bold text-white text-xs shrink-0 mt-0.5">
                     06
                   </div>
                   <div>
                     <h3 className="text-sm sm:text-base font-bold text-white flex items-center gap-2">
                       Auditoría y Certificación con CTRL
-                      <span className="text-[9px] font-mono bg-[#E0AAFF] text-black px-2 py-0.5 rounded-full font-bold">
+                      <span className="text-[9px] font-mono bg-[#E0AAFF] text-black px-2 py-0.5 rounded font-bold">
                         CLAVE
                       </span>
                     </h3>
@@ -579,18 +635,18 @@ export default function CourseSalesLanding({ onNavigateToStudio }) {
                     </p>
                   </div>
                 </div>
-                <span className="text-[10px] font-mono text-[#E0AAFF] bg-black/40 px-2.5 py-1 rounded-full whitespace-nowrap shrink-0">
-                  4 CLIPS
+                <span className="text-[10px] font-mono text-[#E0AAFF] bg-black/40 px-2.5 py-1 rounded whitespace-nowrap shrink-0 border border-[#9D4EDD]/30">
+                  [ 4 CLIPS ]
                 </span>
               </div>
             </div>
 
-            {/* Módulo Bonus */}
-            <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-amber-500/10 via-transparent to-transparent border border-amber-500/30" data-placeholder="module-mockup-bonus">
+            {/* Módulo Bonus (Sin emoji, con tag sobrio) */}
+            <div className="p-4 sm:p-5 rounded-xl bg-[#070709] border border-amber-500/30" data-placeholder="module-mockup-bonus">
               <div className="flex items-start justify-between gap-4">
                 <div className="flex items-start gap-3.5">
-                  <div className="w-9 h-9 rounded-xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center font-mono font-bold text-amber-300 text-xs shrink-0 mt-0.5">
-                    🎁
+                  <div className="w-8 h-8 rounded-lg bg-amber-500/20 border border-amber-500/40 flex items-center justify-center font-mono font-bold text-amber-300 text-[10px] shrink-0 mt-0.5">
+                    +
                   </div>
                   <div>
                     <h3 className="text-sm sm:text-base font-bold text-white">
@@ -601,123 +657,132 @@ export default function CourseSalesLanding({ onNavigateToStudio }) {
                     </p>
                   </div>
                 </div>
-                <span className="text-[10px] font-mono text-amber-300 bg-black/40 px-2.5 py-1 rounded-full whitespace-nowrap shrink-0">
-                  INCLUIDO
+                <span className="text-[10px] font-mono text-amber-300 bg-black/40 px-2.5 py-1 rounded whitespace-nowrap shrink-0 border border-amber-500/30">
+                  [ BONUS INCLUIDO ]
                 </span>
               </div>
             </div>
           </div>
         </section>
 
-        {/* ── 6. PLACEHOLDER DE PRUEBA SOCIAL / TESTIMONIOS ── */}
+        {/* ── 6. PLACEHOLDER DE PRUEBA SOCIAL / TESTIMONIOS (SIN NOMBRES INVENTADOS) ── */}
         <section 
           aria-label="Testimonios de productores" 
-          className="mb-16"
+          className="mb-24 sm:mb-32"
           data-placeholder="testimonials-section"
         >
           <div className="text-center mb-8">
             <span className="text-[10px] font-mono tracking-[0.3em] text-[#E0AAFF] uppercase block mb-1">
-              RESULTADOS REALES
+              [ PRUEBA SOCIAL // PRODUCTORES EN ACCIÓN ]
             </span>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-white">
-              Productores que ya tomaron el control de sus temas
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-white font-modern">
+              Resultados de Productores que ya Usan el Método
             </h2>
             <p className="text-xs font-mono text-white/40 mt-1 uppercase">
-              /* PLACEHOLDER LISTO PARA REEMPLAZAR CON CAPTURAS O TESTIMONIOS REALES */
+              /* ESPACIO LISTO PARA INSERTAR CAPTURAS REALES DE WHATSAPP / INSTAGRAM DM / AUDIO REVIEWS */
             </p>
           </div>
 
           <div className="grid sm:grid-cols-3 gap-4">
             
-            {/* Testimonio 1 */}
+            {/* Testimonio 1 (Placeholder real y honesto con borde punteado) */}
             <div 
               data-placeholder="testimonial-1"
-              className="p-5 rounded-2xl bg-white/[0.02] border border-white/[0.06] relative flex flex-col justify-between"
+              className="p-5 rounded-xl border-2 border-dashed border-white/15 bg-[#070709] flex flex-col justify-between"
             >
               <div>
-                <div className="flex text-amber-400 text-xs mb-3">★★★★★</div>
-                <p className="text-xs text-white/80 leading-relaxed italic mb-4">
-                  "Llevaba 2 años frustrado porque mis temas sonaban a la mitad de volumen que los de Feid en Spotify. Con el módulo de Low-End y usando CTRL para medir, logré -8.5 LUFS sin que el bajo distorsione."
+                <div className="text-[10px] font-mono text-[#E0AAFF] mb-3">
+                  [ TESTIMONIO 1 // FEEDBACK WHATSAPP ]
+                </div>
+                <p className="text-xs text-white/70 leading-relaxed font-mono mb-4">
+                  "Espacio reservado para captura de pantalla de WhatsApp o mensaje directo de alumno comentando su cambio de volumen antes vs después de aplicar el método."
                 </p>
               </div>
-              <div className="flex items-center gap-3 pt-3 border-t border-white/[0.06]">
-                <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-[#9D4EDD] to-[#5A189A] flex items-center justify-center font-mono font-bold text-xs text-white">
-                  MR
-                </div>
-                <div>
-                  <h4 className="text-xs font-bold text-white">Marcos R.</h4>
-                  <p className="text-[10px] font-mono text-[#E0AAFF]/70">Beatmaker Urbano (Medellín)</p>
-                </div>
+              <div className="pt-3 border-t border-white/10 text-[10px] font-mono text-white/40">
+                [ INSERTAR CAPTURA O REVIEW ]
               </div>
             </div>
 
             {/* Testimonio 2 */}
             <div 
               data-placeholder="testimonial-2"
-              className="p-5 rounded-2xl bg-white/[0.02] border border-white/[0.06] relative flex flex-col justify-between"
+              className="p-5 rounded-xl border-2 border-dashed border-white/15 bg-[#070709] flex flex-col justify-between"
             >
               <div>
-                <div className="flex text-amber-400 text-xs mb-3">★★★★★</div>
-                <p className="text-xs text-white/80 leading-relaxed italic mb-4">
-                  "Lo mejor es que los clips van al grano. Los vi desde mi teléfono y me senté en FL Studio a aplicarlo en 20 minutos. El VST del piano acústico que regalan ya vale los $59 por sí solo."
+                <div className="text-[10px] font-mono text-[#E0AAFF] mb-3">
+                  [ TESTIMONIO 2 // CASO LOW-END & CTRL ]
+                </div>
+                <p className="text-xs text-white/70 leading-relaxed font-mono mb-4">
+                  "Espacio reservado para captura de alumno mostrando cómo resolvió la pelea del Kick y 808 usando el medidor de CTRL para no saturar el limitador."
                 </p>
               </div>
-              <div className="flex items-center gap-3 pt-3 border-t border-white/[0.06]">
-                <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-[#7B2CBF] to-[#C77DFF] flex items-center justify-center font-mono font-bold text-xs text-black">
-                  JD
-                </div>
-                <div>
-                  <h4 className="text-xs font-bold text-white">Jesús D.</h4>
-                  <p className="text-[10px] font-mono text-[#E0AAFF]/70">Productor Independiente (Caracas)</p>
-                </div>
+              <div className="pt-3 border-t border-white/10 text-[10px] font-mono text-white/40">
+                [ INSERTAR CAPTURA O REVIEW ]
               </div>
             </div>
 
             {/* Testimonio 3 */}
             <div 
               data-placeholder="testimonial-3"
-              className="p-5 rounded-2xl bg-white/[0.02] border border-white/[0.06] relative flex flex-col justify-between"
+              className="p-5 rounded-xl border-2 border-dashed border-white/15 bg-[#070709] flex flex-col justify-between"
             >
               <div>
-                <div className="flex text-amber-400 text-xs mb-3">★★★★★</div>
-                <p className="text-xs text-white/80 leading-relaxed italic mb-4">
-                  "Antes ponía 4 limitadores en el master y sonaba aplastado. Aprender a usar CTRL como referencia me ahorró meses de adivinar a oído en mis audífonos normales."
+                <div className="text-[10px] font-mono text-[#E0AAFF] mb-3">
+                  [ TESTIMONIO 3 // LANZAMIENTO SPOTIFY ]
+                </div>
+                <p className="text-xs text-white/70 leading-relaxed font-mono mb-4">
+                  "Espacio reservado para comentario de productor logrando el sonido competitivo en Spotify sin distorsión inter-sample."
                 </p>
               </div>
-              <div className="flex items-center gap-3 pt-3 border-t border-white/[0.06]">
-                <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-[#5A189A] to-[#E0AAFF] flex items-center justify-center font-mono font-bold text-xs text-white">
-                  AL
-                </div>
-                <div>
-                  <h4 className="text-xs font-bold text-white">Andrés L.</h4>
-                  <p className="text-[10px] font-mono text-[#E0AAFF]/70">Cantante & Productor (Santiago)</p>
-                </div>
+              <div className="pt-3 border-t border-white/10 text-[10px] font-mono text-white/40">
+                [ INSERTAR CAPTURA O REVIEW ]
               </div>
             </div>
           </div>
         </section>
 
-        {/* ── 7. VALUE STACK (EL ANCLAJE DE PRECIO) ── */}
-        <section aria-label="Desglose de valor de la oferta" className="mb-6">
-          <div className="rounded-3xl border-2 border-[#9D4EDD]/60 bg-gradient-to-b from-[#140b20] via-[#0a0710] to-[#040404] p-6 sm:p-9 shadow-[0_0_55px_rgba(157,78,221,0.3)] relative overflow-hidden">
+        {/* ── 7. VALUE STACK (EL ANCLAJE DE PRECIO + MOCKUP DIGITAL DEL PAQUETE) ── */}
+        <section aria-label="Desglose de valor de la oferta" className="mb-24 sm:mb-32">
+          <div className="rounded-2xl border border-[#9D4EDD]/40 bg-[#070709] p-6 sm:p-9 relative">
             
             {/* Cinta superior de ahorro */}
-            <div className="absolute top-0 right-0 bg-gradient-to-l from-[#9D4EDD] to-[#5A189A] text-white text-[10px] sm:text-xs font-mono font-bold tracking-widest px-4 py-1.5 rounded-bl-2xl shadow-lg uppercase">
+            <div className="absolute top-0 right-0 bg-[#9D4EDD] text-white text-[10px] sm:text-xs font-mono font-bold tracking-widest px-4 py-1 rounded-bl-xl uppercase">
               AHORRAS MÁS DEL 75% HOY
             </div>
 
             <div className="text-xs font-mono font-bold tracking-widest text-[#E0AAFF] uppercase mb-1">
-              PAQUETE COMPLETO DE LANZAMIENTO
+              [ PAQUETE COMPLETO DE LANZAMIENTO ]
             </div>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-white mb-6">
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-white mb-6 font-modern">
               Todo lo que te llevas hoy:
             </h2>
 
+            {/* ── MOCKUP DIGITAL DEL PRODUCTO / DIGITAL BUNDLE PLACEHOLDER ── */}
+            <div 
+              data-placeholder="course-mockup"
+              className="mb-8 rounded-xl border-2 border-dashed border-[#9D4EDD]/40 bg-[#050505] p-6 sm:p-8 text-center"
+            >
+              <div className="aspect-[16/9] max-h-[260px] w-full flex flex-col items-center justify-center rounded-lg bg-black/60 border border-white/10 p-4">
+                <div className="w-10 h-10 rounded-xl bg-[#9D4EDD]/20 border border-[#9D4EDD]/40 flex items-center justify-center text-[#E0AAFF] mb-3">
+                  <Layers className="w-5 h-5" />
+                </div>
+                <div className="text-xs sm:text-sm font-mono font-bold text-white tracking-wider uppercase mb-1">
+                  [ INSERTAR AQUÍ MOCKUP DIGITAL DEL BUNDLE: CURSO + CTRL + VST ]
+                </div>
+                <p className="text-[11px] font-mono text-white/50 max-w-sm leading-relaxed">
+                  Composición en ángulo tipo "producto físico" (Laptop con lección en video + Tablet + Caja digital + VST Napbak Piano).
+                </p>
+                <span className="text-[9px] font-mono text-[#E0AAFF]/70 mt-3">
+                  Proporción recomendada: 16:9 • PNG transparente o fondo oscuro
+                </span>
+              </div>
+            </div>
+
             {/* Lista del Value Stack */}
-            <div className="space-y-3.5 mb-8">
+            <div className="space-y-3 mb-8">
               
               {/* Item 1 */}
-              <div className="flex items-start justify-between gap-4 p-3.5 rounded-xl bg-white/[0.03] border border-white/[0.05]">
+              <div className="flex items-start justify-between gap-4 p-3.5 rounded-xl bg-white/[0.02] border border-white/10">
                 <div className="flex items-start gap-3">
                   <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
                   <div>
@@ -733,7 +798,7 @@ export default function CourseSalesLanding({ onNavigateToStudio }) {
               </div>
 
               {/* Item 2 */}
-              <div className="flex items-start justify-between gap-4 p-3.5 rounded-xl bg-white/[0.03] border border-white/[0.05]">
+              <div className="flex items-start justify-between gap-4 p-3.5 rounded-xl bg-white/[0.02] border border-white/10">
                 <div className="flex items-start gap-3">
                   <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
                   <div>
@@ -749,7 +814,7 @@ export default function CourseSalesLanding({ onNavigateToStudio }) {
               </div>
 
               {/* Item 3 */}
-              <div className="flex items-start justify-between gap-4 p-3.5 rounded-xl bg-white/[0.03] border border-white/[0.05]">
+              <div className="flex items-start justify-between gap-4 p-3.5 rounded-xl bg-white/[0.02] border border-white/10">
                 <div className="flex items-start gap-3">
                   <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
                   <div>
@@ -765,7 +830,7 @@ export default function CourseSalesLanding({ onNavigateToStudio }) {
               </div>
 
               {/* Item 4 */}
-              <div className="flex items-start justify-between gap-4 p-3.5 rounded-xl bg-white/[0.03] border border-white/[0.05]">
+              <div className="flex items-start justify-between gap-4 p-3.5 rounded-xl bg-white/[0.02] border border-white/10">
                 <div className="flex items-start gap-3">
                   <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
                   <div>
@@ -782,7 +847,7 @@ export default function CourseSalesLanding({ onNavigateToStudio }) {
             </div>
 
             {/* Cálculo de anclaje */}
-            <div className="p-5 rounded-2xl bg-black/70 border border-white/[0.08] mb-6">
+            <div className="p-5 rounded-xl bg-black/70 border border-white/10 mb-6">
               <div className="flex justify-between items-center text-xs font-mono text-white/50 mb-2">
                 <span>VALOR TOTAL POR SEPARADO:</span>
                 <span className="line-through text-white/40 text-sm">$268 USD</span>
@@ -804,7 +869,7 @@ export default function CourseSalesLanding({ onNavigateToStudio }) {
                   </div>
                 </div>
                 <div className="text-right">
-                  <div className="text-3xl sm:text-5xl font-black text-white font-mono tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-white via-white to-[#E0AAFF]">
+                  <div className="text-3xl sm:text-5xl font-black text-white font-mono tracking-tight">
                     $59 <span className="text-base font-normal text-white/60">USD</span>
                   </div>
                 </div>
@@ -814,7 +879,7 @@ export default function CourseSalesLanding({ onNavigateToStudio }) {
             {/* ── 8. CTA REPETIDO #2 (INMEDIATO TRAS EL VALUE STACK) ── */}
             <button
               onClick={() => handleInitiateCheckout('value-stack-cta-2')}
-              className="w-full py-4 sm:py-4.5 rounded-2xl bg-gradient-to-r from-[#9D4EDD] via-[#7B2CBF] to-[#5A189A] hover:from-[#E0AAFF] hover:via-[#C77DFF] hover:to-[#9D4EDD] hover:text-black text-white font-mono font-bold text-sm sm:text-base tracking-wider uppercase shadow-[0_0_40px_rgba(157,78,221,0.6)] hover:shadow-[0_0_50px_rgba(224,170,255,0.8)] transition-all duration-300 transform hover:-translate-y-0.5 flex items-center justify-center gap-3 cursor-pointer"
+              className="w-full py-4 rounded-xl bg-[#9D4EDD] hover:bg-[#E0AAFF] hover:text-black text-white font-mono font-bold text-sm sm:text-base tracking-wider uppercase transition-colors flex items-center justify-center gap-3 cursor-pointer border border-[#9D4EDD]"
             >
               <span>OBTENER ACCESO COMPLETO POR $59 ➔</span>
             </button>
@@ -825,18 +890,18 @@ export default function CourseSalesLanding({ onNavigateToStudio }) {
         </section>
 
         {/* ── 9. GARANTÍA INCONDICIONAL DE 14 DÍAS ── */}
-        <section aria-label="Garantía incondicional" className="mb-16">
-          <div className="p-6 sm:p-8 rounded-2xl border border-emerald-500/30 bg-gradient-to-b from-emerald-950/15 via-black/40 to-transparent flex flex-col sm:flex-row items-center sm:items-start gap-5">
-            <div className="w-14 h-14 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center shrink-0 shadow-[0_0_20px_rgba(16,185,129,0.25)]">
-              <ShieldCheck className="w-8 h-8 text-emerald-400" />
+        <section aria-label="Garantía incondicional" className="mb-24 sm:mb-32">
+          <div className="p-6 sm:p-8 rounded-2xl border border-emerald-500/30 bg-[#070709] flex flex-col sm:flex-row items-center sm:items-start gap-5">
+            <div className="w-12 h-12 rounded-xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center shrink-0">
+              <ShieldCheck className="w-7 h-7 text-emerald-400" />
             </div>
             <div>
               <div className="flex items-center gap-2 mb-1">
                 <span className="text-xs font-mono font-bold text-emerald-400 uppercase tracking-widest">
-                  100% LIBRE DE RIESGO
+                  [ 100% LIBRE DE RIESGO ]
                 </span>
               </div>
-              <h3 className="text-lg sm:text-xl font-bold text-white mb-2">
+              <h3 className="text-lg sm:text-xl font-bold text-white mb-2 font-modern">
                 Garantía Incondicional de 14 Días
               </h3>
               <p className="text-xs sm:text-sm text-white/70 leading-relaxed font-sans">
@@ -847,17 +912,17 @@ export default function CourseSalesLanding({ onNavigateToStudio }) {
         </section>
 
         {/* ── 10. FAQ PARA PRODUCTORES ── */}
-        <section aria-label="Preguntas frecuentes" className="mb-16">
+        <section aria-label="Preguntas frecuentes" className="mb-24 sm:mb-32">
           <div className="text-center mb-8">
             <span className="text-[10px] font-mono tracking-[0.3em] text-[#E0AAFF] uppercase block mb-1">
-              DUDAS FRECUENTES
+              [ DUDAS FRECUENTES ]
             </span>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-white">
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-white font-modern">
               Preguntas de Productores
             </h2>
           </div>
 
-          <div className="space-y-3">
+          <div className="space-y-2.5">
             {[
               {
                 q: "¿Necesito un estudio con tratamiento acústico o monitores caros?",
@@ -886,7 +951,7 @@ export default function CourseSalesLanding({ onNavigateToStudio }) {
             ].map((faq, idx) => (
               <div 
                 key={idx}
-                className="rounded-xl border border-white/[0.06] bg-white/[0.02] overflow-hidden transition-colors"
+                className="rounded-xl border border-white/10 bg-[#070709] overflow-hidden transition-colors"
               >
                 <button
                   onClick={() => setOpenFaq(openFaq === idx ? null : idx)}
@@ -898,7 +963,7 @@ export default function CourseSalesLanding({ onNavigateToStudio }) {
                   <ChevronDown className={`w-4 h-4 text-[#E0AAFF] transition-transform duration-200 shrink-0 ${openFaq === idx ? 'rotate-180' : ''}`} />
                 </button>
                 {openFaq === idx && (
-                  <div className="px-4 pb-4 text-xs sm:text-sm text-white/70 leading-relaxed font-sans border-t border-white/[0.04] pt-3">
+                  <div className="px-4 pb-4 text-xs sm:text-sm text-white/70 leading-relaxed font-sans border-t border-white/10 pt-3">
                     {faq.a}
                   </div>
                 )}
@@ -908,14 +973,14 @@ export default function CourseSalesLanding({ onNavigateToStudio }) {
         </section>
 
         {/* ── 11. CAPTURA DE EMAIL PARA INDECISOS (LEAD MAGNET) ── */}
-        <section aria-label="Boletín de consejos de mezcla" className="mb-16">
-          <div className="p-6 sm:p-8 rounded-3xl border border-white/[0.08] bg-gradient-to-b from-white/[0.04] to-black/60 backdrop-blur-md text-center relative overflow-hidden">
+        <section aria-label="Boletín de consejos de mezcla" className="mb-24 sm:mb-32">
+          <div className="p-6 sm:p-8 rounded-2xl border border-white/10 bg-[#070709] text-center relative">
             
-            <div className="w-10 h-10 rounded-full bg-[#9D4EDD]/20 border border-[#9D4EDD]/40 flex items-center justify-center mx-auto mb-3">
+            <div className="w-10 h-10 rounded-xl bg-[#9D4EDD]/20 border border-[#9D4EDD]/40 flex items-center justify-center mx-auto mb-3">
               <Mail className="w-5 h-5 text-[#E0AAFF]" />
             </div>
 
-            <h3 className="text-lg sm:text-xl font-bold text-white mb-2">
+            <h3 className="text-lg sm:text-xl font-bold text-white mb-2 font-modern">
               ¿Aún no estás listo para entrar hoy?
             </h3>
             <p className="text-xs sm:text-sm text-white/60 max-w-md mx-auto mb-5 leading-relaxed">
@@ -935,12 +1000,12 @@ export default function CourseSalesLanding({ onNavigateToStudio }) {
                   onChange={(e) => setLeadEmail(e.target.value)}
                   placeholder="Tu correo electrónico..."
                   required
-                  className="flex-1 px-4 py-3 rounded-xl bg-black/70 border border-white/20 text-white placeholder-white/40 text-xs font-mono focus:outline-none focus:border-[#9D4EDD]"
+                  className="flex-1 px-4 py-3 rounded-xl bg-black/80 border border-white/20 text-white placeholder-white/40 text-xs font-mono focus:outline-none focus:border-[#9D4EDD]"
                 />
                 <button
                   type="submit"
                   disabled={leadStatus === 'loading'}
-                  className="px-5 py-3 rounded-xl bg-white/10 hover:bg-[#9D4EDD] hover:text-white text-white/90 text-xs font-mono font-bold tracking-wider uppercase transition-colors shrink-0 cursor-pointer"
+                  className="px-5 py-3 rounded-xl bg-white/10 hover:bg-[#9D4EDD] hover:text-white text-white/90 text-xs font-mono font-bold tracking-wider uppercase transition-colors shrink-0 cursor-pointer border border-white/10"
                 >
                   {leadStatus === 'loading' ? 'ENVIANDO...' : 'ENVIARME GUÍA'}
                 </button>
@@ -953,12 +1018,12 @@ export default function CourseSalesLanding({ onNavigateToStudio }) {
         </section>
 
         {/* ── 12. CTA FINAL DE COMPRA (REPETIDO #3) ── */}
-        <section aria-label="Llamado a la acción final" className="text-center mb-12">
-          <div className="p-8 sm:p-12 rounded-3xl border border-[#9D4EDD]/40 bg-gradient-to-b from-[#140a20] to-[#040404] shadow-[0_0_50px_rgba(157,78,221,0.25)]">
+        <section aria-label="Llamado a la acción final" className="text-center mb-16">
+          <div className="p-8 sm:p-12 rounded-2xl border border-[#9D4EDD]/40 bg-[#070709]">
             <span className="text-[10px] font-mono tracking-[0.3em] text-[#E0AAFF] uppercase block mb-2">
-              TU PRÓXIMO TEMA MERECE SONAR GRANDE
+              [ TU PRÓXIMO TEMA MERECE SONAR GRANDE ]
             </span>
-            <h2 className="text-2xl sm:text-4xl font-extrabold text-white mb-4">
+            <h2 className="text-2xl sm:text-4xl font-extrabold text-white mb-4 font-modern">
               Deja de adivinar en tus mezclas. <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#E0AAFF] via-[#C77DFF] to-[#9D4EDD]">
                 Toma el control hoy mismo.
@@ -970,22 +1035,22 @@ export default function CourseSalesLanding({ onNavigateToStudio }) {
 
             <button
               onClick={() => handleInitiateCheckout('final-cta-3')}
-              className="w-full sm:w-auto px-10 py-4.5 rounded-2xl bg-gradient-to-r from-[#9D4EDD] via-[#7B2CBF] to-[#5A189A] hover:from-[#E0AAFF] hover:via-[#C77DFF] hover:to-[#9D4EDD] hover:text-black text-white font-mono font-bold text-sm sm:text-base tracking-wider uppercase shadow-[0_0_40px_rgba(157,78,221,0.6)] hover:shadow-[0_0_55px_rgba(224,170,255,0.9)] transition-all duration-300 transform hover:-translate-y-0.5 inline-flex items-center justify-center gap-3 cursor-pointer"
+              className="w-full sm:w-auto px-10 py-4.5 rounded-xl bg-[#9D4EDD] hover:bg-[#E0AAFF] hover:text-black text-white font-mono font-bold text-sm sm:text-base tracking-wider uppercase transition-colors inline-flex items-center justify-center gap-3 cursor-pointer border border-[#9D4EDD]"
             >
               <span>INSCRIBIRME AHORA — $59 USD ➔</span>
             </button>
 
-            <div className="flex flex-wrap items-center justify-center gap-4 text-xs font-mono text-white/50 mt-4">
+            <div className="flex flex-wrap items-center justify-center gap-4 text-xs font-mono text-white/50 mt-5">
               <span className="flex items-center gap-1.5">
-                <ShieldCheck className="w-4 h-4 text-emerald-400" /> Garantía de 14 Días
+                <ShieldCheck className="w-4 h-4 text-emerald-400" /> [ GARANTÍA 14 DÍAS ]
               </span>
               <span>•</span>
               <span className="flex items-center gap-1.5">
-                <Zap className="w-4 h-4 text-[#E0AAFF]" /> Acceso Inmediato
+                <Zap className="w-4 h-4 text-[#E0AAFF]" /> [ ACCESO INMEDIATO ]
               </span>
               <span>•</span>
               <span className="flex items-center gap-1.5">
-                <Award className="w-4 h-4 text-amber-400" /> Licencia CTRL Lifetime
+                <Award className="w-4 h-4 text-amber-400" /> [ CTRL LIFETIME ]
               </span>
             </div>
           </div>
@@ -994,7 +1059,7 @@ export default function CourseSalesLanding({ onNavigateToStudio }) {
       </main>
 
       {/* ── FOOTER SIMPLE DE LA LANDING ── */}
-      <footer className="relative z-10 border-t border-white/[0.06] pt-8 pb-12 text-center text-xs font-mono text-white/40">
+      <footer className="relative z-10 border-t border-white/10 pt-8 pb-12 text-center text-xs font-mono text-white/40">
         <div className="max-w-3xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <span className="font-bold text-white font-modern">CTRL by Napbak</span>
