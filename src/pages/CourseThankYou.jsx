@@ -55,19 +55,17 @@ export default function CourseThankYou({ onNavigateToStudio }) {
         <div className="max-w-4xl mx-auto flex items-center justify-between">
           <button 
             onClick={onNavigateToStudio}
-            className="flex items-center gap-2 text-left cursor-pointer"
+            className="flex items-center gap-3 text-left cursor-pointer transition-opacity hover:opacity-90"
+            title="Volver a la suite CTRL"
           >
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#9D4EDD] to-[#5A189A] flex items-center justify-center shadow-[0_0_15px_rgba(157,78,221,0.4)]">
-              <span className="font-mono font-black text-white text-xs tracking-tighter">NB</span>
-            </div>
-            <div>
-              <span className="text-sm font-bold tracking-wider uppercase font-modern text-white block leading-none">
-                CTRL <span className="text-[#E0AAFF] font-normal text-xs">by Napbak</span>
-              </span>
-              <span className="text-[9px] font-mono tracking-widest text-emerald-400 uppercase block mt-0.5">
-                COMPRA EXITOSA
-              </span>
-            </div>
+            <img 
+              src="/ctrl-academy.png" 
+              alt="CTRL ACADEMY" 
+              className="h-8 w-auto object-contain drop-shadow-[0_0_15px_rgba(157,78,221,0.25)]" 
+            />
+            <span className="text-[9px] font-mono tracking-widest text-emerald-400 border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 rounded uppercase hidden sm:inline-block">
+              COMPRA EXITOSA
+            </span>
           </button>
 
           <button

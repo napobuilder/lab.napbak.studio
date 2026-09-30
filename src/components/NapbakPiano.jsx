@@ -8,7 +8,8 @@ import {
   Volume2, 
   Sparkles, 
   Radio, 
-  Download, 
+  Download,
+  ChevronDown, 
   Play, 
   Pause, 
   Square, 
@@ -1258,39 +1259,54 @@ export default function NapbakPiano({ onBack, isDedicatedPage = false }) {
           </div>
 
           {/* Bottom Guide & Universal VST Pack Banner */}
-          <div className="mt-8 pt-6 border-t border-white/5 flex flex-col lg:flex-row items-center justify-between gap-4 text-xs font-mono text-white/50">
+          <div className="mt-8 pt-6 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-5 text-xs font-mono">
             
-            <div className="flex flex-wrap items-center gap-4 text-[10px] tracking-widest uppercase">
-              <span className="flex items-center gap-1.5 text-white/70">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#9D4EDD]"></span>
+            {/* Keyboard Shortcuts Hint */}
+            <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 sm:gap-4 text-[10px] tracking-widest uppercase text-white/50">
+              <span className="flex items-center gap-1.5 text-white/80 font-medium">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#9D4EDD] shadow-[0_0_8px_#9D4EDD]"></span>
                 {t.keyGuideQwerty}
               </span>
-              <span className="hidden sm:inline text-white/30">•</span>
-              <span className="hidden sm:inline text-white/50">{t.keyGuideBlack}</span>
-              <span className="hidden sm:inline text-white/30">•</span>
-              <span className="text-white/50">{t.keyGuideSustain}</span>
+              <span className="text-white/20">•</span>
+              <span className="text-white/60">{t.keyGuideBlack}</span>
+              <span className="text-white/20">•</span>
+              <span className="text-white/60">{t.keyGuideSustain}</span>
             </div>
 
-            {/* Native VST3 Download Pill */}
-            <div className="flex items-center gap-3 bg-white/[0.03] border border-white/10 px-4 py-2.5 rounded-2xl hover:border-[#9D4EDD]/40 transition-colors">
-              <div className="flex flex-col text-left">
-                <span className="text-[10px] text-white font-bold tracking-wider uppercase flex items-center gap-1.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                  {t.vstPillTitle}
-                </span>
-                <span className="text-[8px] text-white/40 tracking-wider">
-                  {t.vstPillSubtitle}
+            {/* Native VST3 / Universal Pack CTA Action (Smooth Scroll to Download Vault) */}
+            <button
+              type="button"
+              onClick={() => {
+                const el = document.getElementById('download-vault');
+                if (el) {
+                  el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                } else {
+                  window.scrollTo({ top: document.body.scrollHeight / 2, behavior: 'smooth' });
+                }
+              }}
+              className="group relative flex items-center gap-3.5 px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#9D4EDD]/15 via-black/80 to-[#9D4EDD]/10 hover:from-[#9D4EDD]/25 hover:to-[#ec4899]/20 border border-[#9D4EDD]/30 hover:border-[#E0AAFF]/70 text-left transition-all duration-300 shadow-[0_0_20px_rgba(157,78,221,0.15)] hover:shadow-[0_0_30px_rgba(157,78,221,0.3)] active:scale-98 cursor-pointer"
+            >
+              <div className="w-8 h-8 rounded-lg bg-[#9D4EDD]/20 border border-[#9D4EDD]/40 flex items-center justify-center text-[#E0AAFF] group-hover:scale-105 group-hover:bg-[#9D4EDD] group-hover:text-black transition-all shrink-0">
+                <Sliders className="w-4 h-4" />
+              </div>
+              <div className="flex flex-col pr-1">
+                <div className="flex items-center gap-2">
+                  <span className="text-[11px] text-white font-bold tracking-wider uppercase font-mono group-hover:text-[#E0AAFF] transition-colors">
+                    {lang === 'es' ? 'PLUGINS VST3 & PACKS' : 'VST3 PLUGINS & PACKS'}
+                  </span>
+                  <span className="flex h-2 w-2 relative">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                  </span>
+                </div>
+                <span className="text-[9px] text-white/50 tracking-wide font-mono">
+                  {lang === 'es' ? 'Para FL Studio, Ableton & DAWs (Win / Mac)' : 'For FL Studio, Ableton & DAWs (Win / Mac)'}
                 </span>
               </div>
-              <a
-                href="/downloads/Napbak_Concert_Grand_VST3_Win64.zip"
-                download="Napbak_Concert_Grand_VST3_Win64.zip"
-                className="px-3.5 py-1.5 rounded-xl bg-[#9D4EDD] text-white text-[9px] font-bold tracking-widest uppercase hover:bg-[#E0AAFF] hover:text-black transition-all flex items-center gap-1.5 active:scale-95 shadow-md shadow-[#9D4EDD]/30"
-              >
-                <Download className="w-3 h-3" />
-                {t.getVst3}
-              </a>
-            </div>
+              <div className="ml-auto pl-2 flex items-center justify-center w-7 h-7 rounded-lg bg-white/5 group-hover:bg-[#E0AAFF] text-[#E0AAFF] group-hover:text-black transition-all">
+                <ChevronDown className="w-4 h-4 transform group-hover:translate-y-0.5 transition-transform duration-200" />
+              </div>
+            </button>
 
           </div>
 

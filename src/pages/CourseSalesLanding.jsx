@@ -8,8 +8,7 @@ import {
   Check, 
   Mail, 
   Award,
-  Sliders,
-  Layers
+  Sliders
 } from 'lucide-react';
 
 // ============================================================================
@@ -152,20 +151,14 @@ export default function CourseSalesLanding({ onNavigateToStudio }) {
           <div className="flex items-center gap-2.5">
             <button 
               onClick={onNavigateToStudio}
-              className="flex items-center gap-2.5 group text-left cursor-pointer"
+              className="flex items-center gap-2.5 group text-left cursor-pointer transition-opacity hover:opacity-90"
               title="Volver a la suite CTRL"
             >
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#9D4EDD] to-[#5A189A] flex items-center justify-center border border-white/10">
-                <span className="font-mono font-black text-white text-xs tracking-tighter">NB</span>
-              </div>
-              <div>
-                <span className="text-sm font-bold tracking-wider uppercase font-modern text-white block leading-none">
-                  CTRL <span className="text-[#E0AAFF] font-normal text-xs">by Napbak</span>
-                </span>
-                <span className="text-[9px] font-mono tracking-widest text-white/50 uppercase block mt-0.5">
-                  [ ACADEMIA DE PRODUCTORES ]
-                </span>
-              </div>
+              <img 
+                src="/ctrl-academy.png" 
+                alt="CTRL ACADEMY" 
+                className="h-8 sm:h-9 w-auto object-contain drop-shadow-[0_0_18px_rgba(157,78,221,0.3)]"
+              />
             </button>
           </div>
 
@@ -757,24 +750,21 @@ export default function CourseSalesLanding({ onNavigateToStudio }) {
               Todo lo que te llevas hoy:
             </h2>
 
-            {/* ── MOCKUP DIGITAL DEL PRODUCTO / DIGITAL BUNDLE PLACEHOLDER ── */}
-            <div 
-              data-placeholder="course-mockup"
-              className="mb-8 rounded-xl border-2 border-dashed border-[#9D4EDD]/40 bg-[#050505] p-6 sm:p-8 text-center"
-            >
-              <div className="aspect-[16/9] max-h-[260px] w-full flex flex-col items-center justify-center rounded-lg bg-black/60 border border-white/10 p-4">
-                <div className="w-10 h-10 rounded-xl bg-[#9D4EDD]/20 border border-[#9D4EDD]/40 flex items-center justify-center text-[#E0AAFF] mb-3">
-                  <Layers className="w-5 h-5" />
-                </div>
-                <div className="text-xs sm:text-sm font-mono font-bold text-white tracking-wider uppercase mb-1">
-                  [ INSERTAR AQUÍ MOCKUP DIGITAL DEL BUNDLE: CURSO + CTRL + VST ]
-                </div>
-                <p className="text-[11px] font-mono text-white/50 max-w-sm leading-relaxed">
-                  Composición en ángulo tipo "producto físico" (Laptop con lección en video + Tablet + Caja digital + VST Napbak Piano).
-                </p>
-                <span className="text-[9px] font-mono text-[#E0AAFF]/70 mt-3">
-                  Proporción recomendada: 16:9 • PNG transparente o fondo oscuro
-                </span>
+            {/* ── MOCKUP DIGITAL DEL PRODUCTO / DIGITAL BUNDLE ── */}
+            <div className="mb-8 rounded-2xl overflow-hidden border border-white/10 bg-[#08080c] shadow-[0_15px_40px_rgba(0,0,0,0.8),0_0_30px_rgba(157,78,221,0.2)] group relative">
+              <picture>
+                <source srcSet="/bundle-mockup.webp" type="image/webp" />
+                <source srcSet="/bundle-mockup.png" type="image/png" />
+                <img 
+                  src="/bundle-mockup.webp" 
+                  alt="Bundle Completo: Curso Toma el Control + CTRL Suite Lifetime + VST Napbak Piano" 
+                  className="w-full h-auto object-cover transition-transform duration-500 group-hover:scale-[1.015]"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </picture>
+              <div className="absolute bottom-3 right-3 sm:bottom-4 sm:right-4 px-3 py-1 rounded-full bg-black/75 backdrop-blur-md border border-white/10 text-[10px] font-mono text-white/80 uppercase tracking-wider shadow-lg">
+                [ BUNDLE DIGITAL COMPLETO ]
               </div>
             </div>
 
