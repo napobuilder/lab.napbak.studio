@@ -613,10 +613,10 @@ export default function App({ initialRoute = 'analyzer' }) {
                         {t.pricing.monthlyTitle}
                         <span className="text-[10px] text-[#E0AAFF]/50 font-mono tracking-widest block mt-1">{t.pricing.monthlyPeriod}</span>
                       </th>
-                      <th className="p-6 md:p-8 font-modern text-[#E0AAFF] tracking-widest text-lg uppercase w-1/3 relative border-l border-white/5 border-t-2 border-t-[#9D4EDD] bg-[#9D4EDD]/[0.06]">
+                      <th className="p-6 md:p-8 pb-10 font-modern text-[#E0AAFF] tracking-widest text-lg uppercase w-1/3 relative border-l border-white/5 border-t-2 border-t-[#9D4EDD] bg-[#9D4EDD]/[0.06]">
                         {t.pricing.lifetimeTitle}
                         <span className="text-[10px] text-[#E0AAFF]/50 font-mono tracking-widest block mt-1">{t.pricing.lifetimePeriod}</span>
-                        <div className="absolute top-4 right-4 bg-[#9D4EDD] text-white text-[8px] font-mono tracking-widest uppercase px-3 py-1 rounded-full hidden sm:block shadow-[0_0_15px_rgba(157,78,221,0.5)]">
+                        <div className="absolute bottom-3 left-1/2 -translate-x-1/2 whitespace-nowrap bg-gradient-to-r from-amber-500 via-rose-500 to-[#9D4EDD] text-white text-[8px] font-mono tracking-widest uppercase px-3 py-1 rounded-full shadow-[0_0_15px_rgba(244,63,94,0.4)] animate-pulse">
                           {t.pricing.bestValue}
                         </div>
                       </th>
@@ -658,7 +658,16 @@ export default function App({ initialRoute = 'analyzer' }) {
                         <span className="font-serif italic text-3xl text-[#E0AAFF] font-bold">{t.pricing.monthlyPrice}<span className="text-xs font-mono lowercase text-[#E0AAFF]/50 not-italic font-normal">{t.pricing.monthlySuffix}</span></span>
                       </td>
                       <td className="p-6 md:px-8 py-6 border-l border-white/5 bg-[#9D4EDD]/[0.06]">
-                        <span className="font-serif italic text-3xl text-[#E0AAFF] font-bold">{t.pricing.lifetimePrice}<span className="text-[10px] tracking-widest font-mono uppercase text-[#E0AAFF]/50 not-italic font-normal ml-2">{t.pricing.lifetimeSuffix}</span></span>
+                        <div className="flex flex-col items-center gap-1">
+                          <span className="line-through text-white/40 text-sm font-mono font-normal">{t.pricing.lifetimeOldPrice}</span>
+                          <div className="flex items-baseline gap-2">
+                            <span className="font-serif italic text-3xl sm:text-4xl text-[#E0AAFF] font-bold">{t.pricing.lifetimePrice}</span>
+                            <span className="text-[9px] tracking-wider font-mono uppercase text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-2 py-0.5 rounded-full font-bold whitespace-nowrap">
+                              {t.pricing.lifetimeDiscountBadge}
+                            </span>
+                          </div>
+                          <span className="text-[10px] tracking-widest font-mono uppercase text-[#E0AAFF]/50 not-italic font-normal">{t.pricing.lifetimeSuffix}</span>
+                        </div>
                       </td>
                     </tr>
                     <tr>
@@ -754,14 +763,23 @@ export default function App({ initialRoute = 'analyzer' }) {
 
               {/* Lifetime Access */}
               <div className="border border-[#9D4EDD] bg-[#9D4EDD]/[0.06] backdrop-blur-sm rounded-3xl p-6 relative shadow-[0_0_30px_rgba(157,78,221,0.2)] flex flex-col justify-between">
-                <div className="absolute top-4 right-4 bg-[#9D4EDD] text-white text-[8px] font-mono tracking-widest uppercase px-3 py-1 rounded-full">
+                <div className="absolute top-4 right-4 bg-gradient-to-r from-amber-500 via-rose-500 to-[#9D4EDD] text-white text-[8px] font-mono tracking-widest uppercase px-3 py-1 rounded-full shadow-[0_0_15px_rgba(244,63,94,0.4)] animate-pulse">
                   {t.pricing.bestValue}
                 </div>
                 <div>
                   <div className="flex justify-between items-center mb-4 mt-2">
                     <span className="font-modern text-[#E0AAFF] tracking-widest text-lg font-bold uppercase">{t.pricing.lifetimeTitle}</span>
                   </div>
-                  <div className="font-serif italic text-4xl text-[#E0AAFF] font-bold mb-6">{t.pricing.lifetimePrice}<span className="text-[10px] tracking-widest font-mono uppercase text-[#E0AAFF]/50 not-italic font-normal ml-2">{t.pricing.lifetimeSuffix}</span></div>
+                  <div className="flex flex-col mb-6">
+                    <span className="line-through text-white/40 text-base font-mono font-normal mb-1">{t.pricing.lifetimeOldPrice}</span>
+                    <div className="flex items-baseline gap-2.5">
+                      <span className="font-serif italic text-4xl text-[#E0AAFF] font-bold">{t.pricing.lifetimePrice}</span>
+                      <span className="text-[9px] tracking-wider font-mono uppercase text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-2 py-0.5 rounded-full font-bold whitespace-nowrap">
+                        {t.pricing.lifetimeDiscountBadge}
+                      </span>
+                    </div>
+                    <span className="text-[10px] tracking-widest font-mono uppercase text-[#E0AAFF]/50 not-italic font-normal mt-1">{t.pricing.lifetimeSuffix}</span>
+                  </div>
                   <ul className="text-xs font-mono text-[#E0AAFF]/80 space-y-3 mb-8">
                     <li className="flex items-center gap-2">✓ {t.pricing.analysesUnlimited}</li>
                     <li className="flex items-center gap-2">✓ {t.pricing.dynamicsFeature}</li>
