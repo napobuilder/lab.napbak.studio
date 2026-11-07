@@ -613,11 +613,13 @@ export default function App({ initialRoute = 'analyzer' }) {
                         {t.pricing.monthlyTitle}
                         <span className="text-[10px] text-[#E0AAFF]/50 font-mono tracking-widest block mt-1">{t.pricing.monthlyPeriod}</span>
                       </th>
-                      <th className="p-6 md:p-8 pb-10 font-modern text-[#E0AAFF] tracking-widest text-lg uppercase w-1/3 relative border-l border-white/5 border-t-2 border-t-[#9D4EDD] bg-[#9D4EDD]/[0.06]">
-                        {t.pricing.lifetimeTitle}
-                        <span className="text-[10px] text-[#E0AAFF]/50 font-mono tracking-widest block mt-1">{t.pricing.lifetimePeriod}</span>
-                        <div className="absolute bottom-3 left-1/2 -translate-x-1/2 whitespace-nowrap bg-gradient-to-r from-amber-500 via-rose-500 to-[#9D4EDD] text-white text-[8px] font-mono tracking-widest uppercase px-3 py-1 rounded-full shadow-[0_0_15px_rgba(244,63,94,0.4)] animate-pulse">
+                      <th className="p-0 font-modern text-[#E0AAFF] tracking-widest text-lg uppercase w-1/3 relative border-l border-white/5 border-t-2 border-t-[#9D4EDD] bg-[#9D4EDD]/[0.06] overflow-hidden">
+                        <div className="bg-gradient-to-r from-amber-500 via-rose-500 to-[#9D4EDD] text-white text-[8px] font-mono tracking-widest uppercase py-1.5 w-full text-center animate-pulse shadow-[0_2px_12px_rgba(244,63,94,0.35)]">
                           {t.pricing.bestValue}
+                        </div>
+                        <div className="p-6 md:p-8">
+                          {t.pricing.lifetimeTitle}
+                          <span className="text-[10px] text-[#E0AAFF]/50 font-mono tracking-widest block mt-1">{t.pricing.lifetimePeriod}</span>
                         </div>
                       </th>
                     </tr>
@@ -659,13 +661,15 @@ export default function App({ initialRoute = 'analyzer' }) {
                       </td>
                       <td className="p-6 md:px-8 py-6 border-l border-white/5 bg-[#9D4EDD]/[0.06]">
                         <div className="flex flex-col items-center gap-1">
-                          <span className="line-through text-white/40 text-sm font-mono font-normal">{t.pricing.lifetimeOldPrice}</span>
-                          <div className="flex items-baseline gap-2">
-                            <span className="font-serif italic text-3xl sm:text-4xl text-[#E0AAFF] font-bold">{t.pricing.lifetimePrice}</span>
-                            <span className="text-[9px] tracking-wider font-mono uppercase text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-2 py-0.5 rounded-full font-bold whitespace-nowrap">
-                              {t.pricing.lifetimeDiscountBadge}
-                            </span>
+                          {/* Precio principal con tachado a la derecha-arriba */}
+                          <div className="relative inline-flex items-start justify-center">
+                            <span className="font-serif italic text-4xl text-[#E0AAFF] font-bold leading-none">{t.pricing.lifetimePrice}</span>
+                            <span className="line-through text-white/35 text-sm font-mono font-normal ml-1 mt-0.5 leading-none">{t.pricing.lifetimeOldPrice}</span>
                           </div>
+                          {/* SAVE badge como línea propia */}
+                          <span className="text-[9px] tracking-wider font-mono uppercase text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-2.5 py-0.5 rounded-full font-bold">
+                            {t.pricing.lifetimeDiscountBadge}
+                          </span>
                           <span className="text-[10px] tracking-widest font-mono uppercase text-[#E0AAFF]/50 not-italic font-normal">{t.pricing.lifetimeSuffix}</span>
                         </div>
                       </td>
@@ -771,13 +775,13 @@ export default function App({ initialRoute = 'analyzer' }) {
                     <span className="font-modern text-[#E0AAFF] tracking-widest text-lg font-bold uppercase">{t.pricing.lifetimeTitle}</span>
                   </div>
                   <div className="flex flex-col mb-6">
-                    <span className="line-through text-white/40 text-base font-mono font-normal mb-1">{t.pricing.lifetimeOldPrice}</span>
-                    <div className="flex items-baseline gap-2.5">
-                      <span className="font-serif italic text-4xl text-[#E0AAFF] font-bold">{t.pricing.lifetimePrice}</span>
-                      <span className="text-[9px] tracking-wider font-mono uppercase text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-2 py-0.5 rounded-full font-bold whitespace-nowrap">
-                        {t.pricing.lifetimeDiscountBadge}
-                      </span>
+                    <div className="relative inline-flex items-start">
+                      <span className="font-serif italic text-4xl text-[#E0AAFF] font-bold leading-none">{t.pricing.lifetimePrice}</span>
+                      <span className="line-through text-white/35 text-sm font-mono font-normal ml-1 mt-0.5 leading-none">{t.pricing.lifetimeOldPrice}</span>
                     </div>
+                    <span className="text-[9px] tracking-wider font-mono uppercase text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-2.5 py-0.5 rounded-full font-bold mt-1.5 w-fit">
+                      {t.pricing.lifetimeDiscountBadge}
+                    </span>
                     <span className="text-[10px] tracking-widest font-mono uppercase text-[#E0AAFF]/50 not-italic font-normal mt-1">{t.pricing.lifetimeSuffix}</span>
                   </div>
                   <ul className="text-xs font-mono text-[#E0AAFF]/80 space-y-3 mb-8">
