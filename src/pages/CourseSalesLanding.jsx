@@ -757,7 +757,7 @@ export default function CourseSalesLanding({ onNavigateToStudio }) {
                 <source srcSet="/bundle-mockup.png" type="image/png" />
                 <img 
                   src="/bundle-mockup.webp" 
-                  alt="Bundle Completo: Curso Toma el Control + CTRL Suite Lifetime + VST Napbak Piano" 
+                  alt="Bundle Completo: Curso Toma el Control + CTRL Suite Lifetime + Plantillas Pro" 
                   className="w-full h-auto object-cover transition-transform duration-500 group-hover:scale-[1.015]"
                   loading="lazy"
                   decoding="async"
@@ -809,10 +809,10 @@ export default function CourseSalesLanding({ onNavigateToStudio }) {
                   <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
                   <div>
                     <h3 className="text-sm font-bold text-white">
-                      Napbak Concert Grand Piano VST3 / AU para tu DAW
+                      Colección de Curvas & Targets de Referencia Pro para CTRL
                     </h3>
                     <p className="text-xs text-white/60 mt-0.5">
-                      Plugin acústico de concierto con cero latencia y filtro felt cálido para FL Studio, Ableton y Logic.
+                      Presets analíticos de curvas espectrales y balances de frecuencias de éxitos top en Spotify, Apple Music y Club.
                     </p>
                   </div>
                 </div>

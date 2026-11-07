@@ -139,10 +139,10 @@ export default function CourseThankYou({ onNavigateToStudio }) {
             </div>
             <div>
               <h2 className="text-sm sm:text-base font-bold text-white">
-                Paso 3: Descarga el Piano VST3 y las Plantillas
+                Paso 3: Descarga las Plantillas y Curvas de Referencia
               </h2>
               <p className="text-xs sm:text-sm text-white/60 mt-1 leading-relaxed">
-                Dentro del correo tienes los enlaces para descargar el plugin Napbak Concert Grand (VST3/AU para Windows y Mac) y las plantillas para FL Studio, Ableton y Reaper.
+                Dentro del correo tienes los enlaces para descargar las plantillas de masterización para FL Studio, Ableton y Reaper, junto con las guías rápidas en PDF.
               </p>
             </div>
           </div>

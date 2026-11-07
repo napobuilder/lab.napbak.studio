@@ -8,7 +8,8 @@ export const translations = {
     nav: {
       subtitle: "SPOTIFY LOUDNESS CHECKER",
       analyzer: "ANALYZER",
-      piano: "CONCERT PIANO",
+      plans: "PLANS",
+      faq: "FAQ",
       getPro: "GET PRO",
       proActive: "PRO ACTIVE"
     },
@@ -60,8 +61,8 @@ export const translations = {
     },
     pricing: {
       tag: "03. MEMBERSHIP",
-      title: "Simple, transparent",
-      titleAccent: "plans",
+      title: "Simple, Transparent",
+      titleAccent: "Plans & Tiers",
       subtitle: "Unleash the true potential of your music without limits",
       freeTitle: "FREE",
       freeStatus: "(Status: Active)",
@@ -75,8 +76,8 @@ export const translations = {
       dynamicsFeature: "Dynamic Range (LRA)",
       clientSideFeature: "100% Client-Side Processing",
       simulationFeature: "Platform & Device Simulation",
-      webPianoOnly: "Web Piano Workstation",
-      vstBonusIncluded: "🎹 Concert Grand VST Plugin (Mac/Win)",
+      lifetimeUpdatesFeature: "Lifetime Updates & Future Modules",
+      lifetimeIncludedTag: "✨ LIFETIME PASS INCLUDED",
       freePrice: "$0",
       monthlyPrice: "$9.99",
       monthlySuffix: " / mo",
@@ -273,7 +274,8 @@ export const translations = {
     nav: {
       subtitle: "ANALIZADOR DE LOUDNESS PARA SPOTIFY",
       analyzer: "ANALIZADOR",
-      piano: "CONCERT PIANO",
+      plans: "PLANES",
+      faq: "FAQ",
       getPro: "OBTENER PRO",
       proActive: "PRO ACTIVO"
     },
@@ -324,9 +326,9 @@ export const translations = {
       f4_desc: "Escucha en tiempo real cómo la normalización de streaming altera tu volumen, y prueba tu mezcla en altavoces simulados de teléfono, coche y clubes."
     },
     pricing: {
-      tag: "03. PLANES & MEMBRESÍA",
-      title: "Planes simples y",
-      titleAccent: "transparentes",
+      tag: "03. PLANES & TIERS",
+      title: "Planes y",
+      titleAccent: "Tiers",
       subtitle: "Desbloquea el verdadero potencial de tu música sin límites",
       freeTitle: "FREE",
       freeStatus: "(Estado: Activo)",
@@ -340,8 +342,8 @@ export const translations = {
       dynamicsFeature: "Dynamic Range (LRA)",
       clientSideFeature: "Procesamiento 100% en tu Navegador",
       simulationFeature: "Simulación de Plataformas y Altavoces",
-      webPianoOnly: "Web Piano Workstation",
-      vstBonusIncluded: "🎹 Concert Grand VST Plugin (Mac/Win)",
+      lifetimeUpdatesFeature: "Actualizaciones y Futuros Módulos",
+      lifetimeIncludedTag: "✨ ACCESO VITALICIO INCLUIDO",
       freePrice: "$0",
       monthlyPrice: "$9.99",
       monthlySuffix: " / mes",

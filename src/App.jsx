@@ -5,7 +5,6 @@ import DualReferenceComparator from './components/DualReferenceComparator';
 import SecretDealLanding from './components/SecretDealLanding';
 import CourseSalesLanding from './pages/CourseSalesLanding';
 import CourseThankYou from './pages/CourseThankYou';
-import { pianoEngine } from './utils/NapbakPianoEngine';
 import { useProStore } from './store/useProStore';
 import { useLanguageStore } from './store/useLanguageStore';
 import { translations, faqDataByLang } from './utils/translations';
@@ -92,8 +91,8 @@ export default function App({ initialRoute = 'analyzer' }) {
         ? "CTRL VIP Creator Pass | Oferta Secreta de Acceso Lifetime ($39)"
         : "CTRL VIP Creator Pass | Secret Lifetime Deal ($39)";
       const vipDesc = lang === 'es'
-        ? "Acceso secreto para creadores: Medidor LUFS, Comparador A/B con crossfader y Piano Acústico VST3 por solo $39 de por vida."
-        : "Secret creator access: LUFS meter, A/B comparator with live crossfader, and Acoustic Piano VST3 for only $39 lifetime.";
+        ? "Acceso secreto para creadores: Medidor LUFS, Comparador A/B con crossfader y suite de masterización CTRL por solo $39 de por vida."
+        : "Secret creator access: LUFS meter, A/B comparator with live crossfader, and CTRL mastering suite for only $39 lifetime.";
 
       document.title = vipTitle;
       if (metaDesc) metaDesc.setAttribute('content', vipDesc);
@@ -103,7 +102,7 @@ export default function App({ initialRoute = 'analyzer' }) {
       if (ogUrl) ogUrl.setAttribute('href', 'https://ctrl.napbak.studio/vip');
     } else if (currentView === 'curso') {
       const cursoTitle = "Toma el Control: Método Spotify Ready | Curso de Mezcla & Mastering";
-      const cursoDesc = "Aprende a mezclar y masterizar tus canciones de 0 a 100 para Spotify en clips cortos directos al grano. Incluye licencia LIFETIME de CTRL y VST3 de Piano Acústico.";
+      const cursoDesc = "Aprende a mezclar y masterizar tus canciones de 0 a 100 para Spotify en clips cortos directos al grano. Incluye licencia LIFETIME de CTRL y plantillas pro para tu DAW.";
 
       document.title = cursoTitle;
       if (metaDesc) metaDesc.setAttribute('content', cursoDesc);
@@ -148,11 +147,6 @@ export default function App({ initialRoute = 'analyzer' }) {
   const cursorRef = useRef(null);
   const cursorInnerRef = useRef(null);
   const canvasRef = useRef(null);
-
-  // Precarga silenciosa en segundo plano de los samples del piano
-  useEffect(() => {
-    pianoEngine.preload();
-  }, []);
 
   // Sincronizar estado PRO reactivo por si hay cambios en localStorage de la versión anterior
   useEffect(() => {
@@ -443,15 +437,18 @@ export default function App({ initialRoute = 'analyzer' }) {
               <span>🎚️</span> {t.nav.analyzer}
             </a>
             <a
-              href="/piano"
-              onClick={(e) => { e.preventDefault(); navigateTo('piano'); }}
-              className={`px-4 py-1.5 rounded-full font-mono text-[10px] tracking-widest uppercase transition-all duration-300 flex items-center gap-1.5 cursor-pointer ${
-                currentView === 'piano'
-                  ? 'bg-[#9D4EDD] text-white font-bold shadow-md shadow-[#9D4EDD]/30'
-                  : 'text-white/60 hover:text-white'
-              }`}
+              href="#pricing"
+              onClick={(e) => scrollTo(e, 'pricing')}
+              className="px-4 py-1.5 rounded-full font-mono text-[10px] tracking-widest uppercase transition-all duration-300 flex items-center gap-1.5 cursor-pointer text-white/60 hover:text-white hover:bg-white/5"
             >
-              <span>🎹</span> {t.nav.piano}
+              <span>⚡</span> {t.nav.plans || 'PLANES'}
+            </a>
+            <a
+              href="#faq"
+              onClick={(e) => scrollTo(e, 'faq')}
+              className="px-4 py-1.5 rounded-full font-mono text-[10px] tracking-widest uppercase transition-all duration-300 flex items-center gap-1.5 cursor-pointer text-white/60 hover:text-white hover:bg-white/5"
+            >
+              <span>💬</span> {t.nav.faq || 'FAQ'}
             </a>
           </div>
         </div>
@@ -647,11 +644,11 @@ export default function App({ initialRoute = 'analyzer' }) {
                       <td className="p-6 md:px-8 py-5 text-[#E0AAFF] border-l border-white/5 bg-[#9D4EDD]/[0.06] font-bold">{t.pricing.simulationFeature}</td>
                     </tr>
                     <tr className="border-b border-white/5 hover:bg-white/[0.02] transition-colors">
-                      <td className="p-6 md:px-8 py-5 text-white/30 font-mono">—</td>
-                      <td className="p-6 md:px-8 py-5 text-[#E0AAFF]/60 border-l border-white/5 bg-[#9D4EDD]/[0.02] font-mono">{t.pricing.webPianoOnly}</td>
+                      <td className="p-6 md:px-8 py-5 text-white/80">{t.pricing.lifetimeUpdatesFeature}</td>
+                      <td className="p-6 md:px-8 py-5 text-[#E0AAFF]/60 border-l border-white/5 bg-[#9D4EDD]/[0.02] font-mono">—</td>
                       <td className="p-6 md:px-8 py-5 text-[#E0AAFF] border-l border-white/5 bg-[#9D4EDD]/[0.06] font-bold">
                         <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#9D4EDD]/20 border border-[#9D4EDD]/50 text-[#E0AAFF] text-[10px] uppercase tracking-wider shadow-[0_0_15px_rgba(157,78,221,0.2)]">
-                          {t.pricing.vstBonusIncluded}
+                          {t.pricing.lifetimeIncludedTag}
                         </span>
                       </td>
                     </tr>
@@ -744,7 +741,6 @@ export default function App({ initialRoute = 'analyzer' }) {
                     <li className="flex items-center gap-2">✓ {t.pricing.dynamicsFeature}</li>
                     <li className="flex items-center gap-2">✓ {t.pricing.clientSideFeature}</li>
                     <li className="flex items-center gap-2">✓ {t.pricing.simulationFeature}</li>
-                    <li className="flex items-center gap-2 text-white/50">✓ {t.pricing.webPianoOnly}</li>
                   </ul>
                 </div>
                 <a 
@@ -772,7 +768,7 @@ export default function App({ initialRoute = 'analyzer' }) {
                     <li className="flex items-center gap-2">✓ {t.pricing.clientSideFeature}</li>
                     <li className="flex items-center gap-2">✓ {t.pricing.simulationFeature}</li>
                     <li className="flex items-center gap-2 text-[#E0AAFF] font-bold bg-[#9D4EDD]/20 px-3 py-1.5 rounded-xl border border-[#9D4EDD]/40 mt-2">
-                      {t.pricing.vstBonusIncluded}
+                      {t.pricing.lifetimeIncludedTag}
                     </li>
                   </ul>
                 </div>
@@ -821,292 +817,6 @@ export default function App({ initialRoute = 'analyzer' }) {
             </div>
             */}
 
-            {/* ── BENTO GRID: CTRL ACADEMY // OPEN LOOP STORYTELLING ── */}
-            <div className="mt-16 max-w-5xl mx-auto w-full">
-              
-              {/* Section Header */}
-              <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
-                <div>
-                  <div className="inline-flex items-center gap-2 bg-[#9D4EDD]/15 border border-[#9D4EDD]/40 px-3 py-1 rounded-full text-[9px] font-mono tracking-[0.25em] uppercase text-[#E0AAFF] font-bold mb-3 shadow-[0_0_15px_rgba(157,78,221,0.25)]">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#E0AAFF] animate-ping"></span>
-                    <span>WORKSHOP LIVE // MÉTODO SPOTIFY READY EN FL STUDIO</span>
-                  </div>
-                  <h3 className="font-modern text-3xl sm:text-4xl text-white font-light tracking-tight">
-                    Aprende la ciencia detrás del <span className="font-serif italic text-transparent bg-clip-text bg-gradient-to-r from-[#E0AAFF] via-white to-[#c084fc] font-normal">volumen comercial.</span>
-                  </h3>
-                </div>
-                <div className="flex items-center gap-2 text-[10px] font-mono text-white/50 bg-white/[0.03] border border-white/5 px-3.5 py-1.5 rounded-full self-start sm:self-auto">
-                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                  <span>+420 Productores Activos</span>
-                </div>
-              </div>
-
-              {/* Bento Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-
-                {/* 1. HERO BENTO CARD (Span 2 cols) */}
-                <div className="md:col-span-2 relative overflow-hidden rounded-3xl border border-[#9D4EDD]/30 bg-gradient-to-br from-[#120822] via-[#09090e] to-[#050508] p-6 sm:p-8 shadow-[0_0_60px_rgba(157,78,221,0.15)] hover:border-[#9D4EDD]/60 hover:shadow-[0_0_80px_rgba(157,78,221,0.25)] transition-all duration-500 group flex flex-col justify-between">
-                  {/* Ambient Glow */}
-                  <div className="absolute -top-24 -right-24 w-80 h-80 bg-[#9D4EDD]/20 blur-[100px] rounded-full pointer-events-none group-hover:bg-[#9D4EDD]/30 transition-all duration-700"></div>
-
-                  <div className="relative z-10">
-                    {/* Header with Logo */}
-                    <div className="flex items-center justify-between gap-4 mb-6">
-                      <img 
-                        src="/ctrl-academy.png" 
-                        alt="CTRL Academy" 
-                        className="h-6 sm:h-7 w-auto object-contain drop-shadow-[0_0_15px_rgba(157,78,221,0.5)]" 
-                      />
-                      <span className="text-[8px] font-mono tracking-widest text-[#E0AAFF] bg-[#9D4EDD]/20 border border-[#9D4EDD]/40 px-2.5 py-0.5 rounded-full uppercase font-bold">
-                        WORKSHOP LIVE • 2.5 HORAS EN DIRECTO
-                      </span>
-                    </div>
-
-                    {/* Open Loop 1 */}
-                    <h4 className="font-modern text-xl sm:text-2xl text-white font-light leading-snug mb-3">
-                      ¿Por qué tu mezcla suena brutal en tus audífonos... pero al subirla a Spotify <span className="text-[#E0AAFF] font-serif italic">pierde pegada y suena apagada?</span>
-                    </h4>
-
-                    <p className="text-xs sm:text-sm text-white/60 font-sans font-light leading-relaxed mb-6">
-                      No necesitas plugins de $500 ni complicarte la vida. Si tu mezcla suena bien, solo necesitas saber darle el espacio correcto para llevarla a nivel comercial. En este workshop descubrirás los 3 pasos esenciales para lograr un máster potente, limpio y con pegada real.
-                    </p>
-
-                    {/* 3D Bundle Mockup Display */}
-                    <div className="relative rounded-2xl overflow-hidden border border-white/10 bg-black/60 shadow-[0_15px_40px_rgba(0,0,0,0.8)] group-hover:border-[#9D4EDD]/40 transition-all duration-500 mb-6">
-                      <img 
-                        src="/bundle-mockup.webp" 
-                        alt="CTRL Academy Bundle - Toma el Control Método Spotify Ready" 
-                        className="w-full h-auto max-h-[260px] object-cover object-center group-hover:scale-[1.02] transition-transform duration-700" 
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-[#09090e] via-transparent to-transparent opacity-80 pointer-events-none"></div>
-                      <div className="absolute bottom-3 left-4 right-4 flex items-center justify-between text-[9px] font-mono text-white/80">
-                        <span className="flex items-center gap-1.5">
-                          <Play className="w-3 h-3 text-[#E0AAFF] fill-current" />
-                          Sesión Live 2.5h en FL Studio • Q&A en Directo
-                        </span>
-                        <span className="text-[#E0AAFF] font-bold">GRABACIÓN + ACCESO DE POR VIDA</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Action Bar */}
-                  <div className="relative z-10 pt-2 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 border-t border-white/5">
-                    <div className="text-[10px] font-mono text-white/50">
-                      <span>Impartido por <strong className="text-white">Napoleon (Napbak)</strong></span>
-                      <span className="block text-[8px] text-white/30 mt-0.5">Ingeniero de Sonido & Productor con +15 años en DAW DSP</span>
-                    </div>
-
-                    <a
-                      href="/curso"
-                      onClick={(e) => { e.preventDefault(); navigateTo('curso'); }}
-                      className="px-6 py-3.5 rounded-xl bg-gradient-to-r from-[#9D4EDD] via-[#8338ec] to-[#7928CA] hover:from-[#b05eed] hover:to-[#9D4EDD] text-white text-[10px] font-mono font-bold tracking-[0.2em] uppercase shadow-[0_0_25px_rgba(157,78,221,0.45)] hover:shadow-[0_0_40px_rgba(157,78,221,0.7)] transition-all duration-300 hover:scale-[1.02] flex items-center justify-center gap-2 cursor-pointer text-center"
-                    >
-                      <span>RESERVAR PLAZA • WORKSHOP LIVE</span>
-                      <ArrowRight className="w-3.5 h-3.5" />
-                    </a>
-                  </div>
-                </div>
-
-                {/* 2. THE TECHNICAL SECRET CARD (Span 1 col) */}
-                <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-[#08080c]/90 p-6 sm:p-7 shadow-xl hover:border-[#9D4EDD]/40 transition-all duration-500 group flex flex-col justify-between">
-                  <div className="space-y-4">
-                    <div className="inline-flex items-center gap-2 bg-white/[0.04] border border-white/10 px-2.5 py-1 rounded-full text-[8px] font-mono tracking-[0.2em] uppercase text-amber-400 font-bold">
-                      <Zap className="w-3 h-3 text-amber-400" />
-                      <span>OPEN LOOP: EL MITO TÉCNICO</span>
-                    </div>
-
-                    <h4 className="font-modern text-lg sm:text-xl text-white font-light leading-snug">
-                      El mito de los plugins de $500: <span className="font-serif italic text-white/70">por qué más plugins no resuelven tu mezcla.</span>
-                    </h4>
-
-                    <p className="text-xs text-white/50 font-mono leading-relaxed">
-                      El 95% de los productores intentan levantar volumen saturando el limitador final. El secreto real está en la cadena de 3 etapas que casi nadie enseña:
-                    </p>
-
-                    {/* 3-Step Chain Graphic */}
-                    <div className="space-y-2.5 pt-2">
-                      <div className="p-3 rounded-xl bg-white/[0.02] border border-white/5 hover:border-[#9D4EDD]/30 transition-colors">
-                        <div className="flex items-center justify-between text-[9px] font-mono text-[#E0AAFF] font-bold mb-1">
-                          <span>PASO 01 // COLOR & TAPE</span>
-                          <span className="text-white/30">+3 dB RMS</span>
-                        </div>
-                        <p className="text-[10px] text-white/70 font-sans">
-                          Saturación armónica por etapas que engaña al oído para percibir más volumen con el mismo pico.
-                        </p>
-                      </div>
-
-                      <div className="p-3 rounded-xl bg-white/[0.02] border border-white/5 hover:border-[#9D4EDD]/30 transition-colors">
-                        <div className="flex items-center justify-between text-[9px] font-mono text-emerald-400 font-bold mb-1">
-                          <span>PASO 02 // SOFT CLIPPING</span>
-                          <span className="text-white/30">ZERO PUMPING</span>
-                        </div>
-                        <p className="text-[10px] text-white/70 font-sans">
-                          Absorbe transitorios agresivos de kick y snare antes de que el limitador empiece a aplastar.
-                        </p>
-                      </div>
-
-                      <div className="p-3 rounded-xl bg-white/[0.02] border border-white/5 hover:border-[#9D4EDD]/30 transition-colors">
-                        <div className="flex items-center justify-between text-[9px] font-mono text-purple-300 font-bold mb-1">
-                          <span>PASO 03 // TRUE PEAK CEILING</span>
-                          <span className="text-white/30">-1.0 dBTP</span>
-                        </div>
-                        <p className="text-[10px] text-white/70 font-sans">
-                          Headroom matemático blindado contra el codec lossy de Spotify y Apple Music.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="pt-4 mt-4 border-t border-white/5 text-center">
-                    <span className="text-[8px] font-mono text-white/40 uppercase tracking-widest">
-                      ⚡ Framework en FL Studio • Principios 100% transferibles a cualquier DAW
-                    </span>
-                  </div>
-                </div>
-
-                {/* 3. VALUE STACKING / THE ARSENAL (Span 2 cols) */}
-                <div className="md:col-span-2 relative overflow-hidden rounded-3xl border border-white/10 bg-[#08080c]/90 p-6 sm:p-7 shadow-xl hover:border-[#9D4EDD]/40 transition-all duration-500 group">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
-                    <div className="inline-flex items-center gap-2 bg-[#9D4EDD]/10 border border-[#9D4EDD]/30 px-2.5 py-1 rounded-full text-[8px] font-mono tracking-[0.2em] uppercase text-[#E0AAFF] font-bold">
-                      <Layers className="w-3 h-3 text-[#E0AAFF]" />
-                      <span>ARSENAL COMPLETO // TODO EN UN SOLO PASE</span>
-                    </div>
-                    <span className="text-[9px] font-mono text-white/40">
-                      Valor por separado: <span className="line-through text-white/30">$178 USD</span>
-                    </span>
-                  </div>
-
-                  <h4 className="font-modern text-xl text-white font-light mb-4">
-                    Todo lo que necesitas para llevar tus tracks al estándar de la industria
-                  </h4>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div className="p-3.5 rounded-2xl bg-white/[0.02] border border-white/5 flex items-start gap-3">
-                      <div className="p-2 rounded-lg bg-[#9D4EDD]/10 border border-[#9D4EDD]/20 text-[#E0AAFF] mt-0.5">
-                        <Play className="w-3.5 h-3.5 fill-current" />
-                      </div>
-                      <div>
-                        <h5 className="text-xs font-mono font-bold text-white mb-0.5">Workshop Live Intensivo (2.5 Horas)</h5>
-                        <p className="text-[10px] text-white/50 leading-relaxed font-sans">
-                          Sesión en directo dentro de FL Studio con Q&A en tiempo real con Napoleon + grabación HD completa para siempre.
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="p-3.5 rounded-2xl bg-white/[0.02] border border-white/5 flex items-start gap-3">
-                      <div className="p-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 mt-0.5">
-                        <Sliders className="w-3.5 h-3.5" />
-                      </div>
-                      <div>
-                        <h5 className="text-xs font-mono font-bold text-white mb-0.5">Licencia CTRL Pro de por Vida</h5>
-                        <p className="text-[10px] text-white/50 leading-relaxed font-sans">
-                          Medición forense de True Peak a 4x y comparador A/B con crossfader de referencia sin límites.
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="p-3.5 rounded-2xl bg-white/[0.02] border border-white/5 flex items-start gap-3">
-                      <div className="p-2 rounded-lg bg-purple-500/10 border border-purple-500/20 text-purple-300 mt-0.5">
-                        <Award className="w-3.5 h-3.5" />
-                      </div>
-                      <div>
-                        <h5 className="text-xs font-mono font-bold text-white mb-0.5">Napbak Concert Grand VST3/AU</h5>
-                        <p className="text-[10px] text-white/50 leading-relaxed font-sans">
-                          El instrumento acústico nativo de alta fidelidad para Windows y Mac incluido como regalo exclusivo.
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="p-3.5 rounded-2xl bg-white/[0.02] border border-white/5 flex items-start gap-3">
-                      <div className="p-2 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-400 mt-0.5">
-                        <Sparkles className="w-3.5 h-3.5" />
-                      </div>
-                      <div>
-                        <h5 className="text-xs font-mono font-bold text-white mb-0.5">Plantilla FL Studio (.FLP) & Presets</h5>
-                        <p className="text-[10px] text-white/50 leading-relaxed font-sans">
-                          Sesión de master lista para FL Studio con buses calibrados, limitación por etapas y curvas de referencia.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* 4. ZERO RISK GUARANTEE CARD (Span 1 col) */}
-                <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-b from-[#0b0c10] to-[#050508] p-6 sm:p-7 shadow-xl hover:border-emerald-500/40 transition-all duration-500 group flex flex-col justify-between">
-                  <div>
-                    <div className="w-10 h-10 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 mb-4 shadow-[0_0_20px_rgba(16,185,129,0.2)]">
-                      <ShieldCheck className="w-5 h-5" />
-                    </div>
-
-                    <span className="text-[8px] font-mono tracking-[0.2em] uppercase text-emerald-400 font-bold block mb-1">
-                      GARANTÍA INCONDICIONAL
-                    </span>
-
-                    <h4 className="font-modern text-lg sm:text-xl text-white font-light leading-snug mb-3">
-                      Pruébalo durante 14 días. Si tus mezclas no suenan pro, <span className="font-serif italic text-emerald-300">no pagas nada.</span>
-                    </h4>
-
-                    <p className="text-xs text-white/50 font-sans font-light leading-relaxed mb-6">
-                      Aplica el método a tus propias canciones. Si no notas un salto cuántico en pegada, claridad y volumen, te reembolsamos el 100% de tu dinero de inmediato.
-                    </p>
-                  </div>
-
-                  <a
-                    href="/curso"
-                    onClick={(e) => { e.preventDefault(); navigateTo('curso'); }}
-                    className="w-full py-3.5 px-4 rounded-xl border border-white/10 hover:border-[#9D4EDD]/50 bg-white/5 hover:bg-[#9D4EDD]/20 text-white text-[10px] font-mono font-bold tracking-[0.15em] uppercase text-center transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer"
-                  >
-                    <span>VER PLAN DE ESTUDIOS</span>
-                    <ArrowRight className="w-3.5 h-3.5 text-[#E0AAFF]" />
-                  </a>
-                </div>
-
-              </div>
-            </div>
-
-          </div>
-        </section>
-
-        {/* Ecosystem / More from Napbak Lab Section */}
-        <section id="ecosystem" aria-label="More tools from Napbak Studio" className="py-20 border-t border-white/5 relative z-10 bg-[#070707]/60 backdrop-blur-md">
-          <div className="max-w-5xl mx-auto px-6">
-            <div className="flex flex-col md:flex-row items-center justify-between gap-8 rounded-3xl border border-[#9D4EDD]/30 bg-gradient-to-br from-[#9D4EDD]/10 via-[#0a0a0a] to-[#070707] p-8 md:p-12 shadow-[0_10px_50px_rgba(157,78,221,0.08)] relative overflow-hidden group">
-              <div className="absolute top-0 right-0 w-80 h-80 bg-[#9D4EDD]/15 rounded-full blur-[100px] pointer-events-none group-hover:bg-[#9D4EDD]/25 transition-all duration-700"></div>
-
-              <div className="flex-1 relative z-10">
-                <div className="flex flex-wrap items-center gap-2 mb-3">
-                  <span className="text-xl">🎹</span>
-                  <span className="text-[9px] font-mono tracking-[0.4em] text-[#E0AAFF] uppercase font-bold">
-                    {t.ecosystem.tag}
-                  </span>
-                  <span className="text-[8px] font-mono tracking-widest bg-[#9D4EDD]/30 text-[#E0AAFF] border border-[#9D4EDD]/50 px-2 py-0.5 rounded-full uppercase font-bold">
-                    {t.ecosystem.badge}
-                  </span>
-                </div>
-                <h3 className="font-modern text-2xl md:text-4xl text-white font-light tracking-tight mb-3">
-                  {t.ecosystem.title} <span className="font-serif italic text-[#E0AAFF]">{t.ecosystem.titleAccent}</span>
-                </h3>
-                <p className="text-xs text-white/60 font-mono leading-relaxed max-w-xl mb-4">
-                  {t.ecosystem.desc}
-                </p>
-                <div className="flex flex-wrap items-center gap-4 text-[10px] font-mono text-white/40">
-                  <span>{t.ecosystem.b1}</span>
-                  <span>•</span>
-                  <span>{t.ecosystem.b2}</span>
-                  <span>•</span>
-                  <span>{t.ecosystem.b3}</span>
-                </div>
-              </div>
-
-              <div className="flex flex-col sm:flex-row items-center gap-3 relative z-10 w-full md:w-auto">
-                <button
-                  onClick={() => navigateTo('piano')}
-                  className="w-full sm:w-auto px-6 py-4 rounded-full bg-gradient-to-r from-[#9D4EDD] to-[#ec4899] hover:from-[#E0AAFF] hover:to-[#fbcfe8] text-white hover:text-black font-mono text-[10px] font-bold tracking-widest uppercase transition-all shadow-lg shadow-[#9D4EDD]/30 flex items-center justify-center gap-2 cursor-pointer active:scale-95 whitespace-nowrap"
-                >
-                  {t.ecosystem.openBtn} <span>→</span>
-                </button>
-              </div>
-            </div>
           </div>
         </section>
 
@@ -1184,11 +894,8 @@ export default function App({ initialRoute = 'analyzer' }) {
             <div className="flex flex-col items-start gap-3">
               <span className="text-[9px] tracking-widest font-mono uppercase text-white font-bold mb-2">{t.footer.quickLinks}</span>
               <a href="/" onClick={(e) => { e.preventDefault(); navigateTo('analyzer'); }} className="text-[10px] tracking-wide font-mono hover:text-[#E0AAFF] transition-colors cursor-pointer text-left">{t.nav.analyzer}</a>
-              <a href="/piano" onClick={(e) => { e.preventDefault(); navigateTo('piano'); }} className="text-[10px] tracking-wide font-mono hover:text-[#E0AAFF] transition-colors cursor-pointer text-left text-[#E0AAFF]">{t.nav.piano}</a>
-              <a href="/vip" onClick={(e) => { e.preventDefault(); navigateTo('vip'); }} className="text-[10px] tracking-wide font-mono text-white/40 hover:text-[#E0AAFF] transition-colors cursor-pointer text-left">VIP CREATOR PASS</a>
-              <a href="/curso" onClick={(e) => { e.preventDefault(); navigateTo('curso'); }} className="text-[10px] tracking-wide font-mono text-[#E0AAFF] hover:text-white transition-colors cursor-pointer text-left">CURSO SPOTIFY READY</a>
               <a href="#features" onClick={(e) => scrollTo(e, 'features')} className="text-[10px] tracking-wide font-mono hover:text-[#E0AAFF] transition-colors">{t.features.titleAccent}</a>
-              <a href="#pricing" onClick={(e) => scrollTo(e, 'pricing')} className="text-[10px] tracking-wide font-mono hover:text-[#E0AAFF] transition-colors">{t.pricing.titleAccent}</a>
+              <a href="#pricing" onClick={(e) => scrollTo(e, 'pricing')} className="text-[10px] tracking-wide font-mono hover:text-[#E0AAFF] transition-colors">{t.nav.plans}</a>
               <a href="#faq" onClick={(e) => scrollTo(e, 'faq')} className="text-[10px] tracking-wide font-mono hover:text-[#E0AAFF] transition-colors">FAQ</a>
             </div>
 
